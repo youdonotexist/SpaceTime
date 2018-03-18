@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Commonwealth.Script.Model;
-using Commonwealth.Script.Proc;
 using Commonwealth.Script.UI;
 using Commonwealth.Script.UI.Sector;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 

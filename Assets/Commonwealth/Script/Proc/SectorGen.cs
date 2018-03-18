@@ -16,7 +16,7 @@ namespace Commonwealth.Script.Proc
             _alphaNumerics = "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789          ";
         }
 
-        public static List<Sector> GenerateSectors(float maxDist, float minDist, int count)
+        public static List<Sector> GenerateSectors(float minDist, float maxDist, int count)
         {
             List<Sector> sectorList = new List<Sector>();
 

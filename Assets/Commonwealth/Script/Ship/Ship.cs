@@ -10,6 +10,8 @@ namespace Commonwealth.Script.Ship
 
     public class Ship : MonoBehaviour
     {
+        [SerializeField] private float _mass;
+        
         private Rigidbody2D _rigidbody2D;
         private Collider2D _collider2D;
         private Transform _transform;
@@ -53,5 +55,12 @@ namespace Commonwealth.Script.Ship
         {
             return _transform;
         }
+        
+        public float CalculateMass()
+        {
+            return _mass;
+        }
     }
+    
+    
 }

@@ -1,3 +1,4 @@
+using System;
 using UniRx;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Commonwealth.Script.Ship.Hardware
     public class Engine : MonoBehaviour, IShipControlable
     {
         [SerializeField] private float _maxThrust = 20.0f;
-        [SerializeField] private float _maxSpeed = 1000.0f;
+        [SerializeField] private float _maxSpeed = 40.0f;
         [SerializeField] private Animator _converter;
 
         [SerializeField] private FuelContainer[] _fuelContainers;
@@ -33,12 +34,18 @@ namespace Commonwealth.Script.Ship.Hardware
             public float CurrentThrust;
             public float CurrentSpeed;
             public float FuelRemaining;
+            public float MaxThrust;
+            public float ShipMass;
+            public float MaxVelocity;
 
-            public EngineMetrics(float currentThrust, float currentSpeed, float fuelRemaining)
+            public EngineMetrics(float currentThrust, float currentSpeed, float fuelRemaining, float maxThrustWithFuel, float shipMass, float maxVelocity)
             {
                 CurrentThrust = currentThrust;
                 CurrentSpeed = currentSpeed;
                 FuelRemaining = fuelRemaining;
+                MaxThrust = maxThrustWithFuel;
+                ShipMass = shipMass;
+                MaxVelocity = maxVelocity;
             }
 
             public override string ToString()
@@ -62,13 +69,28 @@ namespace Commonwealth.Script.Ship.Hardware
             get { return _thrustRatio; }
         }
 
+        public float MaxThrust
+        {
+            get { return _maxThrust; }
+        }
+
+        public float Velocity
+        {
+            get { return _velocity; }
+        }
+
+        public float PreviousSpeed
+        {
+            get { return _previousSpeed; }
+        }
+
         void Start()
         {
             _ship = GetComponentInParent<Ship>();
             _previousDirection = _ship.GetTransform().position.z;
             _previousPosition = _ship.GetTransform().position;
 
-            _lastEvent = new EngineMetrics(0.0f, 0.0f, GetFuelRemaining());
+            _lastEvent = BuildEngineMetrics(0.0f, 0.0f);
             _engineMetricsStream.OnNext(_lastEvent);
         }
 
@@ -86,7 +108,7 @@ namespace Commonwealth.Script.Ship.Hardware
             Transform trans = _ship.GetTransform();
             Vector3 currentPos = trans.position;
 
-            float mass = 100.0f;
+            float mass = _ship.CalculateMass();
             _acceleration = finalThrust / mass;
             _velocity += _acceleration;
 
@@ -94,8 +116,8 @@ namespace Commonwealth.Script.Ship.Hardware
 
             trans.position = currentPos + ((speed * _desiredDirection));
 
-            _fuelConverter.SetConverterUtilization((finalThrust / _maxThrust) * _maxThrust);
-            _lastEvent = new EngineMetrics(finalThrust, speed, GetFuelRemaining());
+            _fuelConverter.SetConverterUtilization((finalThrust / _maxThrust) * 100.0f);
+            _lastEvent = BuildEngineMetrics(finalThrust, speed);
             _engineMetricsStream.OnNext(_lastEvent);
             
             _previousPosition = currentPos;
@@ -115,17 +137,17 @@ namespace Commonwealth.Script.Ship.Hardware
             if (Mathf.Approximately(_lastEvent.CurrentThrust, 0.0f)) //no thrust
             {
                 Debug.Log("No Thrust, reversing speed: " + _lastEvent.CurrentThrust);
-                _thrustRatio = -speedDir * 0.5f;
+                _thrustRatio = -speedDir * 1.0f;
             }
             else if (Mathf.Approximately(speedDir + thrustDir, 0.0f)) //Already opposite
             {
                 Debug.Log("Already opposite, just maxxing out");
-                _thrustRatio = 0.5f * thrustDir;
+                _thrustRatio = 1.0f * thrustDir;
             }
             else
             {
                 Debug.Log("Reversing Thrust");
-                _thrustRatio = -speedDir * 0.5f;
+                _thrustRatio = -speedDir * 1.0f;
             }
         }
 
@@ -169,6 +191,19 @@ namespace Commonwealth.Script.Ship.Hardware
         {
             _velocity = 0.0f;
             _acceleration = 0.0f;
+        }
+
+        private EngineMetrics BuildEngineMetrics(float finalThrust, float speed)
+        {
+            return new EngineMetrics(finalThrust, speed, GetFuelRemaining(), CalculateMaximumThrustWithFuel(), _ship.CalculateMass(), _maxSpeed);
+        }
+
+        private float CalculateMaximumThrustWithFuel()
+        {
+            float fuelRequired = _fuelBurnRate * _maxThrust;
+            float finalThrust = AcquireFuel(Mathf.Abs(fuelRequired)) * _maxThrust;
+
+            return finalThrust;
         }
     }
 }

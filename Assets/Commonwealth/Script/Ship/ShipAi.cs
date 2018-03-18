@@ -5,6 +5,7 @@ using Commonwealth.Script.Proc;
 using Commonwealth.Script.Ship.Hardware;
 using UniRx;
 using UnityEngine;
+using UnityEngine.iOS;
 
 namespace Commonwealth.Script.Ship
 {
@@ -15,20 +16,23 @@ namespace Commonwealth.Script.Ship
         private World _world;
 
         private Sector _currentSector;
-
         private DistanceTracker _distanceTracker;
 
         private bool _requestedStop = false;
+        private float _shipMass;
 
         private bool _isInstalled = false;
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
 
         public void OnInstall(Ship ship)
         {
+            UnityEngine.iOS.NotificationServices.RegisterForNotifications(NotificationType.Alert);
+            
             _isInstalled = true;
+            _shipMass = ship.CalculateMass();
 
             //Start acquiring components
-            _shipControls = ship.GetComponentInChildren<Hardware.ShipControls>();
+            _shipControls = ship.GetComponentInChildren<ShipControls>();
             _engine = ship.GetComponentInChildren<Engine>();
             _distanceTracker = ship.GetComponentInChildren<DistanceTracker>();
 
@@ -50,12 +54,12 @@ namespace Commonwealth.Script.Ship
                 .Subscribe(unit => _requestedStop = true).AddTo(_disposeBag);
 
             _shipControls.PickSectorStream
-                .Subscribe(unit => _shipControls.ShowSectorPicker(SectorGen.GenerateSectors(100.0f, 1000.0f, 5)))
+                .Subscribe(unit => _shipControls.ShowSectorPicker(SectorGen.GenerateSectors(100.0f, 300.0f, 5)))
                 .AddTo(_disposeBag);
 
             _shipControls.NewSectorStream
                 .Do(_ => _shipControls.HideSectorPicker())
-                .Do(sector => _distanceTracker.NewSector())
+                .Do(sector => _distanceTracker.NewSector(sector))
                 .Subscribe(SetSector).AddTo(_disposeBag);
 
             _engine.GetEngineMetrics()
@@ -92,6 +96,7 @@ namespace Commonwealth.Script.Ship
                     _engine.__Freeze();
                     _shipControls.ResetThrusterControls();
                     _requestedStop = false;
+                    _currentSector = null;
                 }
                 else
                 {
@@ -99,6 +104,29 @@ namespace Commonwealth.Script.Ship
                     _shipControls.MoveThrusterControl(_engine.ThrustRatio, false);
                 }
             }
+            
+            if (_currentSector != null)
+            {
+                //Debug.Log("Travel Distance: " + _currentSector.Distance + ", Current Distance: " +
+                  //        _distanceTracker.CurrentTripDistance);
+
+                float distanceFromSector =  _currentSector.Distance - _distanceTracker.CurrentTripDistance;
+                float vSquared = metrics.CurrentSpeed * metrics.CurrentSpeed; 
+                float forceToSlowDown = (-vSquared * _shipMass) / (2.0f * distanceFromSector);
+
+                if (_distanceTracker.CurrentTripDistance >= _currentSector.Distance)
+                {
+                    _requestedStop = true;
+                }
+                else if (Mathf.Abs(forceToSlowDown) >= _engine.MaxThrust)
+                {
+                    float slowDownRatio = Mathf.Clamp(forceToSlowDown / _engine.MaxThrust, -1.0f, 1.0f);
+                    _shipControls.MoveThrusterControl(slowDownRatio, false);
+                    _engine.OnThrustChange(slowDownRatio);
+                }
+            }
+            
+            
         }
 
         private void SetSector(Sector sector)
@@ -108,18 +136,10 @@ namespace Commonwealth.Script.Ship
             _engine.OnDirectionChange(sector.Direction);
             Debug.Log("Selected sector: " + sector.Name);
         }
-
+        
         private void FixedUpdate()
         {
-            if (_currentSector != null)
-            {
-                Debug.Log("Travel Distance: " + _currentSector.Distance + ", Current Distance: " + _distanceTracker.CurrentTripDistance);
-            }
             
-            if (_currentSector != null && _distanceTracker.CurrentTripDistance >= _currentSector.Distance)
-            {
-                _requestedStop = true;
-            }
         }
     }
 }

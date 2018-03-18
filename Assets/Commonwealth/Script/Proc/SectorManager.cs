@@ -11,7 +11,7 @@ namespace Commonwealth.Script.Proc
         private void Awake()
         {
             SectorGen.Initialize(1);
-            SectorList = SectorGen.GenerateSectors(50.0f, 1000.0f, 10);
+            SectorList = SectorGen.GenerateSectors(5000.0f, 10000000.0f, 10);
         }
     }
 }
