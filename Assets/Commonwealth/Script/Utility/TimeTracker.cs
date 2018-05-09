@@ -5,7 +5,7 @@ namespace Commonwealth.Script.Utility
 {
     public class TimeTracker : MonoBehaviour
     {
-        private Subject<long> _timeChangeStream = new Subject<long>();
+        private readonly Subject<long> _timeChangeStream = new Subject<long>();
 
         private void Awake()
         {

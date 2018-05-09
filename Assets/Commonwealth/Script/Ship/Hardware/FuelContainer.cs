@@ -26,6 +26,13 @@ namespace Commonwealth.Script.Ship
         {
         }
 
+        public float AuthorizeFuel(float requested)
+        {
+            float possible = Mathf.Min(_availableFuel, requested);
+
+            return possible / requested;
+        }
+
         //Returns a number between 1 and 0 signifying how much of the requested they got
         public float AcquireFuel(float requested)
         {

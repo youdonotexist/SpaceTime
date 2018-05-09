@@ -8,6 +8,7 @@ namespace Commonwealth.Script.Ship.Hardware
     {
         [SerializeField] private float _maxThrust = 20.0f;
         [SerializeField] private float _maxSpeed = 40.0f;
+        [SerializeField] private float _fuelBurnRate = 0.001f; //1kg fuel per 1g thrust
         [SerializeField] private Animator _converter;
 
         [SerializeField] private FuelContainer[] _fuelContainers;
@@ -21,7 +22,7 @@ namespace Commonwealth.Script.Ship.Hardware
         private Vector3 _previousVelocity = Vector3.zero;
         private Vector3 _previousPosition;
         private float _previousSpeed;
-        private float _fuelBurnRate = 0.001f; //1kg fuel per 1g thrust
+        
         private EngineMetrics _lastEvent;
 
         private float _velocity;
@@ -37,8 +38,9 @@ namespace Commonwealth.Script.Ship.Hardware
             public float MaxThrust;
             public float ShipMass;
             public float MaxVelocity;
+            public float DistanceTraveled;
 
-            public EngineMetrics(float currentThrust, float currentSpeed, float fuelRemaining, float maxThrustWithFuel, float shipMass, float maxVelocity)
+            public EngineMetrics(float currentThrust, float currentSpeed, float fuelRemaining, float maxThrustWithFuel, float shipMass, float maxVelocity, float distTraveled)
             {
                 CurrentThrust = currentThrust;
                 CurrentSpeed = currentSpeed;
@@ -46,6 +48,7 @@ namespace Commonwealth.Script.Ship.Hardware
                 MaxThrust = maxThrustWithFuel;
                 ShipMass = shipMass;
                 MaxVelocity = maxVelocity;
+                DistanceTraveled = distTraveled;
             }
 
             public override string ToString()
@@ -90,7 +93,7 @@ namespace Commonwealth.Script.Ship.Hardware
             _previousDirection = _ship.GetTransform().position.z;
             _previousPosition = _ship.GetTransform().position;
 
-            _lastEvent = BuildEngineMetrics(0.0f, 0.0f);
+            _lastEvent = BuildEngineMetrics(0.0f, 0.0f, 0.0f);
             _engineMetricsStream.OnNext(_lastEvent);
         }
 
@@ -117,10 +120,10 @@ namespace Commonwealth.Script.Ship.Hardware
             trans.position = currentPos + ((speed * _desiredDirection));
 
             _fuelConverter.SetConverterUtilization((finalThrust / _maxThrust) * 100.0f);
-            _lastEvent = BuildEngineMetrics(finalThrust, speed);
+            _lastEvent = BuildEngineMetrics(finalThrust, speed, Vector3.Distance(trans.position, _previousPosition));
             _engineMetricsStream.OnNext(_lastEvent);
             
-            _previousPosition = currentPos;
+            _previousPosition = trans.position;
             _previousSpeed = speed;
         }
         
@@ -161,6 +164,20 @@ namespace Commonwealth.Script.Ship.Hardware
         {
             return _engineMetricsStream;
         }
+        
+        private float AuthorizeFuel(float requestedAmount)
+        {
+            foreach (FuelContainer container in _fuelContainers)
+            {
+                float receivedPercentage = container.AuthorizeFuel(requestedAmount);
+                if (receivedPercentage > 0.0f)
+                {
+                    return receivedPercentage;
+                }
+            }
+
+            return 0.0f;
+        }
 
         private float AcquireFuel(float requestedAmount)
         {
@@ -193,15 +210,15 @@ namespace Commonwealth.Script.Ship.Hardware
             _acceleration = 0.0f;
         }
 
-        private EngineMetrics BuildEngineMetrics(float finalThrust, float speed)
+        private EngineMetrics BuildEngineMetrics(float finalThrust, float speed, float deltaDistance)
         {
-            return new EngineMetrics(finalThrust, speed, GetFuelRemaining(), CalculateMaximumThrustWithFuel(), _ship.CalculateMass(), _maxSpeed);
+            return new EngineMetrics(finalThrust, speed, GetFuelRemaining(), CalculateMaximumThrustWithFuel(), _ship.CalculateMass(), _maxSpeed, deltaDistance);
         }
 
         private float CalculateMaximumThrustWithFuel()
         {
             float fuelRequired = _fuelBurnRate * _maxThrust;
-            float finalThrust = AcquireFuel(Mathf.Abs(fuelRequired)) * _maxThrust;
+            float finalThrust = AuthorizeFuel(Mathf.Abs(fuelRequired)) * _maxThrust;
 
             return finalThrust;
         }

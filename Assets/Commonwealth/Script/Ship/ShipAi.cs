@@ -2,6 +2,7 @@
 using Commonwealth.Script.Generation;
 using Commonwealth.Script.Model;
 using Commonwealth.Script.Proc;
+using Commonwealth.Script.Ship.EngineMod;
 using Commonwealth.Script.Ship.Hardware;
 using UniRx;
 using UnityEngine;
@@ -11,17 +12,23 @@ namespace Commonwealth.Script.Ship
 {
     public class ShipAi : MonoBehaviour, IShipAi
     {
-        private Engine _engine;
+        //User Controls
         private ShipControls _shipControls;
+        private EngineModUi _engineMod;
+        
+        //Ship Components
+        private Engine _engine;
+        private EngineModManager _engineModManager;
+        
+        //State tracking
         private World _world;
-
         private Sector _currentSector;
         private DistanceTracker _distanceTracker;
 
-        private bool _requestedStop = false;
+        private bool _requestedStop;
         private float _shipMass;
 
-        private bool _isInstalled = false;
+        private bool _isInstalled;
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
 
         public void OnInstall(Ship ship)
@@ -35,6 +42,8 @@ namespace Commonwealth.Script.Ship
             _shipControls = ship.GetComponentInChildren<ShipControls>();
             _engine = ship.GetComponentInChildren<Engine>();
             _distanceTracker = ship.GetComponentInChildren<DistanceTracker>();
+            _engineModManager = ship.GetComponentInChildren<EngineModManager>();
+            _engineMod = ship.GetComponentInChildren<EngineModUi>();
 
             //Hook up controls to systems
             _shipControls.ThrustStream
@@ -54,7 +63,7 @@ namespace Commonwealth.Script.Ship
                 .Subscribe(unit => _requestedStop = true).AddTo(_disposeBag);
 
             _shipControls.PickSectorStream
-                .Subscribe(unit => _shipControls.ShowSectorPicker(SectorGen.GenerateSectors(100.0f, 300.0f, 5)))
+                .Subscribe(unit => _shipControls.ShowSectorPicker(SectorGen.GenerateSectors(5000.0f, 10000.0f, 5)))
                 .AddTo(_disposeBag);
 
             _shipControls.NewSectorStream
@@ -65,6 +74,9 @@ namespace Commonwealth.Script.Ship
             _engine.GetEngineMetrics()
                 .Do(CheckMetrics)
                 .Subscribe(_distanceTracker.OnEngineMetrics).AddTo(_disposeBag);
+
+            _engineMod.GetSimulateStream()
+                .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
         }
 
         public void OnUninstall(Ship ship)
@@ -125,8 +137,6 @@ namespace Commonwealth.Script.Ship
                     _engine.OnThrustChange(slowDownRatio);
                 }
             }
-            
-            
         }
 
         private void SetSector(Sector sector)
@@ -138,6 +148,11 @@ namespace Commonwealth.Script.Ship
         }
         
         private void FixedUpdate()
+        {
+            
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
         {
             
         }

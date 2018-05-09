@@ -27,11 +27,13 @@ namespace Commonwealth.Script.Ship
         private float _totalTime = 0.0f;
         private float _fuelRemaining = 0.0f;
         private float _currentThrust = 0.0f;
-        private float _currentTripDistance = 0.0f;
-        private float _totalTripDistance = 0.0f;
+        private float _currentTripDistance;
+        private float _totalTripDistance;
         private DateTime? _timeToCurrentDestination;
         
-        private DateTime? _departureDate = null; 
+        private DateTime? _firstToCurrentDestination;
+
+        private DateTime? _departureDate = null;
 
         public float CurrentTripDistance
         {
@@ -40,58 +42,68 @@ namespace Commonwealth.Script.Ship
 
         void Start()
         {
-            _speed = 0.0f;
+            
         }
 
         public void OnEngineMetrics(Engine.EngineMetrics metrics)
         {
-            bool recalculateTime = !Mathf.Approximately(_currentThrust, metrics.CurrentThrust);
+            //bool recalculateTime = !Mathf.Approximately(_currentThrust, metrics.CurrentThrust);
 
             _speed = Mathf.Abs(metrics.CurrentSpeed);
             _fuelRemaining = metrics.FuelRemaining;
             _currentThrust = metrics.CurrentThrust;
+            _currentTripDistance += metrics.DistanceTraveled;
+            
+            Debug.Log("Distance traveled: " + metrics.DistanceTraveled);
 
-            if (recalculateTime)
+            if (_sector == null) return;
+
+            //if (recalculateTime)
+            //{
+            float accel = metrics.MaxThrust / metrics.ShipMass;
+            float decel = -metrics.MaxThrust / metrics.ShipMass;
+
+            float initialVelocity = _speed * _speed ;// * Time.deltaTime;
+            float twoaso = -2 * accel * 0.0f;
+            float twoabs = 2 * decel * (_totalTripDistance - _currentTripDistance);
+            float twoaminus2ab = (2 * accel) - (2 * decel);
+
+           //Debug.Log("Initial v: " + initialVelocity + " accel:" + accel + " decel: " + decel);
+
+            float distanceToApplyOppositeForce = -((initialVelocity + twoaso + twoabs) / twoaminus2ab);
+
+            //Debug.Log("Distance to apply opp force: " + distanceToApplyOppositeForce + " distance left: " +
+                      //(_totalTripDistance - _currentTripDistance));
+
+            if (distanceToApplyOppositeForce <= 0.0f) //We're already past
             {
-                float accel = metrics.MaxThrust / metrics.ShipMass;
-                float decel = -metrics.MaxThrust / metrics.ShipMass;
-                //float distanceToApplyOppositeForce = (-2 * decel * _totalTripDistance) / ((2 * accel) - (2 * decel));
-
-                float initialVelocity = _speed * _speed; // * Time.fixedDeltaTime;
-                float twoaso = -2 * accel * 0.0f;
-                float twoabs = 2 * decel * (_totalTripDistance - _currentTripDistance);
-                float twoaminus2ab = (2 * accel) - (2 * decel);
-
-                Debug.Log("Initial v: " + initialVelocity + " accel:" + accel + " decel: " + decel);
-
-                float distanceToApplyOppositeForce = -((initialVelocity + twoaso + twoabs) / twoaminus2ab);
-
-                Debug.Log("Distance to apply opp force: " + distanceToApplyOppositeForce + " distance left: " +
-                          (_totalTripDistance - _currentTripDistance));
-
-                if (distanceToApplyOppositeForce <= 0.0f) //We're already past
-                {
-                    float timeToStop = (-_speed) / decel;
-                    _timeToCurrentDestination = DateTime.Now.AddSeconds(timeToStop);
-                }
-                else
-                {
-                    
-                    float accelTime = Mathf.Pow((2 * distanceToApplyOppositeForce) / accel, 0.5f);
-                    float timeToStop = (-accel * accelTime) / decel;
-                    _timeToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
-
-                    Debug.Log("Scheduled for: " + _timeToCurrentDestination);
-                    UnityEngine.iOS.LocalNotification not =
-                        new UnityEngine.iOS.LocalNotification
-                        {
-                            alertBody = "Arrived @ " + _sector.Name,
-                            fireDate = _timeToCurrentDestination.Value,
-                            timeZone = TimeZone.CurrentTimeZone.StandardName
-                        };
-                    UnityEngine.iOS.NotificationServices.ScheduleLocalNotification(not);
-                }
+                //Debug.Log("Short dist: " + distanceToApplyOppositeForce);
+                float timeToStop = -_speed / decel;
+                _timeToCurrentDestination = DateTime.Now.AddSeconds(timeToStop);
             }
+            else
+            {
+                float accelTime = Mathf.Pow((2 * distanceToApplyOppositeForce) / accel, 0.5f);
+                float timeToStop = (-accel * accelTime) / decel;
+                if (_firstToCurrentDestination == null)
+                {
+                    _firstToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
+                }
+                _timeToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
+
+                Debug.Log("Scheduled for: " + _timeToCurrentDestination);
+                UnityEngine.iOS.LocalNotification not =
+                    new UnityEngine.iOS.LocalNotification
+                    {
+                        alertBody = "Arrived @ " + _sector.Name,
+                        fireDate = _timeToCurrentDestination.Value,
+                        timeZone = TimeZone.CurrentTimeZone.StandardName
+                    };
+                UnityEngine.iOS.NotificationServices.CancelAllLocalNotifications();
+                UnityEngine.iOS.NotificationServices.ScheduleLocalNotification(not);
+            }
+
+            //}
         }
 
         public void NewTracking(float speed)
@@ -135,15 +147,17 @@ namespace Commonwealth.Script.Ship
 
             if (_destinationText != null)
             {
-                _destinationText.text = "ETA: " + (_timeToCurrentDestination.HasValue ? _timeToCurrentDestination.ToString() : "[No Destination]");
+                _destinationText.text = "ETA: " + (_timeToCurrentDestination.HasValue
+                                            ? _timeToCurrentDestination + "\n" + _firstToCurrentDestination + "\n" + DateTime.Now
+                                            : "[No Destination]");
             }
         }
 
         private void FixedUpdate()
         {
-            float delta = _speed * Time.fixedDeltaTime;
+            float delta = _speed;
             _totalDistance += delta;
-            _currentTripDistance += delta;
+            //_currentTripDistance += delta;
             _totalTime += Time.fixedDeltaTime;
 
             //v = d / t
