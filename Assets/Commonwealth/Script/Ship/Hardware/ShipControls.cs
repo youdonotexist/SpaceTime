@@ -37,6 +37,7 @@ namespace Commonwealth.Script.Ship.Hardware
         private ReactiveCollection<IDisposable> _disposables = new ReactiveCollection<IDisposable>();
         private readonly Subject<Vector2> _panStream = new Subject<Vector2>();
         private readonly Subject<float> _zoomStream = new Subject<float>();
+        private readonly Subject<float> _rotateStream = new Subject<float>();
 
         public IObservable<float> ThrustStream
         {
@@ -77,7 +78,12 @@ namespace Commonwealth.Script.Ship.Hardware
             get { return _zoomStream; }
         }
 
-        public IObservable<Model.Sector> NewSectorStream
+        public Subject<float> RotateStream
+        {
+            get { return _rotateStream; }
+        }
+
+        public IObservable<Sector> NewSectorStream
         {
             get { return _sectorControls.NewSectorStream(); }
         }
@@ -108,14 +114,20 @@ namespace Commonwealth.Script.Ship.Hardware
         {
             // On mouse down, capture it's position.
             // Otherwise, if the mouse is still down, pan the camera.
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetKey(KeyCode.Space) && !Input.GetMouseButton(0))
             {
                 _lastPanPosition = Input.mousePosition;
             }
-            else if (Input.GetMouseButton(0))
+            
+            if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.Space))
             {
-                PanCamera(Input.mousePosition);
+                RotateCamera(Input.mousePosition);
             }
+            else if (Input.GetMouseButtonDown(0))
+            {
+                _lastPanPosition = Input.mousePosition;
+            }
+
 
             // Check for scrolling to zoom the camera
             _zoomStream.OnNext(Input.GetAxis("Mouse ScrollWheel"));
@@ -144,7 +156,7 @@ namespace Commonwealth.Script.Ship.Hardware
                     break;
 
                 case 2: // Zooming
-                    Vector2[] newPositions = new Vector2[] {Input.GetTouch(0).position, Input.GetTouch(1).position};
+                    Vector2[] newPositions = {Input.GetTouch(0).position, Input.GetTouch(1).position};
                     if (!_wasZoomingLastFrame)
                     {
                         _lastZoomPositions = newPositions;
@@ -178,6 +190,13 @@ namespace Commonwealth.Script.Ship.Hardware
 
             // Cache the position
             _lastPanPosition = newPanPosition;
+        }
+
+        void RotateCamera(Vector2 newRotatePosition)
+        {
+            _rotateStream.OnNext(_lastPanPosition.x - newRotatePosition.x);
+
+            _lastPanPosition = newRotatePosition;
         }
 
         public void ShowSectorPicker(List<Sector> sectorList)

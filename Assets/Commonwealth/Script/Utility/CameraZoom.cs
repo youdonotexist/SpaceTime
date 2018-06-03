@@ -21,6 +21,7 @@ namespace Commonwealth.Script.Utility
             _camera = GetComponent<Camera>();
             _follow = GetComponentInParent<BetterCamera2DFollow>();
             _shipControls.ZoomStream.Subscribe(Zoom).AddTo(_disposableBag);
+            _shipControls.RotateStream.Subscribe(Rotate).AddTo(_disposableBag);
         }
 
         private void Zoom(float value)
@@ -29,6 +30,11 @@ namespace Commonwealth.Script.Utility
             float newZ = _follow.GetOffsetZ() + scroll;
 
             _follow.ShiftOffsetZBy(scroll);
+        }
+
+        private void Rotate(float value)
+        {
+            _follow.Rotate(value);
         }
     }
 }
