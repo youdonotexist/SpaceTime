@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Commonwealth.Script.Model;
-using UnityEngine;
 using ProceduralToolkit;
+using UnityEngine;
 
 namespace Commonwealth.Script.Proc
 {

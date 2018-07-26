@@ -26,7 +26,7 @@ namespace CW.Editor
                     up = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Up)));
                     
                     //For fuel types, only look up
-                    if (!slot.AcceptsPiece(EnginePiece.PieceType.Fuel))
+                    if (!slot.AcceptsPiece(EnginePiece.SlotAttributes.Fuel))
                     {
                         down = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Down)));
                         left = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Left)));

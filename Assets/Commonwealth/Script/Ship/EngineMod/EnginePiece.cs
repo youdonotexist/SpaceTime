@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using Commonwealth.Script.EditorUtils;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Commonwealth.Script.Ship.EngineMod
 {
     public class EnginePiece : MonoBehaviour
     {
         
-        [Flags] public enum PieceType
+        [Flags] public enum SlotAttributes
         {
             None = 0,
             Fuel = 1 << 0,
             Tile = 1 << 1,
-            Pipe = 1 << 2
+            Pipe = 1 << 2,
+            Damaged = 1 << 3
         }
         
         [Flags]
@@ -30,11 +32,11 @@ namespace Commonwealth.Script.Ship.EngineMod
         [EnumFlags]
         [SerializeField] private Direction _directions;
 
-        [SerializeField] private PieceType _pieceType;
+        [FormerlySerializedAs("_pieceType")] [SerializeField] private SlotAttributes _slotAttributes;
 
-        public PieceType Type
+        public SlotAttributes Type
         {
-            get { return _pieceType; }
+            get { return _slotAttributes; }
         }
 
         private Collider _collider;

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using Commonwealth.Script.Proc;
 using Commonwealth.Script.Utility;
+using ProceduralToolkit;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.WSA.WebCam;
+using Random = System.Random;
 
 namespace Commonwealth.Script.Ship.EngineMod
 {
@@ -49,10 +52,7 @@ namespace Commonwealth.Script.Ship.EngineMod
                 EnginePiece piece = HighlightedPiece();
                 if (piece != null)
                 {
-                    Vector3 camPt = Camera.main.ScreenToWorldPoint(
-                        new Vector3(Input.mousePosition.x,
-                            Input.mousePosition.y,
-                            CameraUtils.CameraOffset(Camera.main, piece.transform.position)));
+                    Vector3 camPt = InputManager.MouseWorld;
                     Vector3 piecePt = piece.transform.position;
                     _selectedOffset = new Vector3(piecePt.x - camPt.x, piecePt.y - camPt.y, piece.transform.position.z);
                     _selectedPiece = piece;
@@ -81,11 +81,7 @@ namespace Commonwealth.Script.Ship.EngineMod
 
             if (_selectedPiece != null)
             {
-                Vector3 camPt = Camera.main.ScreenToWorldPoint(
-                    new Vector3(
-                        Input.mousePosition.x,
-                        Input.mousePosition.y,
-                        CameraUtils.CameraOffset(Camera.main, _selectedPiece.transform.position)));
+                Vector3 camPt = InputManager.MouseWorld;
                 _selectedPiece.transform.position = new Vector3(camPt.x + _selectedOffset.x,
                     camPt.y + _selectedOffset.y,
                     _selectedOffset.z);
@@ -124,9 +120,9 @@ namespace Commonwealth.Script.Ship.EngineMod
 
         private T HighlightedObject<T>(LayerMask mask)
         {
-            Ray camPt = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(camPt, 1000000.0f, mask);
+            Vector3 origin = InputManager.ActiveCamera.transform.position;
+            Vector3 direction = InputManager.MouseWorld - InputManager.ActiveCamera.transform.position;
+            RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(new Ray(origin, direction), 1000000.0f, mask);
             if (hits.Length > 0)
             {
                 Debug.Log("Hit: " + hits[0].collider.gameObject.name);
@@ -195,10 +191,15 @@ namespace Commonwealth.Script.Ship.EngineMod
                     EngineSlot left = null;
                     EngineSlot right = null;
 
+                    if (!slot.AcceptsPiece(EnginePiece.SlotAttributes.Fuel))
+                    {
+                        slot.SetHealth(RandomE.Chance(0.1f) ? 0.0f : 100.0f);
+                    }
+
                     up = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Up)));
 
                     //For fuel types, only look up
-                    if (!slot.AcceptsPiece(EnginePiece.PieceType.Fuel))
+                    if (!slot.AcceptsPiece(EnginePiece.SlotAttributes.Fuel))
                     {
                         down = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Down)));
                         left = ExtractSlot(Physics2D.OverlapPoint(GetPoint(slot, EnginePiece.Direction.Left)));

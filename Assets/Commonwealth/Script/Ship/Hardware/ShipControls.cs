@@ -39,12 +39,12 @@ namespace Commonwealth.Script.Ship.Hardware
         private readonly Subject<float> _zoomStream = new Subject<float>();
         private readonly Subject<float> _rotateStream = new Subject<float>();
 
-        public IObservable<float> ThrustStream
+        public UniRx.IObservable<float> ThrustStream
         {
             get { return _speedSlider.OnValueChangedAsObservable(); }
         }
 
-        public IObservable<Vector3> DirectionStream
+        public UniRx.IObservable<Vector3> DirectionStream
         {
             get
             {
@@ -53,17 +53,17 @@ namespace Commonwealth.Script.Ship.Hardware
             }
         }
 
-        public IObservable<Unit> StopThrustersStream
+        public UniRx.IObservable<Unit> StopThrustersStream
         {
             get { return _stopThrustersButton.OnClickAsObservable(); }
         }
 
-        public IObservable<Unit> SlowToStopStream
+        public UniRx.IObservable<Unit> SlowToStopStream
         {
             get { return _slowToStopButton.OnClickAsObservable(); }
         }
 
-        public IObservable<Unit> PickSectorStream
+        public UniRx.IObservable<Unit> PickSectorStream
         {
             get { return _sectorControls.PickSectorButtonStream(); }
         }
@@ -83,7 +83,7 @@ namespace Commonwealth.Script.Ship.Hardware
             get { return _rotateStream; }
         }
 
-        public IObservable<Sector> NewSectorStream
+        public UniRx.IObservable<Sector> NewSectorStream
         {
             get { return _sectorControls.NewSectorStream(); }
         }

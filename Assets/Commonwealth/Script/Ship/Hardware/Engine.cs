@@ -160,7 +160,7 @@ namespace Commonwealth.Script.Ship.Hardware
             //_desiredZ += (_maxThrust * dir);
         }
 
-        public IObservable<EngineMetrics> GetEngineMetrics()
+        public UniRx.IObservable<EngineMetrics> GetEngineMetrics()
         {
             return _engineMetricsStream;
         }

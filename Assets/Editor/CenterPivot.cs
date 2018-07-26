@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Commonwealth.Script.Utility;
 using UnityEditor;
 using UnityEngine;
-using ProBuilder2;
-using ProBuilder2.Common;
-using ProBuilder2.MeshOperations;
 
 namespace CW.Editor
 {
@@ -19,6 +17,7 @@ namespace CW.Editor
             {
                 Vector3 pos = Vector3.zero;
                 Transform[] children = t.GetComponentsInChildren<Transform>();
+                Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
                 float count = children.Length - 1;
 
                 foreach (var child in children)
@@ -35,6 +34,7 @@ namespace CW.Editor
                 {
                     if (child != t)
                     {
+                        childParentMap.Add(child, child.parent);
                         child.parent = null;
                     }
                 }
@@ -45,63 +45,114 @@ namespace CW.Editor
                 {
                     if (child != t)
                     {
-                        child.parent = t;
+                        child.parent = childParentMap[child];
                     }
                 }
             }
         }
-
-        [MenuItem("Tools/Build Mesh From Sprite")]
-        private static void BuildMeshFromSprite()
+        
+        [MenuItem("Tools/MinX Pivot")]
+        private static void MinXPivot()
         {
             Transform t = Selection.activeTransform;
             if (t != null)
             {
-                PolygonCollider2D collider = t.GetComponent<PolygonCollider2D>();
-                if (collider != null)
+                float minX = float.MaxValue;
+                SpriteRenderer[] children = t.GetComponentsInChildren<SpriteRenderer>();
+                Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
+                float count = children.Length - 1;
+
+                foreach (var child in children)
                 {
-                    List<Vector2> points = new List<Vector2>();
-
-                    foreach (Vector2 point in collider.points)
+                    if (child != t && child.bounds.min.x < minX)
                     {
-                        points.Add(t.InverseTransformPoint(point));
+                        minX = child.bounds.min.x;
                     }
+                }
 
-                    //points = SortVerticies(points);
+                Vector3 pos = t.position;
+                pos = new Vector3(minX, pos.y, pos.z);
 
-                    Triangulator tri = new Triangulator(points.ToArray());
-                    int[] indexes = tri.Triangulate();
-
-                    List<Vector3> points3d = new List<Vector3>();
-                    foreach (Vector2 pt in points)
+                foreach (var child in children)
+                {
+                    if (child != t)
                     {
-                        points3d.Add(new Vector3(pt.x, pt.y, t.transform.position.z));
+                        childParentMap.Add(child.transform, child.transform.parent);
+                        child.transform.parent = null;
                     }
-                    
-                    points3d.Add(new Vector3(points[0].x, points[0].y, t.transform.position.z));
+                }
 
-                    //List<Vector3> output = new List<Vector3>();
-                    //foreach (int index in indexes)
-                    //{
-                    //    output.Add(points[index]);
-                    //}
+                t.position = pos;
 
-                    //output.Add(points[indexes[0]]);
-
-                    pb_Object obj = pb_Object.CreateInstanceWithPoints(points3d.ToArray());
-                    
-                    List<pb_Face> trashFaces = obj.faces.ToList();
-                    pb_Face baseFace = new pb_Face();
-                    obj.CreatePolygon(indexes, false, out baseFace);
-                    
-                    //obj.DeleteFaces(trashFaces);
-           
-                    obj.ToMesh();
-                    obj.Refresh();
-                    
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        child.transform.parent = childParentMap[child.transform];
+                    }
                 }
             }
         }
+        
+        [MenuItem("Tools/Center On Frame")]
+        private static void CenterSpritePivot()
+        {
+            Transform t = Selection.activeTransform;
+            if (t != null)
+            {
+                float minX = float.MaxValue;
+                Transform[] children = t.GetComponentsInChildren<Transform>();
+                Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
+                float count = children.Length - 1;
+
+                Vector3 pos = t.position;
+                foreach (var child in children)
+                {
+                    if (child.gameObject.name == "Framer")
+                    {
+                        pos = child.transform.position;
+                    }
+                }
+
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        childParentMap.Add(child, child.parent);
+                        child.parent = null;
+                    }
+                }
+
+                t.position = pos;
+
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        child.parent = childParentMap[child];
+                    }
+                }
+            }
+        }
+
+        [MenuItem("Tools/Fit Fitter")]
+        private static void FitFitter()
+        {
+            Transform t = Selection.activeTransform;
+            CameraFit fit = t.GetComponentInChildren<CameraFit>();
+            if (fit)
+            {
+                fit.FitFitter();
+            }
+        }
+        
+        [MenuItem("Tools/Collider Fitter")]
+        private static void ColliderFitter()
+        {
+            Side s = Selection.activeTransform.GetComponent<Side>();
+            s.Build();
+        }
+
         
         public static List<Vector2> SortVerticies(List<Vector2> points) {
             // get centroid

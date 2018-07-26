@@ -54,7 +54,7 @@ namespace Commonwealth.Script.Ship
             _currentThrust = metrics.CurrentThrust;
             _currentTripDistance += metrics.DistanceTraveled;
             
-            Debug.Log("Distance traveled: " + metrics.DistanceTraveled);
+            //Debug.Log("Distance traveled: " + metrics.DistanceTraveled);
 
             if (_sector == null) return;
 

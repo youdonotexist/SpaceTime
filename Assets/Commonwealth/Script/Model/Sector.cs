@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
-using UnityEngine.Collections;
 
 namespace Commonwealth.Script.Model
 {
@@ -11,7 +11,7 @@ namespace Commonwealth.Script.Model
         [SerializeField] private float _distance;
         [SerializeField] private List<Feature> _featureList = new List<Feature>();
 
-        [SerializeField] [ReadOnly] private Vector3 _sectorDirection;
+        [SerializeField] private Vector3 _sectorDirection;
 
         public Sector(string name, float distance)
         {

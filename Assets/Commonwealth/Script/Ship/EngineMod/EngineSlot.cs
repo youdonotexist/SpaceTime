@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Commonwealth.Script.EditorUtils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Commonwealth.Script.Ship.EngineMod
 {
@@ -17,7 +18,11 @@ namespace Commonwealth.Script.Ship.EngineMod
         private EngineSlot _left;
         private EngineSlot _right;
 
-        [EnumFlags] [SerializeField] private EnginePiece.PieceType _acceptedPieces;
+        private float _health = 100.0f;
+
+        [SerializeField] private Sprite _damagedSprite;
+        [SerializeField] private Sprite _okaySprite;
+        [EnumFlags] [SerializeField] private EnginePiece.SlotAttributes _slotAttirbutes;
 
         void Awake()
         {
@@ -49,7 +54,21 @@ namespace Commonwealth.Script.Ship.EngineMod
             _renderer.color = selected ? Color.red : _originalColor;
         }
 
-
+        public void SetHealth(float health)
+        {
+            _health = health;
+            if (_health <= 0.0f)
+            {
+                _renderer.sprite = _damagedSprite;
+                _slotAttirbutes |= EnginePiece.SlotAttributes.Damaged;
+            }
+            else
+            {
+                _renderer.sprite = _okaySprite;
+                _slotAttirbutes &= ~EnginePiece.SlotAttributes.Damaged;
+            }
+        }
+        
         public bool HasPiece()
         {
             return _installedPiece != null;
@@ -60,9 +79,11 @@ namespace Commonwealth.Script.Ship.EngineMod
             return _installedPiece;
         }
 
-        public bool AcceptsPiece(EnginePiece.PieceType type)
+        public bool AcceptsPiece(EnginePiece.SlotAttributes type)
         {
-            return (_acceptedPieces & type) == type;
+            bool damaged = (_slotAttirbutes & EnginePiece.SlotAttributes.Damaged) == EnginePiece.SlotAttributes.Damaged;
+            bool acceptsType = (_slotAttirbutes & type) == type; 
+            return !damaged && acceptsType;
         }
 
         public bool CanMoveFrom(EnginePiece.Direction direction)
