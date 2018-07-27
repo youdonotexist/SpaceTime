@@ -24,10 +24,6 @@ public class Side : MonoBehaviour
 
         _renderBounds = GetComponent<Collider2D>();
     }
-    
-    void Start() {
-    
-    }
 
     public void Build()
     {
@@ -35,25 +31,19 @@ public class Side : MonoBehaviour
         SpriteRenderer[] renderers = t.GetComponentsInChildren<SpriteRenderer>();
         Bounds b = new Bounds();
         BoxCollider2D parent = t.GetComponent<BoxCollider2D>();
-        if (parent == null)
-        {
-            return;
-        }
-
-        if (renderers.Length == 0)
+        if (parent == null || renderers.Length == 0)
         {
             return;
         }
 
         float minx = float.MaxValue, miny = float.MaxValue, maxx = float.MinValue, maxy = float.MinValue;
-        float centerx, centery;
 
-        foreach (SpriteRenderer renderer in renderers)
+        foreach (SpriteRenderer r in renderers)
         {
-            minx = Mathf.Min((minx), renderer.bounds.min.x);
-            miny = Mathf.Min((miny), renderer.bounds.min.y);
-            maxx = Mathf.Max(maxx, renderer.bounds.max.x);
-            maxy = Mathf.Max(maxy, renderer.bounds.max.y);
+            minx = Mathf.Min((minx), r.bounds.min.x);
+            miny = Mathf.Min((miny), r.bounds.min.y);
+            maxx = Mathf.Max(maxx, r.bounds.max.x);
+            maxy = Mathf.Max(maxy, r.bounds.max.y);
         }
 
         b.SetMinMax(new Vector2(minx, miny), new Vector2(maxx, maxy));
@@ -82,28 +72,27 @@ public class Side : MonoBehaviour
 
     void Update()
     {
+        if (_renderMaterial.mainTexture == null)
+        {
+            Build();
+        }
+        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
         RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit, 100000.0f)) return;
+
+        if (!Physics.Raycast(ray, out hit, 100000.0f) || hit.transform != _renderSquare) return;
 
         Bounds rendererBounds = _renderSquare.GetComponent<MeshFilter>().sharedMesh.bounds;
         Vector3 worldMainCam = hit.point;
-        //if (!rendererBounds.Contains(worldMainCam)) return;
         
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawSphere(worldMainCam, 1.0f);
 
         Vector3 localPt = _renderSquare.InverseTransformPoint(worldMainCam);
-        //localPt.Scale(_renderSquare.localScale);
         _localPosTracker.localPosition = localPt;
         
         Vector3 scaledLocalPoint = new Vector3(
             localPt.x / (rendererBounds.extents.x), 
             localPt.y / (rendererBounds.extents.y), 
             localPt.z / (rendererBounds.extents.z));
-        
-        //Debug.Log("Global To Plane: " + localPt + " render bounds: " + rendererBounds);
-        //Debug.Log("Local To Plane: " + scaledLocalPoint);
 
         scaledLocalPoint.x *= -1.0f;
         float tmp = scaledLocalPoint.y;
@@ -114,18 +103,14 @@ public class Side : MonoBehaviour
         Vector3 scaledWorldSide = new Vector3(scaledLocalPoint.x * _renderBounds.bounds.extents.x, 
             scaledLocalPoint.y * _renderBounds.bounds.extents.y,
             scaledLocalPoint.z * _renderBounds.bounds.extents.z);
-        //Debug.Log("Normalized size: " + scaledWorldSide);
-        Vector3 worldSide = scaledWorldSide + _renderBounds.bounds.center; ;//transform.TransformPoint(scaledLocalPoint);
         
-        //Debug.Log("Bounds check: " + worldSide + " bounds: " + _renderBounds.bounds);
-        
-        if (!_renderBounds.bounds.Contains(worldSide)) return; 
-        
-        //Gizmos.color = Color.green;
-        //Gizmos.DrawCube(worldSide, new Vector3(1.0f, 1.0f, 1.0f));
-        
-        //Debug.DrawLine(_camera.transform.position, worldSide);
-        //Debug.Log("====");
+        Vector3 worldSide = scaledWorldSide + _renderBounds.bounds.center;
+
+        if (!_renderBounds.bounds.Contains(worldSide))
+        {
+            Debug.Log("rejecting: " + gameObject.name);
+            return;
+        } 
 
         InputManager.MouseWorld = worldSide;
         InputManager.ActiveCamera = _camera;
