@@ -2,6 +2,11 @@
 
 namespace Commonwealth.Script.Utility
 {
+    public interface __IRotator
+    {
+        void OnRotate(float amt);
+    }
+    
     public class BetterCamera2DFollow : MonoBehaviour
     {
         public Transform Target;
@@ -18,6 +23,7 @@ namespace Commonwealth.Script.Utility
 
         public void ShiftOffsetZBy(float offsetZ)
         {
+            float newOffset = _mOffsetZ + offsetZ; 
             _mOffsetZ += offsetZ;
         }
 
@@ -52,8 +58,8 @@ namespace Commonwealth.Script.Utility
                 Vector3 negDistance = new Vector3(0.0f, 0.0f, _mOffsetZ);
                 Vector3 position = rotation * negDistance + Target.position;
  
-                transform.rotation = rotation;
                 transform.position = position;
+                transform.LookAt(Target);
 
                 _mRotOffset = 0.0f;
             }

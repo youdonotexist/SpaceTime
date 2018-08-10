@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Commonwealth.Script.Ship.EngineMod;
 using Commonwealth.Script.Utility;
 using UnityEditor;
 using UnityEngine;
@@ -153,6 +154,19 @@ namespace CW.Editor
             s.Build();
         }
 
+        [MenuItem("Tools/Index Engine Slots")]
+        private static void IndexEngineSlots()
+        {
+            EngineSlot[] slots = Selection.activeTransform.GetComponentsInChildren<EngineSlot>();
+            List<EngineSlot> slotList = new List<EngineSlot>(slots);
+
+            foreach (EngineSlot slot in slotList)
+            {
+                slot.Index = new Vector2Int();
+            }
+            
+            
+        }
         
         public static List<Vector2> SortVerticies(List<Vector2> points) {
             // get centroid

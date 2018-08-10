@@ -12,6 +12,13 @@ namespace Commonwealth.Script.Ship
         public float AvailableFuel
         {
             get { return _availableFuel; }
+            set { _availableFuel = value; }
+        }
+
+        public float MaxCapacity
+        {
+            get { return _maxCapacity; }
+            set { _maxCapacity = value; }
         }
 
 

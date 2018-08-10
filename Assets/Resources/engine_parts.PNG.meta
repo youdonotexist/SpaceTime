@@ -2,15 +2,21 @@ fileFormatVersion: 2
 guid: 592e0d8bb214f46b88b3ca25659c1081
 TextureImporter:
   fileIDToRecycleName:
-    21300000: engine_parts_0
-    21300002: engine_parts_1
-    21300004: engine_parts_2
+    21300000: Vertical
+    21300002: DownToLeft
+    21300004: Fuel
     21300006: engine_parts_3
-    21300008: engine_parts_4
-    21300010: engine_parts_5
-    21300012: engine_parts_6
-    21300014: engine_parts_7
+    21300008: UpToLeft
+    21300010: UpToRight
+    21300012: DownToRight
+    21300014: Horizontal
     21300016: damaged
+    21300018: Tile_1
+    21300020: Tile_2
+    21300022: Tile_4
+    21300024: Tile_3
+    21300026: engine_parts_0
+    21300028: T
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -124,7 +130,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: engine_parts_0
+      name: Vertical
       rect:
         serializedVersion: 2
         x: 2
@@ -144,7 +150,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_1
+      name: DownToLeft
       rect:
         serializedVersion: 2
         x: 17
@@ -164,7 +170,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_2
+      name: Fuel
       rect:
         serializedVersion: 2
         x: 24
@@ -204,7 +210,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_4
+      name: UpToLeft
       rect:
         serializedVersion: 2
         x: 11
@@ -224,7 +230,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_5
+      name: UpToRight
       rect:
         serializedVersion: 2
         x: 17
@@ -244,7 +250,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_6
+      name: DownToRight
       rect:
         serializedVersion: 2
         x: 7
@@ -264,7 +270,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: engine_parts_7
+      name: Horizontal
       rect:
         serializedVersion: 2
         x: 1
@@ -292,13 +298,133 @@ TextureImporter:
         width: 7
         height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: bfa8abf08a4534148b605ed6be4d68fb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_1
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 38
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ab058d7d8a224aa09c745acd4d09a27
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_2
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 38
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63c38b6e4a0ef4402a6f9ddcc91a1c09
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_4
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 30
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52900f025095f4f51bdc2bcc1fca4d56
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tile_3
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 30
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ebfcdaf68e5049789078a7bb1e9813e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: engine_parts_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 43
+        width: 4
+        height: 3
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c495c4bd185cc433f9dde3177a27bb2c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 42
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26b2634a0c9fc4ec390ea7ddf9361abb
       vertices: []
       indices: 
       edges: []

@@ -20,13 +20,14 @@ namespace Commonwealth.Script.Utility
         {
             _camera = GetComponent<Camera>();
             _follow = GetComponentInParent<BetterCamera2DFollow>();
+            
             _shipControls.ZoomStream.Subscribe(Zoom).AddTo(_disposableBag);
             _shipControls.RotateStream.Subscribe(Rotate).AddTo(_disposableBag);
         }
 
         private void Zoom(float value)
         {
-            float scroll = value * 0.5f;
+            float scroll = -value * 2.0f;
             float newZ = _follow.GetOffsetZ() + scroll;
 
             _follow.ShiftOffsetZBy(scroll);

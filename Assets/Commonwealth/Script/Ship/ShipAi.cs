@@ -6,7 +6,6 @@ using Commonwealth.Script.Ship.EngineMod;
 using Commonwealth.Script.Ship.Hardware;
 using UniRx;
 using UnityEngine;
-using UnityEngine.iOS;
 
 namespace Commonwealth.Script.Ship
 {
@@ -33,7 +32,7 @@ namespace Commonwealth.Script.Ship
 
         public void OnInstall(Ship ship)
         {
-            UnityEngine.iOS.NotificationServices.RegisterForNotifications(NotificationType.Alert);
+            //UnityEngine.iOS.NotificationServices.RegisterForNotifications(NotificationType.Alert);
             
             _isInstalled = true;
             _shipMass = ship.CalculateMass();
@@ -75,8 +74,8 @@ namespace Commonwealth.Script.Ship
                 .Do(CheckMetrics)
                 .Subscribe(_distanceTracker.OnEngineMetrics).AddTo(_disposeBag);
 
-            _engineMod.GetSimulateStream()
-                .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
+            //_engineMod.GetSimulateStream()
+              //  .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
         }
 
         public void OnUninstall(Ship ship)

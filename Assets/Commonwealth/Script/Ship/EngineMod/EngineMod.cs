@@ -5,7 +5,7 @@ namespace Commonwealth.Script.Ship.EngineMod
 	public class EngineMod : MonoBehaviour
 	{
 
-		[SerializeField] public GameObject slotPrefab;
+		[SerializeField] public GameObject SlotPrefab;
 		
 		// Use this for initialization
 		void Start ()
@@ -19,18 +19,13 @@ namespace Commonwealth.Script.Ship.EngineMod
 				int x = i % rows;
 				int y = Mathf.FloorToInt((float) i / rows);
 
-				GameObject go = Instantiate(slotPrefab);
+				GameObject go = Instantiate(SlotPrefab);
 				Collider collider = go.GetComponent<Collider>();
 				Vector3 pos = go.transform.position;
 				pos.x = (x * (collider.bounds.size.x + spacing));
 				pos.y = (y * (collider.bounds.size.y + spacing));
 				go.transform.position = pos;
 			}
-		}
-	
-		// Update is called once per frame
-		void Update () {
-		
 		}
 	}
 }

@@ -2,7 +2,6 @@ using System;
 using Commonwealth.Script.Model;
 using Commonwealth.Script.Ship.Hardware;
 using UnityEngine;
-using UnityEngine.iOS;
 using UnityEngine.UI;
 
 namespace Commonwealth.Script.Ship
@@ -35,15 +34,7 @@ namespace Commonwealth.Script.Ship
 
         private DateTime? _departureDate = null;
 
-        public float CurrentTripDistance
-        {
-            get { return _currentTripDistance; }
-        }
-
-        void Start()
-        {
-            
-        }
+        public float CurrentTripDistance => _currentTripDistance;
 
         public void OnEngineMetrics(Engine.EngineMetrics metrics)
         {
@@ -92,7 +83,7 @@ namespace Commonwealth.Script.Ship
                 _timeToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
 
                 Debug.Log("Scheduled for: " + _timeToCurrentDestination);
-                UnityEngine.iOS.LocalNotification not =
+                /*UnityEngine.iOS.LocalNotification not =
                     new UnityEngine.iOS.LocalNotification
                     {
                         alertBody = "Arrived @ " + _sector.Name,
@@ -100,7 +91,7 @@ namespace Commonwealth.Script.Ship
                         timeZone = TimeZone.CurrentTimeZone.StandardName
                     };
                 UnityEngine.iOS.NotificationServices.CancelAllLocalNotifications();
-                UnityEngine.iOS.NotificationServices.ScheduleLocalNotification(not);
+                UnityEngine.iOS.NotificationServices.ScheduleLocalNotification(not);*/
             }
 
             //}

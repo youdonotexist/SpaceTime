@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.AppleTV;
+﻿
 using UnityEngine;
 
 public class CameraFit : MonoBehaviour

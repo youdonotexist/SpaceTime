@@ -10,11 +10,10 @@ public class Side : MonoBehaviour
     [SerializeField] private Transform _renderSquare;
     [SerializeField] private Material _renderMaterial;
     [SerializeField] private Camera _camera;
+    [SerializeField] private LayerMask _layerMask;
 
     private RenderTexture _renderTexture;
     private Collider2D _renderBounds;
-
-    public Transform _localPosTracker;
 
     void Awake()
     {
@@ -51,43 +50,57 @@ public class Side : MonoBehaviour
         parent.offset = t.InverseTransformPoint(b.center);
 
         Camera c = t.GetComponentInChildren<Camera>();
-        c.pixelRect = new Rect(Vector2.zero, new Vector2(b.size.x + 1, b.size.y + 1)* 100.0f);
+        c.pixelRect = new Rect(Vector2.zero, new Vector2(b.size.x + 1, b.size.y + 1) * 100.0f);
         c.aspect = b.size.x / b.size.y;
+        CalculateOrthographicSize(c, b);
 
         Vector3 pos = c.transform.position;
         c.transform.position = new Vector3(b.center.x, b.center.y, pos.z);
 
         SetRenderScaleSize(b.size);
     }
+    
+    void CalculateOrthographicSize(Camera cam, Bounds boundingBox)
+    {
+        Vector3 topRight = new Vector3(boundingBox.max.x, boundingBox.min.y, 0f);
+        Vector3 topRightAsViewport = cam.WorldToViewportPoint(topRight);
+       
+        if (topRightAsViewport.x >= topRightAsViewport.y)
+            cam.orthographicSize = Mathf.Abs(boundingBox.size.x) / cam.aspect / 2f;
+        else
+            cam.orthographicSize = Mathf.Abs(boundingBox.size.y) / 2f;
+
+    }
 
     private void SetRenderScaleSize(Vector2 size)
     {
         _renderSquare.localScale = new Vector3(size.x, 1.0f, size.y);
-        _renderTexture = new RenderTexture(Mathf.FloorToInt(size.x + 1) * 100, Mathf.FloorToInt(size.y + 1) * 100, 24);
+        _renderTexture = new RenderTexture(Mathf.FloorToInt(size.x + 1) * 100, Mathf.FloorToInt(size.y + 1) * 100, 0);
         _renderTexture.filterMode = FilterMode.Point;
 
         _renderMaterial.mainTexture = _renderTexture;
         _camera.targetTexture = _renderTexture;
     }
 
-    void Update()
+    void LateUpdate()
     {
-        if (_renderMaterial.mainTexture == null)
+        if (_camera.targetTexture == null)
         {
             Build();
         }
-        
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
         RaycastHit hit;
+        
+        Debug.DrawLine(ray.origin, ray.origin+ (ray.direction * 100000.0f));
 
-        if (!Physics.Raycast(ray, out hit, 100000.0f) || hit.transform != _renderSquare) return;
+        if (!Physics.Raycast(ray, out hit, 10000000.0f, _layerMask) || hit.collider.transform != _renderSquare) return;
 
         Bounds rendererBounds = _renderSquare.GetComponent<MeshFilter>().sharedMesh.bounds;
         Vector3 worldMainCam = hit.point;
         
 
         Vector3 localPt = _renderSquare.InverseTransformPoint(worldMainCam);
-        _localPosTracker.localPosition = localPt;
         
         Vector3 scaledLocalPoint = new Vector3(
             localPt.x / (rendererBounds.extents.x), 
@@ -114,5 +127,6 @@ public class Side : MonoBehaviour
 
         InputManager.MouseWorld = worldSide;
         InputManager.ActiveCamera = _camera;
+        InputManager.SetSide(this);
     }
 }

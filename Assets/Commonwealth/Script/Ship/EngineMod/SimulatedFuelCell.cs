@@ -54,6 +54,8 @@ namespace Commonwealth.Script.Ship.EngineMod
 
         void Update()
         {
+            if (!_spriteRenderer.isVisible) { Destroy(gameObject);}
+            
             // A Cell has three states
             //Rogue
             // Pipeline
@@ -74,6 +76,7 @@ namespace Commonwealth.Script.Ship.EngineMod
             {
                 Pipeline();
             }
+            
         }
 
         private void FreeFloat()

@@ -27,35 +27,41 @@ namespace Commonwealth.Script.Ship.EngineMod
             Down = 1 << 1,
             Left = 1 << 2,
             Right = 1 << 3
+                    
         }
 
         [EnumFlags]
         [SerializeField] private Direction _directions;
-
         [FormerlySerializedAs("_pieceType")] [SerializeField] private SlotAttributes _slotAttributes;
 
-        public SlotAttributes Type
-        {
-            get { return _slotAttributes; }
-        }
+        public SlotAttributes Type => _slotAttributes;
+        public Vector3 OriginalPos => _originalPos;
 
         private Collider _collider;
+        private SpriteRenderer _renderer;
         private Vector3 _originalPos;
 
-        public Vector3 OriginalPos
+        public float EfficiencyMultiplier { get; set; } = 1.0f;
+
+        void Awake()
         {
-            get { return _originalPos; }
+            _collider = GetComponent<Collider>();
+            _renderer = GetComponent<SpriteRenderer>();
         }
 
         void Start()
         {
-            _collider = GetComponent<Collider>();
             _originalPos = transform.position;
         }
 
         public bool CanMoveFrom(Direction direction)
         {
             return (_directions & direction) == direction;
+        }
+
+        public Direction GetDirectionFlag()
+        {
+            return _directions;
         }
         
         public Direction[] GetDirections(Direction ignore = Direction.None)
@@ -79,6 +85,26 @@ namespace Commonwealth.Script.Ship.EngineMod
             if (direction == Direction.Right) return Vector2.right;
             
             return Vector2.zero;
+        }
+
+        public void SetSprite(Sprite sprite)
+        {
+            _renderer.sprite = sprite;
+        }
+
+        public string GetPartName()
+        {
+            return _renderer.sprite.name;
+        }
+
+        public void SetDirections(Direction pieceModelDirection)
+        {
+            _directions = pieceModelDirection;
+        }
+
+        public void SetAttributes(SlotAttributes slotAttributes)
+        {
+            _slotAttributes = slotAttributes;
         }
     }
 }

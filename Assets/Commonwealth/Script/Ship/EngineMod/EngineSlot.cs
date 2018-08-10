@@ -24,6 +24,8 @@ namespace Commonwealth.Script.Ship.EngineMod
         [SerializeField] private Sprite _okaySprite;
         [EnumFlags] [SerializeField] private EnginePiece.SlotAttributes _slotAttirbutes;
 
+        public Vector2Int Index;
+
         void Awake()
         {
             _renderer = GetComponent<SpriteRenderer>();

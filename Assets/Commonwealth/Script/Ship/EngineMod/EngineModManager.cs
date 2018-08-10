@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using Commonwealth.Script.Proc;
+using Commonwealth.Script.Ship.EngineMod.Model;
 using Commonwealth.Script.Utility;
 using ProceduralToolkit;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.WSA.WebCam;
-using Random = System.Random;
 
 namespace Commonwealth.Script.Ship.EngineMod
 {
     public class EngineModManager : MonoBehaviour
     {
+        [SerializeField] private EngineParts _engineParts;
         [SerializeField] private LayerMask _slotMask;
         [SerializeField] private LayerMask _pieceMask;
         [SerializeField] private GameObject _fuelPrefeb;
 
         private EngineSlot _highlightedSlot;
-
         private EnginePiece _selectedPiece;
         private Vector3 _selectedOffset;
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
@@ -86,6 +85,15 @@ namespace Commonwealth.Script.Ship.EngineMod
                     camPt.y + _selectedOffset.y,
                     _selectedOffset.z);
             }
+
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                SerializeToJson();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                DeserializeFromJson();
+            }
         }
 
         public void Simulate()
@@ -97,6 +105,7 @@ namespace Commonwealth.Script.Ship.EngineMod
                 EngineSlot slot = container.GetComponentInParent<EngineSlot>();
 
                 GameObject go = Instantiate(_fuelPrefeb);
+                go.layer = slot.gameObject.layer;
                 SimulatedFuelCell cell = go.GetComponent<SimulatedFuelCell>();
                 cell.Simulate(slot, null);
 
@@ -125,16 +134,121 @@ namespace Commonwealth.Script.Ship.EngineMod
             RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(new Ray(origin, direction), 1000000.0f, mask);
             if (hits.Length > 0)
             {
-                Debug.Log("Hit: " + hits[0].collider.gameObject.name);
+                //Debug.Log("Hit: " + hits[0].collider.gameObject.name);
                 return hits[0].collider.GetComponent<T>();
             }
 
             return default(T);
         }
 
+        private void SerializeToJson()
+        {
+            List<EngineSlot> slotList = new List<EngineSlot>();
+            gameObject.GetComponentsInChildren(true, slotList);
+
+            EngineModel engineModel = new EngineModel();
+            engineModel.Slots = new List<EngineSlotModel>();
+            engineModel.FuelSlots = new List<FuelSlotModel>();
+
+            for (int i = 0; i < slotList.Count; i++)
+            {
+                EngineSlot slot = slotList[i];
+
+                if (slot.AcceptsPiece(EnginePiece.SlotAttributes.Fuel))
+                {
+                    FuelSlotModel slotModel = new FuelSlotModel();
+                    slotModel.Index = slot.Index;
+
+                    EnginePiece installedPiece = slot.InstalledPiece();
+                    if (installedPiece != null)
+                    {
+                        FuelContainer fuelContainer = installedPiece.GetComponent<FuelContainer>();
+                        FuelContainerModel fuelContainerModel = new FuelContainerModel();
+                        fuelContainerModel.AvailableFuel = fuelContainer.AvailableFuel;
+                        fuelContainerModel.MaxCapacity = fuelContainer.MaxCapacity;
+
+                        slotModel.FuelContainer = fuelContainerModel;
+                        engineModel.FuelSlots.Add(slotModel);
+                    }
+                }
+                else
+                {
+                    EngineSlotModel slotModel = new EngineSlotModel();
+                    slotModel.Index = slot.Index;
+
+                    EnginePiece installedPiece = slot.InstalledPiece();
+                    if (installedPiece != null)
+                    {
+                        EnginePieceModel pieceModel = new EnginePieceModel();
+                        pieceModel.Direction = installedPiece.GetDirectionFlag();
+                        pieceModel.EfficiencyMultiplier = installedPiece.EfficiencyMultiplier;
+                        pieceModel.VisualType = installedPiece.GetPartName();
+                        pieceModel.SlotAttributes = installedPiece.Type;
+
+                        slotModel.Piece = pieceModel;
+                        engineModel.Slots.Add(slotModel);
+                    }
+                }
+            }
+
+            String jsonEngine = JsonUtility.ToJson(engineModel);
+            PlayerPrefs.SetString("EngineMod", jsonEngine);
+            Debug.Log(jsonEngine);
+        }
+
+        public void DeserializeFromJson()
+        {
+            //Deserialize
+            string engineMod = PlayerPrefs.GetString("EngineMod");
+            EngineModel engineModel = JsonUtility.FromJson<EngineModel>(engineMod);
+
+            //Get all the engine slots
+            List<EngineSlot> slotList = new List<EngineSlot>();
+            gameObject.GetComponentsInChildren(true, slotList);
+
+            foreach (EngineSlot slot in slotList)
+            {
+                if (slot.AcceptsPiece(EnginePiece.SlotAttributes.Fuel))
+                {
+                    FuelSlotModel model =
+                        engineModel.FuelSlots.SingleOrDefault(m =>
+                            m.Index.x == slot.Index.x && m.Index.y == slot.Index.y);
+
+                    if (model == null) continue;
+
+                    FuelContainerModel containerModel = model.FuelContainer;
+
+                    if (containerModel != null)
+                    {
+                        EnginePiece piece = _engineParts.FuelContainerWithName(containerModel);
+                        slot.SetPiece(piece);
+                    }
+                }
+                else
+                {
+                    //Get the model that matches the index
+                    EngineSlotModel model =
+                        engineModel.Slots.SingleOrDefault(m => m.Index.x == slot.Index.x && m.Index.y == slot.Index.y);
+
+                    if (model == null) continue;
+                    //engineModel.Slots.Single(m => (m.Index.x == slot.Index.x && m.Index.y == slot.Index.y));
+                    EnginePieceModel pieceModel = model.Piece;
+
+                    bool hasPiece = !string.IsNullOrEmpty(pieceModel.VisualType);
+                    if (hasPiece)
+                    {
+                        EnginePiece piece = _engineParts.EnginePieceWithName(pieceModel);
+
+                        slot.SetPiece(piece);
+                    }
+                }
+            }
+        }
+
         public IEnumerator SimulateCoroutine(EngineSlot start)
         {
             GameObject fuel = Instantiate(_fuelPrefeb, start.transform);
+            fuel.layer = start.gameObject.layer;
             Transform fuelTransform = fuel.transform;
 
             fuelTransform.position = start.transform.position;
