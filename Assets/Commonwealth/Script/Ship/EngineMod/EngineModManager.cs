@@ -256,7 +256,6 @@ namespace Commonwealth.Script.Ship.EngineMod
             EngineSlot begin = start;
             EngineSlot end = start.GetFirst(null);
 
-            float moveTime = 0.5f;
             float takenTime = 0.0f;
 
             Debug.Log("Picking new begin/end (" + begin.gameObject.name + " " + end.gameObject.name + ")");

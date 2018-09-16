@@ -10,6 +10,7 @@ namespace Commonwealth.Script.Utility
     public class BetterCamera2DFollow : MonoBehaviour
     {
         public Transform Target;
+        public Transform SecondaryTarget;
         public float Damping = 1;
         public float LookAheadFactor = 3;
         public float LookAheadReturnSpeed = 0.5f;
@@ -23,7 +24,6 @@ namespace Commonwealth.Script.Utility
 
         public void ShiftOffsetZBy(float offsetZ)
         {
-            float newOffset = _mOffsetZ + offsetZ; 
             _mOffsetZ += offsetZ;
         }
 

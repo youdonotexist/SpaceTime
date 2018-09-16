@@ -1,3 +1,4 @@
+using Commonwealth.Script.Ship;
 using ProceduralToolkit.Examples;
 using UniRx;
 using UnityEngine;

@@ -12,7 +12,7 @@ namespace Commonwealth.Script.Ship.EngineMod
 		{
 			int max = 25;
 			int rows = 5;
-			int cols = 5;
+			//int cols = 5;
 			float spacing = 0.1f;
 			for (int i = 0; i < max; i++)
 			{
@@ -20,10 +20,10 @@ namespace Commonwealth.Script.Ship.EngineMod
 				int y = Mathf.FloorToInt((float) i / rows);
 
 				GameObject go = Instantiate(SlotPrefab);
-				Collider collider = go.GetComponent<Collider>();
+				Collider slotCollider = go.GetComponent<Collider>();
 				Vector3 pos = go.transform.position;
-				pos.x = (x * (collider.bounds.size.x + spacing));
-				pos.y = (y * (collider.bounds.size.y + spacing));
+				pos.x = (x * (slotCollider.bounds.size.x + spacing));
+				pos.y = (y * (slotCollider.bounds.size.y + spacing));
 				go.transform.position = pos;
 			}
 		}

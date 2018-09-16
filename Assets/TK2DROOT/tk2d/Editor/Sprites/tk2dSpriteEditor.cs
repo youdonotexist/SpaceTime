@@ -305,7 +305,7 @@ class tk2dSpriteEditor : Editor
 			{
 				if (PrefabUtility.GetPrefabType(spr) == PrefabType.PrefabInstance)
 				{
-					Object parent = PrefabUtility.GetPrefabParent(spr.gameObject);
+					Object parent = PrefabUtility.GetCorrespondingObjectFromSource(spr.gameObject);
 					bool found = false;
 					foreach (tk2dBaseSprite sprite in targetSprites) {
 						if (sprite.gameObject == parent) {

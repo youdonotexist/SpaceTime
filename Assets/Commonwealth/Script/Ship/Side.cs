@@ -7,13 +7,14 @@ using UnityEngine.Rendering;
 [ExecuteInEditMode]
 public class Side : MonoBehaviour
 {
-    [SerializeField] private Transform _renderSquare;
+    [SerializeField] private Transform _cubeSpace;
     [SerializeField] private Material _renderMaterial;
     [SerializeField] private Camera _camera;
     [SerializeField] private LayerMask _layerMask;
 
     private RenderTexture _renderTexture;
-    private Collider2D _renderBounds;
+    private Collider2D _flatSpace;
+    private Mesh _cubeSpaceBounds;
 
     void Awake()
     {
@@ -21,7 +22,8 @@ public class Side : MonoBehaviour
         
         Build();
 
-        _renderBounds = GetComponent<Collider2D>();
+        _flatSpace = GetComponent<Collider2D>();
+        _cubeSpaceBounds = _cubeSpace.GetComponent<MeshFilter>().sharedMesh;
     }
 
     public void Build()
@@ -74,7 +76,7 @@ public class Side : MonoBehaviour
 
     private void SetRenderScaleSize(Vector2 size)
     {
-        _renderSquare.localScale = new Vector3(size.x, 1.0f, size.y);
+        _cubeSpace.localScale = new Vector3(size.x, 1.0f, size.y);
         _renderTexture = new RenderTexture(Mathf.FloorToInt(size.x + 1) * 100, Mathf.FloorToInt(size.y + 1) * 100, 0);
         _renderTexture.filterMode = FilterMode.Point;
 
@@ -94,38 +96,19 @@ public class Side : MonoBehaviour
         
         Debug.DrawLine(ray.origin, ray.origin+ (ray.direction * 100000.0f));
 
-        if (!Physics.Raycast(ray, out hit, 10000000.0f, _layerMask) || hit.collider.transform != _renderSquare) return;
+        if (!Physics.Raycast(ray, out hit, 10000000.0f, _layerMask) || hit.collider.transform != _cubeSpace) return;
 
-        Bounds rendererBounds = _renderSquare.GetComponent<MeshFilter>().sharedMesh.bounds;
-        Vector3 worldMainCam = hit.point;
-        
+        Bounds cubeSpaceBounds = _cubeSpaceBounds .bounds;
+        Vector3 cubeSpaceMouse = hit.point;
+        Vector3 flatSpaceMouse = ConversionUtils.CubeToFlat(_cubeSpace, cubeSpaceBounds, _flatSpace.bounds, cubeSpaceMouse);
 
-        Vector3 localPt = _renderSquare.InverseTransformPoint(worldMainCam);
-        
-        Vector3 scaledLocalPoint = new Vector3(
-            localPt.x / (rendererBounds.extents.x), 
-            localPt.y / (rendererBounds.extents.y), 
-            localPt.z / (rendererBounds.extents.z));
-
-        scaledLocalPoint.x *= -1.0f;
-        float tmp = scaledLocalPoint.y;
-        scaledLocalPoint.y = -scaledLocalPoint.z;
-        scaledLocalPoint.z = tmp;
-        
- 
-        Vector3 scaledWorldSide = new Vector3(scaledLocalPoint.x * _renderBounds.bounds.extents.x, 
-            scaledLocalPoint.y * _renderBounds.bounds.extents.y,
-            scaledLocalPoint.z * _renderBounds.bounds.extents.z);
-        
-        Vector3 worldSide = scaledWorldSide + _renderBounds.bounds.center;
-
-        if (!_renderBounds.bounds.Contains(worldSide))
+        if (!_flatSpace.bounds.Contains(flatSpaceMouse))
         {
             Debug.Log("rejecting: " + gameObject.name);
             return;
         } 
 
-        InputManager.MouseWorld = worldSide;
+        InputManager.MouseWorld = flatSpaceMouse;
         InputManager.ActiveCamera = _camera;
         InputManager.SetSide(this);
     }

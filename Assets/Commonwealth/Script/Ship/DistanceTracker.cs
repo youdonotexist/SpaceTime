@@ -14,6 +14,7 @@ namespace Commonwealth.Script.Ship
         [SerializeField] private Text _speedText;
         [SerializeField] private Text _thrustText;
         [SerializeField] private Text _destinationText;
+        [SerializeField] private Text _fuelEfficiencyText;
 
         //private List<Quaternion> _directions = new List<Quaternion>();
         //private List<float> _speed = new List<float>();
@@ -113,27 +114,32 @@ namespace Commonwealth.Script.Ship
         {
             if (_distanceText != null)
             {
-                _distanceText.text = "Total: " + _totalDistance;
+                _distanceText.text = "Total Distance: " + _totalDistance;
             }
 
             if (_timeText != null)
             {
-                _timeText.text = _totalTime + " s";
+                _timeText.text = "Total Time: " + _totalTime + " s";
             }
 
             if (_fuelText != null)
             {
-                _fuelText.text = _fuelRemaining + "kg";
+                _fuelText.text = "Fuel Remaining: " + _fuelRemaining + "kg";
             }
 
             if (_speedText != null)
             {
-                _speedText.text = _speed + "m/s";
+                _speedText.text = "Speed: " + _speed + "m/s";
             }
 
             if (_thrustText != null)
             {
-                _thrustText.text = _currentThrust + "N";
+                _thrustText.text = "Current Thrust: " + _currentThrust + "N";
+            }
+
+            if (_fuelEfficiencyText != null)
+            {
+                _fuelEfficiencyText.text = "Fuel Efficiency: " + "1x";
             }
 
             if (_destinationText != null)
@@ -142,6 +148,8 @@ namespace Commonwealth.Script.Ship
                                             ? _timeToCurrentDestination + "\n" + _firstToCurrentDestination + "\n" + DateTime.Now
                                             : "[No Destination]");
             }
+            
+            
         }
 
         private void FixedUpdate()

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Commonwealth.Script.Ship.EngineMod;
-using Commonwealth.Script.Utility;
 using UnityEditor;
 using UnityEngine;
 
-namespace CW.Editor
+namespace Commonwealth.Editor
 {
-    public class Tools
+    public static class Tools
     {
         [MenuItem("Tools/Center Pivot")]
         private static void CenterPivot()
@@ -61,7 +58,6 @@ namespace CW.Editor
                 float minX = float.MaxValue;
                 SpriteRenderer[] children = t.GetComponentsInChildren<SpriteRenderer>();
                 Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
-                float count = children.Length - 1;
 
                 foreach (var child in children)
                 {
@@ -101,10 +97,8 @@ namespace CW.Editor
             Transform t = Selection.activeTransform;
             if (t != null)
             {
-                float minX = float.MaxValue;
                 Transform[] children = t.GetComponentsInChildren<Transform>();
                 Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
-                float count = children.Length - 1;
 
                 Vector3 pos = t.position;
                 foreach (var child in children)
@@ -191,17 +185,17 @@ namespace CW.Editor
         
         public class Comp : IComparer<Vector2>
         {
-            public Vector2 center;
+            private readonly Vector2 _center;
 
             public Comp(Vector2 center)
             {
-                this.center = center;
+                _center = center;
             }
             
             public int Compare (Vector2 a, Vector2 b)
             {
-                double a1 = (Mathf.Rad2Deg * (Mathf.Atan2(a.x - center.x, a.y - center.y)) + 360) % 360;
-                double a2 = (Mathf.Rad2Deg * (Mathf.Atan2(b.x - center.x, b.y - center.y)) + 360) % 360;
+                double a1 = (Mathf.Rad2Deg * (Mathf.Atan2(a.x - _center.x, a.y - _center.y)) + 360) % 360;
+                double a2 = (Mathf.Rad2Deg * (Mathf.Atan2(b.x - _center.x, b.y - _center.y)) + 360) % 360;
                 return (int) (a1 - a2);
             }
         }

@@ -138,8 +138,6 @@ namespace Commonwealth.Script.Ship.EngineMod
                 _takenTime = 0.0f;
 
                 transform.position = _start.transform.position;
-
-                Debug.Log("Lerping toward end...");
             }
             else
             {
@@ -155,7 +153,6 @@ namespace Commonwealth.Script.Ship.EngineMod
             // Look at the directions we can go from this piece and 
             if (_start == null) return;
 
-            EngineSlot begin = _start;
             EngineSlot end = _currentEnd == null ? _start : _currentEnd;
             EnginePiece.Direction cellCameFrom = end.DirectionOf(_start);
 

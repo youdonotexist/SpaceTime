@@ -23,13 +23,13 @@ namespace Commonwealth.Script.Generation
 
 		private void Awake()
 		{
+			Random.InitState(_seed);
+			
 			_minExtents = new Vector2(_gridSize * -0.5f, _gridSize * -0.5f);
 			_maxExtents = new Vector2(_gridSize * 0.5f, _gridSize * 0.5f);
 
 			for (int i = 0; i < _things.Length; i++)
 			{
-				//Vector2 rand = Random.insideUnitCircle;
-
 				_things[i] = new Vector2(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
 				
 			}

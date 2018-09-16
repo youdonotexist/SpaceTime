@@ -28,7 +28,6 @@ namespace Commonwealth.Script.Utility
         private void Zoom(float value)
         {
             float scroll = -value * 2.0f;
-            float newZ = _follow.GetOffsetZ() + scroll;
 
             _follow.ShiftOffsetZBy(scroll);
         }
