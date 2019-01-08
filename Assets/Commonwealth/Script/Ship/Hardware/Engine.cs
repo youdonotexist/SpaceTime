@@ -14,7 +14,7 @@ namespace Commonwealth.Script.Ship.Hardware
         [SerializeField] private FuelContainer[] _fuelContainers;
         [SerializeField] private FuelConverter _fuelConverter;
 
-        private Ship _ship;
+        [SerializeField] private Ship _ship;
 
         private float _thrustRatio;
         private Vector3 _desiredDirection;
@@ -89,7 +89,6 @@ namespace Commonwealth.Script.Ship.Hardware
 
         void Start()
         {
-            _ship = GetComponentInParent<Ship>();
             _previousDirection = _ship.GetTransform().position.z;
             _previousPosition = _ship.GetTransform().position;
 

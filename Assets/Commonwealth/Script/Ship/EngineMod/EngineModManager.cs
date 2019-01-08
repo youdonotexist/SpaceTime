@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Commonwealth.Script.Ship.EngineMod.Model;
 using Commonwealth.Script.Utility;
+using Commonwealth.Script.Utility.Transformations;
 using ProceduralToolkit;
 using UniRx;
 using UnityEngine;
@@ -21,11 +22,13 @@ namespace Commonwealth.Script.Ship.EngineMod
         private EngineSlot _highlightedSlot;
         private EnginePiece _selectedPiece;
         private Vector3 _selectedOffset;
+        
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
+        
 
         void Start()
         {
-            //Fake 
+            //TODO - Remove, Fake 
             Connect(this);
             GameObject.Find("Simulate").GetComponent<Button>().OnClickAsObservable().Subscribe(_ => { Simulate(); })
                 .AddTo(_disposeBag);
@@ -51,7 +54,8 @@ namespace Commonwealth.Script.Ship.EngineMod
                 EnginePiece piece = HighlightedPiece();
                 if (piece != null)
                 {
-                    Vector3 camPt = InputManager.MouseWorld;
+                    TransformContext context = InputManager.StateForCamera(InputManager.InputState.Ui);
+                    Vector3 camPt = context.WorldPointCube;
                     Vector3 piecePt = piece.transform.position;
                     _selectedOffset = new Vector3(piecePt.x - camPt.x, piecePt.y - camPt.y, piece.transform.position.z);
                     _selectedPiece = piece;
@@ -80,7 +84,8 @@ namespace Commonwealth.Script.Ship.EngineMod
 
             if (_selectedPiece != null)
             {
-                Vector3 camPt = InputManager.MouseWorld;
+                TransformContext context = InputManager.StateForCamera(InputManager.InputState.Ui);
+                Vector3 camPt = context.WorldPointCube;
                 _selectedPiece.transform.position = new Vector3(camPt.x + _selectedOffset.x,
                     camPt.y + _selectedOffset.y,
                     _selectedOffset.z);
@@ -129,8 +134,9 @@ namespace Commonwealth.Script.Ship.EngineMod
 
         private T HighlightedObject<T>(LayerMask mask)
         {
-            Vector3 origin = InputManager.ActiveCamera.transform.position;
-            Vector3 direction = InputManager.MouseWorld - InputManager.ActiveCamera.transform.position;
+            TransformContext context = InputManager.StateForCamera(InputManager.InputState.Ui);
+            Vector3 origin = context.Camera.transform.position;
+            Vector3 direction = context.WorldPointCube - context.Camera.transform.position;
             RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(new Ray(origin, direction), 1000000.0f, mask);
             if (hits.Length > 0)
             {

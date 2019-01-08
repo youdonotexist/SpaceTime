@@ -5,9 +5,7 @@ namespace Commonwealth.Script.Ship.EngineMod
     public class SimulatedFuelCell : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private float _lifetime = 6.0f;
 
-        private float _fuelAmount = 1.0f;
         private float _elapsed;
         private float _size = 1.0f;
         private float _takenTime = 0.0f;

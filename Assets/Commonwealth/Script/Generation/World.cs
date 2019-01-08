@@ -13,10 +13,10 @@ namespace Commonwealth.Script.Generation
 		[SerializeField] private Transform _shipMarker;
 		
 		private int _seed = 13;
-		private int _gridSize = Int32.MaxValue;
-		private Vector2 _startPos = new Vector2(0.0f, 0.0f);
-		private Vector2 _minExtents; 
-		private Vector2 _maxExtents;
+		//private int _gridSize = Int32.MaxValue;
+		//private Vector2 _startPos = new Vector2(0.0f, 0.0f);
+		//private Vector2 _minExtents; 
+		//private Vector2 _maxExtents;
 		private Vector3 _shipOrigin;
 		
 		Vector2[] _things = new Vector2[50]; 
@@ -25,8 +25,8 @@ namespace Commonwealth.Script.Generation
 		{
 			Random.InitState(_seed);
 			
-			_minExtents = new Vector2(_gridSize * -0.5f, _gridSize * -0.5f);
-			_maxExtents = new Vector2(_gridSize * 0.5f, _gridSize * 0.5f);
+			//_minExtents = new Vector2(_gridSize * -0.5f, _gridSize * -0.5f);
+			//_maxExtents = new Vector2(_gridSize * 0.5f, _gridSize * 0.5f);
 
 			for (int i = 0; i < _things.Length; i++)
 			{

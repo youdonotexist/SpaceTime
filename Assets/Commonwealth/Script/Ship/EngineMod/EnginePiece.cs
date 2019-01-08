@@ -37,7 +37,6 @@ namespace Commonwealth.Script.Ship.EngineMod
         public SlotAttributes Type => _slotAttributes;
         public Vector3 OriginalPos => _originalPos;
 
-        private Collider _collider;
         private SpriteRenderer _renderer;
         private Vector3 _originalPos;
 
@@ -45,7 +44,6 @@ namespace Commonwealth.Script.Ship.EngineMod
 
         void Awake()
         {
-            _collider = GetComponent<Collider>();
             _renderer = GetComponent<SpriteRenderer>();
         }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Commonwealth.Script.Life
 {
-    public class Human : MonoBehaviour
+    public class Human : Lifeform
     {
 
         [SerializeField] private float _speed = 4.0f;
@@ -37,7 +37,10 @@ namespace Commonwealth.Script.Life
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                _currentDoor.Use(this);
+                if (_currentDoor != null)
+                {
+                    _currentDoor.Use(this);
+                }
             }
 
             _rigidbody2D.MovePosition(pos);

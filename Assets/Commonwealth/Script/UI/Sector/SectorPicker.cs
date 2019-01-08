@@ -10,13 +10,10 @@ namespace Commonwealth.Script.UI.Sector
 
         void Awake()
         {
-            
         }
 
-        public void Show(List<Model.Sector> sectorList)
+        private void BuildSectorUi(List<Model.Sector> sectorList)
         {
-            gameObject.SetActive(true);
-
             for (int i = 0; i < Sectors.Length; i++)
             {
                 SectorContainer container = Sectors[i];
@@ -48,6 +45,16 @@ namespace Commonwealth.Script.UI.Sector
             }
 
             return sectorStreams;
+        }
+
+        public void SetData(List<Model.Sector> list)
+        {
+            BuildSectorUi(list);
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Commonwealth.Script.Utility
 
         private void Rotate(float value)
         {
-            _follow.Rotate(value);
+            //_follow.Rotate(value);
         }
     }
 }

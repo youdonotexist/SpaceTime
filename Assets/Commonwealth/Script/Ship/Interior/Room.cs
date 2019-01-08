@@ -4,11 +4,11 @@ namespace Commonwealth.Script.Ship.Interior
 {
     public class Room : MonoBehaviour
     {
-        private Door[] _doors;
-        
+        public Door[] Doors { get; private set; }
+
         void Awake()
         {
-            _doors = GetComponentsInChildren<Door>();
+            Doors = GetComponentsInChildren<Door>();
         }
     }
 }

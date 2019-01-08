@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Commonwealth.Script.Ship
+namespace Commonwealth.Script.Ship.Hardware
 {
 	public class FuelConverter : MonoBehaviour
 	{

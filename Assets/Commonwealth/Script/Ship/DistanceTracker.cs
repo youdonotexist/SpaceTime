@@ -30,10 +30,8 @@ namespace Commonwealth.Script.Ship
         private float _currentTripDistance;
         private float _totalTripDistance;
         private DateTime? _timeToCurrentDestination;
-        
-        private DateTime? _firstToCurrentDestination;
 
-        private DateTime? _departureDate = null;
+        private DateTime? _firstToCurrentDestination;
 
         public float CurrentTripDistance => _currentTripDistance;
 
@@ -45,7 +43,7 @@ namespace Commonwealth.Script.Ship
             _fuelRemaining = metrics.FuelRemaining;
             _currentThrust = metrics.CurrentThrust;
             _currentTripDistance += metrics.DistanceTraveled;
-            
+
             //Debug.Log("Distance traveled: " + metrics.DistanceTraveled);
 
             if (_sector == null) return;
@@ -55,17 +53,17 @@ namespace Commonwealth.Script.Ship
             float accel = metrics.MaxThrust / metrics.ShipMass;
             float decel = -metrics.MaxThrust / metrics.ShipMass;
 
-            float initialVelocity = _speed * _speed ;// * Time.deltaTime;
+            float initialVelocity = _speed * _speed; // * Time.deltaTime;
             float twoaso = -2 * accel * 0.0f;
             float twoabs = 2 * decel * (_totalTripDistance - _currentTripDistance);
             float twoaminus2ab = (2 * accel) - (2 * decel);
 
-           //Debug.Log("Initial v: " + initialVelocity + " accel:" + accel + " decel: " + decel);
+            //Debug.Log("Initial v: " + initialVelocity + " accel:" + accel + " decel: " + decel);
 
             float distanceToApplyOppositeForce = -((initialVelocity + twoaso + twoabs) / twoaminus2ab);
 
             //Debug.Log("Distance to apply opp force: " + distanceToApplyOppositeForce + " distance left: " +
-                      //(_totalTripDistance - _currentTripDistance));
+            //(_totalTripDistance - _currentTripDistance));
 
             if (distanceToApplyOppositeForce <= 0.0f) //We're already past
             {
@@ -81,6 +79,7 @@ namespace Commonwealth.Script.Ship
                 {
                     _firstToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
                 }
+
                 _timeToCurrentDestination = DateTime.Now.AddSeconds(accelTime + timeToStop);
 
                 Debug.Log("Scheduled for: " + _timeToCurrentDestination);
@@ -145,11 +144,10 @@ namespace Commonwealth.Script.Ship
             if (_destinationText != null)
             {
                 _destinationText.text = "ETA: " + (_timeToCurrentDestination.HasValue
-                                            ? _timeToCurrentDestination + "\n" + _firstToCurrentDestination + "\n" + DateTime.Now
+                                            ? _timeToCurrentDestination + "\n" + _firstToCurrentDestination + "\n" +
+                                              DateTime.Now
                                             : "[No Destination]");
             }
-            
-            
         }
 
         private void FixedUpdate()

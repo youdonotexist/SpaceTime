@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Commonwealth.Script.Proc
 {
-    public class SectorGen
+    public static class SectorGen
     {
         private static string _alphaNumerics;
 

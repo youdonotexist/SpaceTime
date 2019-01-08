@@ -1,9 +1,12 @@
 ﻿using System;
 using Commonwealth.Script.Generation;
+using Commonwealth.Script.Life;
 using Commonwealth.Script.Model;
 using Commonwealth.Script.Proc;
 using Commonwealth.Script.Ship.EngineMod;
 using Commonwealth.Script.Ship.Hardware;
+using Commonwealth.Script.Ship.Monitors;
+using Commonwealth.Script.Utility;
 using UniRx;
 using UnityEngine;
 
@@ -23,12 +26,32 @@ namespace Commonwealth.Script.Ship
         private World _world;
         private Sector _currentSector;
         private DistanceTracker _distanceTracker;
+        
+        //Monitoring
+        private LifeformMonitor _lifeformMonitor;
+        private SpatialMonitor _spatialMonitor;
 
+        
+        //private
         private bool _requestedStop;
         private float _shipMass;
-
         private bool _isInstalled;
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
+        
+        //TODO: DELETE
+        GameObject sphere;
+        private Vector3 tempPos;
+        [SerializeField] private Transform _cubeSpace;
+
+        void Awake()
+        {
+            sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.GetComponent<Collider>().enabled = false;
+            sphere.SetActive(true);
+        }
+
+        public float _circleRadius = 300.0f;
+        public float _squareSize = 600.0f;
 
         public void OnInstall(Ship ship)
         {
@@ -38,11 +61,13 @@ namespace Commonwealth.Script.Ship
             _shipMass = ship.CalculateMass();
 
             //Start acquiring components
-            _shipControls = ship.GetComponentInChildren<ShipControls>();
-            _engine = ship.GetComponentInChildren<Engine>();
-            _distanceTracker = ship.GetComponentInChildren<DistanceTracker>();
-            _engineModManager = ship.GetComponentInChildren<EngineModManager>();
-            _engineMod = ship.GetComponentInChildren<EngineModUi>();
+            _shipControls = GetComponentInChildren<ShipControls>();
+            _engine = GetComponentInChildren<Engine>();
+            _distanceTracker = GetComponentInChildren<DistanceTracker>();
+            _engineModManager = GetComponentInChildren<EngineModManager>();
+            _engineMod = GetComponentInChildren<EngineModUi>();
+            _lifeformMonitor = GetComponentInChildren<LifeformMonitor>();
+            _spatialMonitor = GetComponentInChildren<SpatialMonitor>();
 
             //Hook up controls to systems
             _shipControls.ThrustStream
@@ -62,7 +87,7 @@ namespace Commonwealth.Script.Ship
                 .Subscribe(unit => _requestedStop = true).AddTo(_disposeBag);
 
             _shipControls.PickSectorStream
-                .Subscribe(unit => _shipControls.ShowSectorPicker(SectorGen.GenerateSectors(5000.0f, 10000.0f, 5)))
+                .Subscribe(unit => _shipControls.ShowSectorPicker())
                 .AddTo(_disposeBag);
 
             _shipControls.NewSectorStream
@@ -73,9 +98,39 @@ namespace Commonwealth.Script.Ship
             _engine.GetEngineMetrics()
                 .Do(CheckMetrics)
                 .Subscribe(_distanceTracker.OnEngineMetrics).AddTo(_disposeBag);
+            
+            
+            //TODO Refactor
+            Observable.EveryFixedUpdate()
+                .Select(_ =>
+                {
+                    Lifeform lifeformPos = _lifeformMonitor.GetLifeform();
+                    return _spatialMonitor.GetLifeformPositionInCube(lifeformPos);
+                })
+                .Subscribe(pos =>
+                {
+                    tempPos = pos;
+                    //Vector3
+                    Vector3 localPt = tempPos;//_cubeSpace.InverseTransformPoint(tempPos);
 
+                    sphere.transform.position = localPt;//new Vector3(ellipsePoint.x, transform.position.y, ellipsePoint.y);
+                    
+                    Vector2 point = new Vector2(localPt.x, localPt.z);
+                    
+                    Vector2 ellipsePoint = CameraUtils.Ellipse(point, _circleRadius, _circleRadius);
+                    Vector3 realPt = new Vector3(ellipsePoint.x, localPt.y, ellipsePoint.y);
+
+                    Camera.main.transform.position = realPt;//sphere.transform.position;
+                    Camera.main.transform.LookAt(tempPos);
+                });
             //_engineMod.GetSimulateStream()
-              //  .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
+            //  .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireSphere(transform.position, _circleRadius);
+            Gizmos.DrawWireCube(transform.position, new Vector3(_squareSize, 0.0f, _squareSize));
         }
 
         public void OnUninstall(Ship ship)
@@ -145,15 +200,10 @@ namespace Commonwealth.Script.Ship
             _engine.OnDirectionChange(sector.Direction);
             Debug.Log("Selected sector: " + sector.Name);
         }
-        
-        private void FixedUpdate()
-        {
-            
-        }
 
-        private void OnApplicationPause(bool pauseStatus)
+        public void ShowOverlay(string overlayId)
         {
-            
+            _shipControls.ShowOverlay(overlayId);
         }
     }
 }

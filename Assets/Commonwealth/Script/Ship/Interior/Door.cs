@@ -51,7 +51,7 @@ namespace Commonwealth.Script.Ship.Interior
 
             foreach (var door in _connectedDoors)
             {
-                Debug.DrawLine(transform.position, door.transform.position);    
+                //Debug.DrawLine(transform.position, door.transform.position);    
             }
             
         }

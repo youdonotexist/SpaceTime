@@ -27,14 +27,13 @@ namespace Commonwealth.Script.Ship.Hardware
         [SerializeField] private BetterSlider _directionSlider;
         [SerializeField] private Button _stopThrustersButton;
         [SerializeField] private Button _slowToStopButton;
-        [SerializeField] private SectorControl _sectorControls;
+        [SerializeField] private OverlayManager _overlayManager;
 
         private Vector2 _lastPanPosition;
         private int _panFingerId;
         private bool _wasZoomingLastFrame;
         private Vector2[] _lastZoomPositions; // Touch mode only
 
-        private ReactiveCollection<IDisposable> _disposables = new ReactiveCollection<IDisposable>();
         private readonly Subject<Vector2> _panStream = new Subject<Vector2>();
         private readonly Subject<float> _zoomStream = new Subject<float>();
         private readonly Subject<float> _rotateStream = new Subject<float>();
@@ -65,7 +64,7 @@ namespace Commonwealth.Script.Ship.Hardware
 
         public UniRx.IObservable<Unit> PickSectorStream
         {
-            get { return _sectorControls.PickSectorButtonStream(); }
+            get { return _overlayManager.PickSectorStream; }
         }
 
         public Subject<Vector2> PanStream
@@ -85,7 +84,7 @@ namespace Commonwealth.Script.Ship.Hardware
 
         public UniRx.IObservable<Sector> NewSectorStream
         {
-            get { return _sectorControls.NewSectorStream(); }
+            get { return _overlayManager.NewSectorStream; }
         }
 
         public void ResetThrusterControls()
@@ -118,7 +117,7 @@ namespace Commonwealth.Script.Ship.Hardware
             {
                 _lastPanPosition = Input.mousePosition;
             }
-            
+
             if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.Space))
             {
                 RotateCamera(Input.mousePosition);
@@ -199,14 +198,19 @@ namespace Commonwealth.Script.Ship.Hardware
             _lastPanPosition = newRotatePosition;
         }
 
-        public void ShowSectorPicker(List<Sector> sectorList)
+        public void ShowSectorPicker()
         {
-            _sectorControls.ShowPicker(sectorList);
+            _overlayManager.GetSectorPicker().Show(true);
         }
 
         public void HideSectorPicker()
         {
-            _sectorControls.HidePicker();
+            _overlayManager.GetSectorPicker().Show(false);
+        }
+
+        public void ShowOverlay(string overlayId)
+        {
+            //_overlayManager.ShowOverlay(overlayId);
         }
     }
 }

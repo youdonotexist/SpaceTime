@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Commonwealth.Script.Ship;
 using Commonwealth.Script.Ship.EngineMod;
 using UnityEditor;
 using UnityEngine;
@@ -38,6 +39,48 @@ namespace Commonwealth.Editor
                 }
 
                 t.position = pos;
+
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        child.parent = childParentMap[child];
+                    }
+                }
+            }
+        }
+        
+        [MenuItem("Tools/Freeze Pivot")]
+        private static void FreezePivot()
+        {
+            Transform t = Selection.activeTransform;
+            if (t != null)
+            {
+                Vector3 pos = Vector3.zero;
+                Transform[] children = t.GetComponentsInChildren<Transform>();
+                Dictionary<Transform, Transform> childParentMap = new Dictionary<Transform, Transform>();
+                float count = children.Length - 1;
+
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        pos += child.transform.position;
+                    }
+                }
+
+                pos = new Vector3(0.0f, 0.0f, 0.0f);
+
+                foreach (var child in children)
+                {
+                    if (child != t)
+                    {
+                        childParentMap.Add(child, child.parent);
+                        child.parent = null;
+                    }
+                }
+
+                t.localPosition = pos;
 
                 foreach (var child in children)
                 {

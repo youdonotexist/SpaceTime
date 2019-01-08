@@ -12,12 +12,13 @@ namespace Commonwealth.Script.Ship
     {
         [SerializeField] private float _mass;
         [SerializeField] private Transform _space;
+        [SerializeField] private ShipAi _shipAi;
         
         private Rigidbody2D _rigidbody2D;
         private Collider2D _collider2D;
         private Transform _transform;
-
-        private IShipAi _shipAi;
+        
+        
 
         // Use this for initialization
         void Awake()
@@ -29,14 +30,10 @@ namespace Commonwealth.Script.Ship
             _transform = GetComponent<Transform>();
 
             //There's already an Ai existing in the system, let's install it
-            IShipAi existing = GetComponentInChildren<IShipAi>();
-            if (existing != null)
-            {
-                InstallAi(existing);
-            }
+            InstallAi(_shipAi);
         }
 
-        public void InstallAi(IShipAi shipAi)
+        public void InstallAi(ShipAi shipAi)
         {
             _shipAi = shipAi;
             _shipAi.OnInstall(this);
@@ -55,6 +52,11 @@ namespace Commonwealth.Script.Ship
         public float CalculateMass()
         {
             return _mass;
+        }
+
+        public void ShowOverlay(string overlayId)
+        {
+            _shipAi.ShowOverlay(overlayId);
         }
     }
     
