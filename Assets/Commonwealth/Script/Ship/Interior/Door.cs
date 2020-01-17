@@ -68,7 +68,10 @@ namespace Commonwealth.Script.Ship.Interior
 
         public void Use(Human human)
         {
-            StartCoroutine(OpenDoor(human));
+            if (isActiveAndEnabled)
+            {
+                StartCoroutine(OpenDoor(human));
+            }
         }
 
         private IEnumerator OpenDoor(Human human)
