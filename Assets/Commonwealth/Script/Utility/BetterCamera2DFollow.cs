@@ -1,21 +1,41 @@
-﻿using UnityEngine;
+﻿using Commonwealth.Script.Life;
+using UnityEngine;
 
 namespace Commonwealth.Script.Utility
 {
+    /// <summary>
+    /// DEPRECATION NOTICE:
+    /// This class is deprecated and will be removed in a future update.
+    /// Please use the new SpriteFollowCamera class instead, which provides improved
+    /// 2D sprite following with better performance and features.
+    /// </summary>
+    [System.Obsolete("This class is deprecated. Use SpriteFollowCamera instead.")]
     public interface __IRotator
     {
         void OnRotate(float amt);
     }
     
+    /// <summary>
+    /// DEPRECATION NOTICE:
+    /// This class is deprecated and will be removed in a future update.
+    /// Please use the new SpriteFollowCamera class instead, which provides improved
+    /// 2D sprite following with better performance and features.
+    /// </summary>
+    [System.Obsolete("This class is deprecated. Use SpriteFollowCamera instead.")]
     public class BetterCamera2DFollow : MonoBehaviour
     {
         public Transform Target;
+        public Human Human;
         public Transform SecondaryTarget;
         public float Damping = 1;
         public float LookAheadFactor = 3;
         public float LookAheadReturnSpeed = 0.5f;
         public float LookAheadMoveThreshold = 0.1f;
 
+        public Transform FlatTranform;
+        public Transform CubeTransform;
+
+        [SerializeField]
         private float _mOffsetZ;
         private float _mRotOffset;
         private Vector3 _mLastTargetPosition;
@@ -40,11 +60,12 @@ namespace Commonwealth.Script.Utility
         // Use this for initialization
         private void Start()
         {
+            Debug.LogWarning("BetterCamera2DFollow is deprecated. Please use SpriteFollowCamera instead.");
+            
             _mLastTargetPosition = Target.position;
             _mOffsetZ = (transform.position - Target.position).z;
             transform.parent = null;
         }
-
 
         // Update is called once per frame
         private void LateUpdate()
@@ -73,35 +94,5 @@ namespace Commonwealth.Script.Utility
                 angle -= 360F;
             return Mathf.Clamp(angle, min, max);
         }
-            
-            
-            /*float rotX = transform.eulerAngles.x + (_mRotOffset * _mOffsetZ * 0.02f);
- 
-            Quaternion rotation = Quaternion.Euler(0, rotX, 0);
-            
-            // only update lookahead pos if accelerating or changed direction
-            float xMoveDelta = (Target.position - _mLastTargetPosition).x;
-
-            bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > LookAheadMoveThreshold;
-
-            if (updateLookAheadTarget)
-            {
-                _mLookAheadPos = LookAheadFactor * Vector3.right * Mathf.Sign(xMoveDelta);
-            }
-            else
-            {
-                _mLookAheadPos =
-                    Vector3.MoveTowards(_mLookAheadPos, Vector3.zero, Time.deltaTime * LookAheadReturnSpeed);
-            }
-
-            Vector3 aheadTargetPos = Target.position + _mLookAheadPos + Vector3.forward * _mOffsetZ;
-            Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref _mCurrentVelocity, Damping);
-
-            transform.position = newPos;
-            transform.rotation = rotation;
-
-            _mLastTargetPosition = Target.position;*/
-        //}
-        
     }
 }

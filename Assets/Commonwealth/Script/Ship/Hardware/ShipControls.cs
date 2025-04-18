@@ -129,7 +129,9 @@ namespace Commonwealth.Script.Ship.Hardware
 
 
             // Check for scrolling to zoom the camera
-            _zoomStream.OnNext(Input.GetAxis("Mouse ScrollWheel"));
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (Math.Abs(scroll) > 0.0f)
+                _zoomStream.OnNext(scroll);
         }
 
         void HandleTouch()

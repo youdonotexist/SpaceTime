@@ -30,6 +30,17 @@ public static class ExtensionMethods
         g.transform.parent = parent.transform;
     }
 
+    public static Bounds CalculateBounds(this Transform parent)
+    {
+        Bounds bounds = new Bounds();
+        foreach (BoxCollider box in parent.GetComponentsInChildren<BoxCollider>())
+        {
+            bounds.Encapsulate(box.bounds);
+        }
+
+        return bounds;
+    }
+
     public static void DestroyChildren(this GameObject parent)
     {
         Transform[] children = new Transform[parent.transform.childCount];

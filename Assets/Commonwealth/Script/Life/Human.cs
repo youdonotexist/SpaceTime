@@ -1,4 +1,5 @@
-﻿using Commonwealth.Script.Ship.Interior;
+﻿using System;
+using Commonwealth.Script.Ship.Interior;
 using UnityEngine;
 
 namespace Commonwealth.Script.Life
@@ -22,19 +23,29 @@ namespace Commonwealth.Script.Life
         // Update is called once per frame
         void FixedUpdate()
         {
-            Vector3 pos = transform.position;
+            // Get current position
+            Vector2 position = _rigidbody2D.position;
+            
+            // Calculate movement for this frame
             if (Input.GetKey(KeyCode.A))
             {
-                pos.x -= _speed * Time.deltaTime;
+                position.x -= _speed * Time.fixedDeltaTime;
                 _spriteRenderer.flipX = true;
-
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                pos.x += _speed * Time.deltaTime;
+                position.x += _speed * Time.fixedDeltaTime;
                 _spriteRenderer.flipX = false;
             }
+            
+            // Move the rigidbody using MovePosition
+            _rigidbody2D.MovePosition(position);
+        }
 
+        private void Update()
+        {
+            Debug.Log("I did it!");
+            // Handle door interaction
             if (Input.GetKeyDown(KeyCode.S))
             {
                 if (_currentDoor != null)
@@ -42,10 +53,8 @@ namespace Commonwealth.Script.Life
                     _currentDoor.Use(this);
                 }
             }
-
-            _rigidbody2D.MovePosition(pos);
         }
-        
+
         private void OnTriggerEnter2D(Collider2D that)
         {   
             Door door = that.GetComponent<Door>();

@@ -1,0 +1,463 @@
+fileFormatVersion: 2
+guid: c24dd6aba591f9343be0cca5242435e2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3242763247118905481
+    second: waterguy_0
+  - first:
+      213: 7742131489785573641
+    second: waterguy_1
+  - first:
+      213: -4278089349720568974
+    second: waterguy_2
+  - first:
+      213: 7364816783882619598
+    second: waterguy_3
+  - first:
+      213: 4582166483144572575
+    second: waterguy_4
+  - first:
+      213: -7461951921914467823
+    second: waterguy_5
+  - first:
+      213: -5553686240468490373
+    second: waterguy_6
+  - first:
+      213: -7036279207542204753
+    second: waterguy_7
+  - first:
+      213: -4590792460195526049
+    second: waterguy_8
+  - first:
+      213: -4313696503678975529
+    second: waterguy_9
+  - first:
+      213: -8323373929631919707
+    second: waterguy_10
+  - first:
+      213: -2788382777245566345
+    second: waterguy_11
+  - first:
+      213: 6583557311814071854
+    second: waterguy_12
+  - first:
+      213: 4385224429942902486
+    second: waterguy_13
+  - first:
+      213: 1268197216526293406
+    second: waterguy_14
+  - first:
+      213: 7287719817734571109
+    second: waterguy_15
+  - first:
+      213: 2269336082042269256
+    second: waterguy_16
+  - first:
+      213: 8543589683003750400
+    second: waterguy_17
+  - first:
+      213: 7371575775552403253
+    second: waterguy_18
+  - first:
+      213: -2443984150725422045
+    second: waterguy_19
+  - first:
+      213: 9128116636756017547
+    second: waterguy_20
+  - first:
+      213: 2036076845315498374
+    second: waterguy_21
+  - first:
+      213: 8690321414845187796
+    second: waterguy_22
+  - first:
+      213: -6170791058966426265
+    second: waterguy_23
+  - first:
+      213: 6580033511681118761
+    second: waterguy_24
+  - first:
+      213: 4373409305931881171
+    second: waterguy_25
+  - first:
+      213: 9152503084854033491
+    second: waterguy_26
+  - first:
+      213: -4020827657726674682
+    second: waterguy_27
+  - first:
+      213: -4371861035311694034
+    second: waterguy_28
+  - first:
+      213: 3070551814245303939
+    second: waterguy_29
+  - first:
+      213: 1915911648909642986
+    second: waterguy_30
+  - first:
+      213: -6493253966686749061
+    second: waterguy_31
+  - first:
+      213: 7123887284476818359
+    second: waterguy_32
+  - first:
+      213: -3000883390940228422
+    second: waterguy_33
+  - first:
+      213: 1000658260670240947
+    second: waterguy_34
+  - first:
+      213: 932091050491712849
+    second: waterguy_35
+  - first:
+      213: -2599672083547649273
+    second: waterguy_36
+  - first:
+      213: -3820056012194387578
+    second: waterguy_37
+  - first:
+      213: 5119291941158520812
+    second: waterguy_38
+  - first:
+      213: 4016736705048036186
+    second: waterguy_39
+  - first:
+      213: 1867073621680968954
+    second: waterguy_40
+  - first:
+      213: -4052304031451233590
+    second: waterguy_41
+  - first:
+      213: 8965161791589607229
+    second: waterguy_42
+  - first:
+      213: 974761343343733455
+    second: waterguy_43
+  - first:
+      213: 3024292689863201982
+    second: waterguy_44
+  - first:
+      213: 2781753843451769262
+    second: waterguy_45
+  - first:
+      213: 3630642258026323572
+    second: waterguy_46
+  - first:
+      213: 5851249306279617045
+    second: waterguy_47
+  - first:
+      213: -5884214484723977054
+    second: waterguy_48
+  - first:
+      213: -7160186826153126770
+    second: waterguy_49
+  - first:
+      213: 169657079200257603
+    second: waterguy_50
+  - first:
+      213: -7465464101485227571
+    second: waterguy_51
+  - first:
+      213: 457214164272860399
+    second: waterguy_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 50
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: waterguy_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77f09c4f1046ff2d0800000000000000
+      internalID: -3242763247118905481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 901f8050293917b60800000000000000
+      internalID: 7742131489785573641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27b0688176c21a4c0800000000000000
+      internalID: -4278089349720568974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eca882f28d5153660800000000000000
+      internalID: 7364816783882619598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e78899320279f30800000000000000
+      internalID: 4582166483144572575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11aae3b1342d17890800000000000000
+      internalID: -7461951921914467823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: waterguy_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0, y: 0.2072118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b77a6eaf9c75de2b0800000000000000
+      internalID: -5553686240468490373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      waterguy_0: -3242763247118905481
+      waterguy_1: 7742131489785573641
+      waterguy_2: -4278089349720568974
+      waterguy_3: 7364816783882619598
+      waterguy_4: 4582166483144572575
+      waterguy_5: -7461951921914467823
+      waterguy_6: -5553686240468490373
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

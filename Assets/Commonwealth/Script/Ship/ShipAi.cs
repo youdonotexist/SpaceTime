@@ -110,27 +110,156 @@ namespace Commonwealth.Script.Ship
                 .Subscribe(pos =>
                 {
                     tempPos = pos;
-                    //Vector3
-                    Vector3 localPt = tempPos;//_cubeSpace.InverseTransformPoint(tempPos);
-
-                    sphere.transform.position = localPt;//new Vector3(ellipsePoint.x, transform.position.y, ellipsePoint.y);
+                    //TryOrbitTwo();
                     
-                    Vector2 point = new Vector2(localPt.x, localPt.z);
-                    
-                    Vector2 ellipsePoint = CameraUtils.Ellipse(point, _circleRadius, _circleRadius);
-                    Vector3 realPt = new Vector3(ellipsePoint.x, localPt.y, ellipsePoint.y);
-
-                    Camera.main.transform.position = realPt;//sphere.transform.position;
-                    Camera.main.transform.LookAt(tempPos);
                 });
             //_engineMod.GetSimulateStream()
             //  .Subscribe(_ => { _engineModManager.Simulate(); }).AddTo(_disposeBag);
         }
 
-        private void OnDrawGizmos()
+        private void TryOrbitOne()
         {
-            Gizmos.DrawWireSphere(transform.position, _circleRadius);
-            Gizmos.DrawWireCube(transform.position, new Vector3(_squareSize, 0.0f, _squareSize));
+            Vector3 localPt = tempPos;//_cubeSpace.InverseTransformPoint(tempPos);
+
+            sphere.transform.position = localPt;//new Vector3(ellipsePoint.x, transform.position.y, ellipsePoint.y);
+                    
+            Vector2 point = new Vector2(localPt.x, localPt.z);
+                    
+            Vector2 ellipsePoint = CameraUtils.Ellipse(point, _circleRadius, _circleRadius);
+            Vector3 realPt = new Vector3(ellipsePoint.x, localPt.y, ellipsePoint.y);
+
+            Camera.main.transform.position = realPt;//sphere.transform.position;
+            Camera.main.transform.LookAt(tempPos);
+        }
+
+        public Transform targetBox; // The 3D box the 2D box is on
+        public Transform movingBox; // The 2D box moving on the 3D box
+        public float orbitRadiusX = 5f; // Radius of the orbit along the X-axis (oblong width)
+        public float orbitRadiusZ = 3f; // Radius of the orbit along the Z-axis (oblong height)
+        public float orbitHeight = 2f; // Height offset above the moving box.
+        public float orbitSpeed = 5f; // Speed of orbit
+        public bool useSurfaceNormal = true;
+        private float currentAngle = 0f;
+        private void TryOrbitTwo()
+        {
+            if (targetBox == null || movingBox == null)
+            {
+                Debug.LogError("Target Box or Moving Box not assigned!");
+                return;
+            }
+
+            Bounds boxBounds = targetBox.CalculateBounds();
+            orbitRadiusX = boxBounds.size.x * 1.5f;
+            orbitRadiusZ = boxBounds.size.z * 2f;
+
+            Vector3 movingBoxPosition = _spatialMonitor.GetLifeformPositionInCube(movingBox.GetComponent<Lifeform>());
+            Vector3 cameraPosition = GetRoundedRectIntersection((movingBoxPosition - transform.position).normalized, orbitRadiusX, orbitRadiusZ, 5.0f);
+            
+    
+            // Make the camera look at the center of the target box
+            cameraPosition.y = movingBoxPosition.y;
+            Camera.main.transform.position = cameraPosition;
+            Camera.main.transform.forward = movingBoxPosition - cameraPosition;
+        }
+        
+
+        
+        
+        public Vector3 GetEllipseIntersection(Vector3 direction, float a, float b)
+        {
+            direction.Normalize();
+
+            float dx = direction.x;
+            float dy = direction.z;
+
+            float denom = (dx * dx) / (a * a) + (dy * dy) / (b * b);
+            float t = Mathf.Sqrt(1f / denom);
+
+            return direction * t;
+        }
+        
+        /// <summary>
+        /// Calculate the intersection point of a direction vector with a rounded rectangle.
+        /// </summary>
+        /// <param name="direction">Normalized direction vector</param>
+        /// <param name="width">Width of the rectangle</param>
+        /// <param name="height">Height of the rectangle</param>
+        /// <param name="cornerRadius">Radius of the corner arcs</param>
+        /// <returns>Intersection point</returns>
+        public Vector3 GetRoundedRectIntersection(Vector3 direction, float width, float height, float cornerRadius)
+        {
+            direction.Normalize();
+            
+            // Get 2D components of the direction
+            float dx = direction.x;
+            float dy = direction.z;
+            
+            // Half-dimensions of the rectangle
+            float halfWidth = width * 0.5f;
+            float halfHeight = height * 0.5f;
+            
+            // Inner rectangle (excluding rounded corners) dimensions
+            float innerWidth = halfWidth - cornerRadius;
+            float innerHeight = halfHeight - cornerRadius;
+            
+            // Check if we're pointing toward a corner region or a straight edge
+            bool isXBeyondInner = Mathf.Abs(dx * innerHeight) > Mathf.Abs(dy * innerWidth);
+            bool isYBeyondInner = Mathf.Abs(dy * innerWidth) > Mathf.Abs(dx * innerHeight);
+            
+            float t;
+            
+            if (isXBeyondInner && isYBeyondInner)
+            {
+                // We're hitting a corner region
+                // Find which corner we're hitting
+                float cornerX = Mathf.Sign(dx) * innerWidth;
+                float cornerY = Mathf.Sign(dy) * innerHeight;
+                
+                // Calculate intersection with the circle at that corner
+                Vector3 cornerCenter = new Vector3(cornerX, 0, cornerY);
+                Vector3 toCorner = cornerCenter - Vector3.zero; // From origin to corner center
+                
+                // Project the direction onto the vector to the corner
+                float proj = Vector3.Dot(direction, toCorner.normalized);
+                
+                // Distance from origin to the circle center
+                float distToCornerCenter = toCorner.magnitude;
+                
+                // Use the quadratic formula to find intersection with the circle
+                float a = 1; // direction is normalized
+                float b = -2 * proj;
+                float c = distToCornerCenter * distToCornerCenter - cornerRadius * cornerRadius;
+                
+                float discriminant = b * b - 4 * a * c;
+                if (discriminant < 0)
+                {
+                    // No intersection (shouldn't happen in our case)
+                    t = 0;
+                }
+                else
+                {
+                    // We want the smaller positive solution
+                    float t1 = (-b + Mathf.Sqrt(discriminant)) / (2 * a);
+                    float t2 = (-b - Mathf.Sqrt(discriminant)) / (2 * a);
+                    
+                    if (t1 > 0 && t2 > 0)
+                        t = Mathf.Min(t1, t2);
+                    else
+                        t = Mathf.Max(t1, t2);
+                }
+            }
+            else if (isXBeyondInner)
+            {
+                // We're hitting a vertical edge
+                t = halfWidth / Mathf.Abs(dx);
+            }
+            else
+            {
+                // We're hitting a horizontal edge
+                t = halfHeight / Mathf.Abs(dy);
+            }
+            
+            return direction * t;
         }
 
         public void OnUninstall(Ship ship)

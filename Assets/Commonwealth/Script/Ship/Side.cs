@@ -37,23 +37,23 @@ namespace Commonwealth.Script.Ship
                 sphere.GetComponent<Collider>().enabled = false;
                 sphere.transform.parent = _cubeSpace;
                 sphere.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);  
-                sphere.SetActive(false);
+               
             }
             else
             {
                 sphere = t.gameObject;
-                sphere.SetActive(false);
+         
             }
             
         }
 
         public void Build()
         {
-            Transform t = transform;
-            SpriteRenderer[] renderers = t.GetComponentsInChildren<SpriteRenderer>();
-            Bounds b = new Bounds();
-            BoxCollider2D parent = t.GetComponent<BoxCollider2D>();
-            if (parent == null || renderers.Length == 0)
+            Transform sideTransform = transform;
+            SpriteRenderer[] renderers = sideTransform.GetComponentsInChildren<SpriteRenderer>();
+            Bounds rendererEncapsulatingBounds = new Bounds();
+            BoxCollider2D parentBoxCollider = sideTransform.GetComponent<BoxCollider2D>();
+            if (parentBoxCollider == null || renderers.Length == 0)
             {
                 return;
             }
@@ -68,19 +68,19 @@ namespace Commonwealth.Script.Ship
                 maxy = Mathf.Max(maxy, r.bounds.max.y);
             }
 
-            b.SetMinMax(new Vector2(minx, miny), new Vector2(maxx, maxy));
-            parent.size = b.size;
-            parent.offset = t.InverseTransformPoint(b.center);
+            rendererEncapsulatingBounds.SetMinMax(new Vector2(minx, miny), new Vector2(maxx, maxy));
+            parentBoxCollider.size = rendererEncapsulatingBounds.size;
+            parentBoxCollider.offset = sideTransform.InverseTransformPoint(rendererEncapsulatingBounds.center);
 
-            Camera c = t.GetComponentInChildren<Camera>();
-            c.pixelRect = new Rect(Vector2.zero, new Vector2(b.size.x + 1, b.size.y + 1) * 100.0f);
-            c.aspect = b.size.x / b.size.y;
-            CalculateOrthographicSize(c, b);
+            //Camera c = sideTransform.GetComponentInChildren<Camera>();
+            //c.pixelRect = new Rect(Vector2.zero, new Vector2(rendererEncapsulatingBounds.size.x + 1, rendererEncapsulatingBounds.size.y + 1) * 100.0f);
+            //c.aspect = rendererEncapsulatingBounds.size.x / rendererEncapsulatingBounds.size.y;
+            //CalculateOrthographicSize(c, rendererEncapsulatingBounds);
 
-            Vector3 pos = c.transform.position;
-            c.transform.position = new Vector3(b.center.x, b.center.y, pos.z);
+            //Vector3 pos = c.transform.position;
+            //c.transform.position = new Vector3(rendererEncapsulatingBounds.center.x, rendererEncapsulatingBounds.center.y, pos.z);
 
-            SetRenderScaleSize(b.size);
+            //SetRenderScaleSize(rendererEncapsulatingBounds.size);
         }
 
         void CalculateOrthographicSize(Camera cam, Bounds boundingBox)
@@ -112,7 +112,7 @@ namespace Commonwealth.Script.Ship
                 Build();
             }
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            /*Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             Debug.DrawLine(ray.origin, ray.origin + (ray.direction * 100000.0f));
@@ -131,7 +131,7 @@ namespace Commonwealth.Script.Ship
             InputManager.MouseWorldCube = cubeSpaceMouse;
             InputManager.MouseWorldFlat = flatSpaceMouse;
             InputManager.ActiveCameraFlat = _camera;
-            InputManager.SetSide(this);
+            InputManager.SetSide(this);*/
         }
 
         public bool HasLifeform(Lifeform lifeform)
@@ -145,23 +145,22 @@ namespace Commonwealth.Script.Ship
         {
             Bounds flatSpaceBounds = _flatSpace.bounds;
             Bounds cubeSpaceBounds = _cubeSpaceBounds.bounds;
-            Vector3 flatWorld = lifeform.transform.position;
+            Vector3 flatWorld = lifeform.GetCenter();
 
             Vector3 flatLocalPos = _flatSpace.transform.InverseTransformPoint(flatWorld);
-            Vector3 scaledFlatLocalPoint = new Vector3(
-                flatLocalPos.x / (flatSpaceBounds.extents.x * 2.0f),
-                flatLocalPos.y / (flatSpaceBounds.extents.y * 2.0f),
-                flatLocalPos.z /
-                (Math.Abs(flatSpaceBounds.extents.z) < Mathf.Epsilon ? 1.0f : flatSpaceBounds.extents.z));
+            float fixedZExtent = Math.Abs(flatSpaceBounds.size.z) < Mathf.Epsilon ? 1.0f : flatSpaceBounds.size.z;
+            Vector3 normalizedFlatLocalPoint = new Vector3(
+                flatLocalPos.x / (flatSpaceBounds.size.x),
+                flatLocalPos.y / (flatSpaceBounds.size.y),
+                flatLocalPos.z / (fixedZExtent)
+               );
             
-            float tmp = scaledFlatLocalPoint.z;
-            scaledFlatLocalPoint.z = scaledFlatLocalPoint.y;
-            scaledFlatLocalPoint.y = tmp;
+            (normalizedFlatLocalPoint.z, normalizedFlatLocalPoint.y) = (normalizedFlatLocalPoint.y, normalizedFlatLocalPoint.z);
+
+            normalizedFlatLocalPoint.x *= -1.0f;
+            normalizedFlatLocalPoint.z *= -1.0f;
             
-            scaledFlatLocalPoint.x *= -1.0f;
-            scaledFlatLocalPoint.z *= -1.0f;
-            
-            Vector3 scaledCubeLocalPoint = Vector3.Scale(scaledFlatLocalPoint, _cubeSpace.GetComponent<BoxCollider>().size);
+            Vector3 scaledCubeLocalPoint = Vector3.Scale(normalizedFlatLocalPoint, _cubeSpace.GetComponent<BoxCollider>().size);
 
             if (HasLifeform(lifeform))
             {
@@ -169,7 +168,7 @@ namespace Commonwealth.Script.Ship
                 sphere.transform.localPosition = scaledCubeLocalPoint;
             }
 
-            return _cubeSpace.TransformPoint(scaledCubeLocalPoint);;
+            return _cubeSpace.TransformPoint(scaledCubeLocalPoint);
         }
 
         public Vector3 CubeToFlat(Vector3 cubeWorldPos)

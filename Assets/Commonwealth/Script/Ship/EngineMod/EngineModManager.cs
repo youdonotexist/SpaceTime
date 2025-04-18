@@ -22,9 +22,9 @@ namespace Commonwealth.Script.Ship.EngineMod
         private EngineSlot _highlightedSlot;
         private EnginePiece _selectedPiece;
         private Vector3 _selectedOffset;
-        
+
         private ReactiveCollection<IDisposable> _disposeBag = new ReactiveCollection<IDisposable>();
-        
+
 
         void Start()
         {
