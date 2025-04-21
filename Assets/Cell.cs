@@ -42,17 +42,11 @@ public class Cell : MonoBehaviour
 
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
         _backgroundSpriteRenderer.color = _state == CellState.Disabled ? Color.white : Color.blue;
-        gameCollider.enabled = _state == CellState.Disabled;
+        //gameCollider.enabled = _state == CellState.Disabled;
         _iconSpriteRenderer.sprite = _state == CellState.Disabled ? null : _cellConfig.GetSprite();
     }
 

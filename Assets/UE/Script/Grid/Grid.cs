@@ -11,11 +11,21 @@ namespace UE.Script.Grid
         public int Width { get; }
         public int Height { get; }
 
-        public Vector2 Size = new Vector2(1.0f, 1.0f);
+        private Vector2 _size = new(1.0f, 1.0f);
 
-        public Vector2 Gap = new Vector2(0.5f, 0.5f);
+        public Vector2 Size
+        {
+            get => _size;
+            set => _size = value;
+        }
 
-        public Vector2 Grouping = new Vector2(4, 1);
+        public Vector2 Gap
+        {
+            get => _gap;
+            set => _gap = value;
+        }
+
+        private Vector2 _gap = new(0.5f, 0.5f);
 
         public struct CellData
         {
@@ -32,13 +42,13 @@ namespace UE.Script.Grid
 
         public Vector2 CoordsToWorld(int x, int y)
         {
-            return new Vector2((x * Size.x) + (x * Gap.x), (y * Size.y) + (y * Gap.y));
+            return new Vector2((x * _size.x) + (x * _gap.x), (y * _size.y) + (y * _gap.y));
         }
 
         public Vector2Int WorldToCoords(Vector2 localPos)
         {
-            int x = (int)((localPos.x + (Size.x * 0.5f)) / (Size.x + Gap.x));
-            int y = (int)((localPos.y + (Size.y * 0.5f)) / (Size.y + Gap.y));
+            int x = (int)((localPos.x + (_size.x * 0.5f)) / (_size.x + _gap.x));
+            int y = (int)((localPos.y + (_size.y * 0.5f)) / (_size.y + _gap.y));
             return new Vector2Int(x, y);
         }
 

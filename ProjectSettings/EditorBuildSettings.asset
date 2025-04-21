@@ -8,4 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Commonwealth/Scene/Main3d.unity
     guid: 4cdca6f1e3a7f438594e02495ef3d25b
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 333200ffea545104c8227ce72224de14,
+      type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 89d3a9e08cea0fa4d99d4329d39de9ea,
+      type: 3}
+  m_UseUCBPForAssetBundles: 0

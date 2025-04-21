@@ -63,6 +63,7 @@ namespace Commonwealth.Script.Ship.Interior
 
         public Door GetRandomConnectedDoor()
         {
+            if (_connectedDoors.Length == 0) return null;
             return _connectedDoors.GetRandom();
         }
 

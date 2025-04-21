@@ -21,7 +21,7 @@ namespace UE.Script.Sequencer
             public Cell[] buttons;
         } 
         
-        public UkuleleEnvelopeInput input;
+        private SpaceTimeInput _input;
         
         [SerializeField]
         List<SeqChannel> channels;
@@ -37,7 +37,12 @@ namespace UE.Script.Sequencer
                 channels[index].buttons = cells.ToArray();
             }
         }
-        
+
+        private void Awake()
+        {
+            _input = new SpaceTimeInput();
+        }
+
         private int _lastPlayed = -1;
         private void Start()
         {
@@ -45,12 +50,29 @@ namespace UE.Script.Sequencer
 
             manager.Initialize(40   , 5);
             manager.EventReceiver.Add(this);
-            
-            input = new UkuleleEnvelopeInput();
-            input.Enable();
-            input.Player.Fire.started += OnFire;
-
             EndLoadingSynth("");
+        }
+
+        private void OnEnable()
+        {
+            
+
+            _input.Player.Fire.started += ctx => Debug.Log("Fire STARTED");
+            _input.Player.Fire.performed += ctx => Debug.Log("Fire PERFORMED");
+            _input.Player.Fire.canceled += ctx => Debug.Log("Fire CANCELED");
+            _input.Player.Fire.started += OnFire;
+            
+            _input.Enable();
+            
+        }
+
+        private void OnDisable()
+        {
+            if (_input != null)
+            {
+                _input.Player.Fire.started -= OnFire;
+                _input.Disable();
+            }
         }
 
         private void Update()

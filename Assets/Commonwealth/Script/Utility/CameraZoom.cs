@@ -29,16 +29,6 @@ namespace Commonwealth.Script.Utility
             // Try to get the new camera controller first
             _spriteFollow = GetComponentInParent<SpriteFollowCamera>();
             
-            // Fall back to legacy controller if needed
-            if (_spriteFollow == null)
-            {
-                _legacyFollow = GetComponentInParent<BetterCamera2DFollow>();
-                if (_legacyFollow != null)
-                {
-                    Debug.LogWarning("Using legacy BetterCamera2DFollow. Consider upgrading to SpriteFollowCamera.");
-                }
-            }
-            
             _shipControls.ZoomStream.Subscribe(Zoom).AddTo(_disposableBag);
             _shipControls.RotateStream.Subscribe(Rotate).AddTo(_disposableBag);
         }

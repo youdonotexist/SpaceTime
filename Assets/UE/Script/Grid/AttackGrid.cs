@@ -5,25 +5,24 @@ namespace UE.Script.Grid
 {
     public class AttackGrid : MonoBehaviour
     {
-        public Grid<Cell> Grid;
+        [SerializeField]
+        private Grid<Cell> Grid;
 
         [SerializeField] private Vector2 gridSize;
         [SerializeField] private Vector2 gridGap;
         [SerializeField] private Sequencer.Sequencer sequencer;
-        [SerializeField] private float groupSpacer = 0.5f;
-        [SerializeField] private float cellPerGroup = 4;
     
         private UkuleleEnvelopeInput input;
     
         public Vector2Int cellCount = new Vector2Int();
 
         public Cell CellPrefab;
-
+        
         private GameObject cellParent;
-        // Start is called before the first frame update
     
         public void BuildGrid()
         {
+            cellParent = transform.Find("Cell Parent")?.gameObject;
             if (cellParent != null)
             {
                 DestroyImmediate(cellParent);
@@ -32,12 +31,12 @@ namespace UE.Script.Grid
             cellParent.transform.parent = transform;
             cellParent.transform.localPosition = Vector3.zero;
         
-            Grid = new Grid<Cell>(cellCount.x, cellCount.y);
-        
-            Grid.Size = gridSize;
-            Grid.Gap = gridGap;
-        
-          
+            Grid = new Grid<Cell>(cellCount.x, cellCount.y)
+            {
+                Size = gridSize,
+                Gap = gridGap
+            };
+
 
             for (int j = 0; j < Grid.Height; j++)
             {
@@ -53,6 +52,7 @@ namespace UE.Script.Grid
                     var cellData = new Grid<Cell>.CellData();
                     var cell = Instantiate(CellPrefab, parent.transform);
                     cell.transform.localPosition = Grid.CoordsToWorld(i, j);
+                    cell.transform.localScale = gridSize;
 
                     cellData.CellObject = cell;
                 
@@ -62,14 +62,6 @@ namespace UE.Script.Grid
             
                 sequencer.SetSeqCells(cells, j);
             }
-        }
-    
-        void Awake()
-        {
-            input = new UkuleleEnvelopeInput();
-            input.Enable();
-
-        
         }
 
         // Update is called once per frame

@@ -1,0 +1,40 @@
+{
+    "name": "SpaceTimeInput",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "159b741d-fc3a-4951-9c20-a4b725c86aab",
+            "actions": [
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "19df8e2c-86ec-4c07-bdf9-663c7fb3fbf4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d82abaa6-b416-4d8d-a5dc-673ca8ee57d9",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Mouse&Keyboard",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Mouse&Keyboard",
+            "bindingGroup": "Mouse&Keyboard",
+            "devices": []
+        }
+    ]
+}

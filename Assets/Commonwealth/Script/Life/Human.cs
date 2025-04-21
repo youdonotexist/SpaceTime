@@ -44,7 +44,6 @@ namespace Commonwealth.Script.Life
 
         private void Update()
         {
-            Debug.Log("I did it!");
             // Handle door interaction
             if (Input.GetKeyDown(KeyCode.S))
             {

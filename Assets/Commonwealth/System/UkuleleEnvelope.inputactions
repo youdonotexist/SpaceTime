@@ -27,7 +27,7 @@
                     "name": "Fire",
                     "type": "Button",
                     "id": "7206922b-44ca-4bc0-a3d0-e6565ed3b58a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,7 +54,7 @@
                     "name": "SelectBeat",
                     "type": "Button",
                     "id": "d8e39a1f-353c-44be-af68-8873695866ea",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -63,7 +63,7 @@
                     "name": "SelectBass",
                     "type": "Button",
                     "id": "0a2c91b7-fe6a-431a-ad75-626dcc7c9eae",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -72,7 +72,7 @@
                     "name": "SelectLead",
                     "type": "Button",
                     "id": "4634d21d-f9b2-40ce-9187-f81fec70ca0b",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

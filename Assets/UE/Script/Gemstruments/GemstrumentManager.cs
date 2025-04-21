@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MidiPlayerTK;
@@ -8,7 +9,7 @@ using UnityEngine.InputSystem;
 
 public class GemstrumentManager : MonoBehaviour, IConductorEventReceiver
 {
-    private UkuleleEnvelopeInput _input;
+    private SpaceTimeInput _input;
 
     private Gemstrument _selectedGemstrument;
 
@@ -23,18 +24,32 @@ public class GemstrumentManager : MonoBehaviour, IConductorEventReceiver
     private void Awake()
     {
         _allGemstruments = GetComponentsInChildren<Gemstrument>().ToList();
-        
-        
     }
 
     void Start()
     {
-        _input = new UkuleleEnvelopeInput();
-        _input.Enable();
-        _input.Player.Fire.started += OnFire;
-        
         ConductorManager manager = ServiceLocator.Current.Get<ConductorManager>();
         manager.mainPlayer.OnEventSynthStarted.AddListener(OnSynthReady);
+        
+        _selectedGemstrument = _allGemstruments.First();
+        selectedSprite.transform.position = _selectedGemstrument.transform.position;
+    }
+
+    private void OnEnable()
+    {
+        if (_input == null)
+            _input = new SpaceTimeInput();
+        _input.Enable();
+        _input.Player.Fire.started += OnFire;
+    }
+
+    private void OnDisable()
+    {
+        if (_input != null)
+        {
+            _input.Player.Fire.started -= OnFire;
+            _input.Disable();
+        }
     }
 
     void OnSynthReady(string arg0)
