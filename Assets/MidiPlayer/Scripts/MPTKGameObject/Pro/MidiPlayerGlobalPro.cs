@@ -1,6 +1,6 @@
-﻿using MEC;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 
 namespace MidiPlayerTK
@@ -9,6 +9,7 @@ namespace MidiPlayerTK
     public partial class MidiPlayerGlobal : MonoBehaviour
     {
         /// <summary>@brief
+        /// @warning MPTK_LiveSoundFont has been deprecated, please investigate <midiSynth>.MPTK_SoundFont.IsReady in place.
         /// Get or set the full path to SoundFont file (.sf2) or URL to loaded. 
         /// Defined in the MidiPlayerGlobal editor inspector. 
         /// Must start with file:// or http:// or https://.
@@ -17,7 +18,7 @@ namespace MidiPlayerTK
         public string MPTK_LiveSoundFont;
 
         /// <summary>@brief 
-        /// Status of the last SoundFonrloaded. The status is updated in a coroutine, so the status can change at each frame.
+        /// Status of the last SoundFont loaded. The status is updated in a coroutine, so the status can change at each frame.
         /// @version 2.11.2
         /// </summary>
         [HideInInspector]
@@ -89,35 +90,33 @@ namespace MidiPlayerTK
             }
         }
 
-        /// 
-        /// <summary>
-        /// Loads a SoundFont dynamically while the application is running.
-        /// The SoundFont can be loaded from a local file, a web resource, or a cache.
-        /// If any MIDI files are currently playing, they will be restarted.
-        /// Loading is performed in the background (coroutine), so the method returns immediately.
-        /// @version Maestro Pro - updated 2.11.2
-        /// @note See also:
+        /// <summary>@brief
+        ///  @warning  MPTK_LoadLiveSF has been deprecated, please investigate <midiSynth>.MPTK_SoundFont.IsReady in place.
+        ///  Load a SoundFont on the fly when application is running.\n
+        ///  SoundFont is loaded from a local file or from the web or from a cache.\n
+        ///  If some Midis are playing they are restarted.\n
+        ///  Loading is done in background (coroutine), so method return immediately.\n
+        ///  @version Maestro Pro - updated 2.11.2
+        ///  @note Look also:
         ///     - #MPTK_LiveSoundFont
-        ///     - #MPTK_StatusLastSoundFontLoaded
-        ///     - #MPTK_LoadSoundFontAtStartup
+        ///     - #MPTK_StatusLastSoundFontLoaded 
+        ///     - #MPTK_LoadSoundFontAtStartup 
         ///     - #MPTK_PathSoundFontCache
         ///     - #MPTK_SoundFontLoaded
         ///     - #MPTK_SoundFontIsReady
         /// </summary>
-        /// <param name="pPathSF">The full path to the SoundFont file. Must start with file:// for local desktop loading, or with http:// or https:// for loading from a web resource.
-        /// If null, the path defined in MPTK_LiveSoundFont is used.</param>
-        /// <param name="defaultBank">The default bank to use for instruments. Set to -1 to select the first bank.</param>
-        /// <param name="drumBank">The bank to use for the drum kit. Set to -1 to select the last bank.</param>
-        /// <param name="restartPlayer">Whether to restart the MIDI player if needed. Default is true.</param>
-        /// <param name="useCache">Whether to reuse previously downloaded SoundFonts if available. Default is true.</param>
-        /// <param name="saveCache">V1.14.0 - Whether to store the loaded SoundFont in a local cache. Default is true. If set to false, the SoundFont is deleted after loading.</param>
-        /// <param name="log">Whether to display log messages. Default is false.</param>
+        /// <param name="pPathSF">Full path to SoudFont file. Must start with file:// for local desktop loading or with or http:// or https:// for loading from web resource.
+        /// If null, the path defined in MPTK_LiveSoundFont is used</param>
+        /// <param name="defaultBank">default bank to use for instrument, default or -1 to select the first bank</param>
+        /// <param name="drumBank">bank to use for drum kit, default or -1 to select the last bank</param>
+        /// <param name="restartPlayer">Restart midi player if need, default is true</param>
+        /// <param name="useCache">Reuse already downloaded SF if exist, default is true</param>
+        /// <param name="log">Display log, default is false</param>
         /// <returns>
-        ///     - true if loading is in progress. Use OnEventPresetLoaded to get information when loading is complete, for example, MPTK_StatusLastSoundFontLoaded.
-        ///     - false if an error is detected in the parameters. The callback OnEventPresetLoaded is not called if the return value is false.
+        ///     - true if loading is in progress, use OnEventPresetLoaded to get information when loading is over, for example MPTK_StatusLastSoundFontLoaded
+        ///     - false if an error is detected in parameters. The callback OnEventPresetLoaded is not call uf return is false.
         /// </returns>
-
-        static public bool MPTK_LoadLiveSF(string pPathSF = null, int defaultBank = -1, int drumBank = -1, bool restartPlayer = true, bool useCache = true, bool saveCache=true,  bool log = false)
+        static public bool MPTK_LoadLiveSF(string pPathSF = null, int defaultBank = -1, int drumBank = -1, bool restartPlayer = true, bool useCache = true, bool log = false)
         {
             MPTK_StatusLastSoundFontLoaded = LoadingStatusSoundFontEnum.InProgress;
             timeToDownloadSoundFont = TimeSpan.Zero;
@@ -144,13 +143,14 @@ namespace MidiPlayerTK
             {
                 MidiSynth[] synths = FindObjectsByType<MidiSynth>(FindObjectsSortMode.None);
                 if (Application.isPlaying)
-                    Routine.RunCoroutine(ImSoundFont.LoadLiveSF(instance.MPTK_LiveSoundFont, defaultBank, drumBank, synths, restartPlayer, useCache, saveCache, log), Segment.RealtimeUpdate);
+                    Routine.RunCoroutine(ImSoundFont.LoadLiveSF(instance.MPTK_LiveSoundFont, defaultBank, drumBank, synths, restartPlayer, useCache, log), Segment.RealtimeUpdate);
                 else
-                    Routine.RunCoroutine(ImSoundFont.LoadLiveSF(instance.MPTK_LiveSoundFont, defaultBank, drumBank, synths, restartPlayer, useCache, saveCache, log), Segment.EditorUpdate);
+                    Routine.RunCoroutine(ImSoundFont.LoadLiveSF(instance.MPTK_LiveSoundFont, defaultBank, drumBank, synths, restartPlayer, useCache, log), Segment.EditorUpdate);
                 return true;
             }
             return false;
         }
+
 
         // not yet available ... perhaps never!
         static public bool MPTK_MergeLiveSF(string pPathSF)

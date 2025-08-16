@@ -3,10 +3,49 @@ Please, read this before updating:
    - If you get errors after updating, please quit Unity Editor and reload your project (GUID must be updated).
    - If you are updating from an older version and errors persist, delete the MidiPlayer folder from your project and reinstall Maestro.
 
-Maestro MPTK attained the age of maturity. This new version is mainly focused on consistency and simplification.
-I hope you will appreciate it!
-
 Thank for your comments and talks, that help a lot to make Maestro better.
+
+V2.16.0 2025-06-16
+	New Features
+		Official version compatible WebGL.
+		MPTK_Core set to false when Unity WebGL selected (legacy mode).
+		Added MPTK_ListPresetDrum, MPTK_PresetsNameDrum, MPTK_PresetsNumberDrum.
+
+	Demo & MVP
+		MidiChannel MVP: now displays channel information.
+		MidiFileWriter: now working with WebGL (removes local file management).
+		TestEuclideanRhythme: now working with WebGL (uses coroutine).
+		TestMidiExternalPlayer: now working with WebGL (uses coroutine).
+		TinyMidiSequencer: deprecated (source code still available).
+
+	Fix
+		WebGL: all voices are now cleared when stopping a MIDI.
+		WebGL: playback now starts at the first note.
+		WebGL: MidiExternalPlayer for WebGL compatibility (move MIDI to as CORS compliant server).
+		WebGL: MPTKWriter is now compliant (direct play only).
+		MPTK_CurrentTempo: get rounded to the nearest integer. Thanks to cihadturhan_unity.
+		Correct issue on quantization calculation. Thanks to cihadturhan_unity.
+
+V2.15.0 2025-04-25
+	New Features
+		SoundFonts can be dynamically loaded either from a local file system or directly from the web.
+        Supports assigning different SoundFonts to different MIDI players.
+		Delays line number for reverb now can be expanded to 12 (default is 8) to produces a better quality sound but with a cpu cost. Add script symbols MPTK_REVERB_NBR_DELAYS_12 to expand.
+		Changes the way each note-on velocity affects the attenuation of a voice. A higher value increases the volume at low velocity (the fluidsynth constant FLUID_PEAK_ATTENUATION is modified). Perfect for soundfont with not audible notes at low velocity. See member MPTK_VelocityAttenuation (experimental feature).
+		Easier access to the verbose mode in the inspector.
+		Access to MPTK custom ChatGPT from the About MPTK.
+	Demo & MVP
+		TestLoadingExternalSoundFont: use of the new MPTKSoundFont class (pro), predefined soundfonts, quick switching, ...
+		MidiChannel: Free MVP, three simple demos in one! disable all channels but not drum, apply sustain, play extra notes ...
+		HackYourMIDI: Pro MVP, how to transform a MIDI note-on on to an arppegio.
+	Fix
+		MPTK_LoadLiveSF is deprecated but is still working.
+		Correct abrupt reverb off when any voice is active.
+		Update from FS 2.3: ignore note-off for non looped samples in the attack phase and improve amp calculation.
+		Improve MIDI sort and set priority for bank change (dramatically decrease time loading for big MIDI file).
+		Ignore CC32 for LSB Bank change (default for GS soundfont))
+		WebGL: subset generator for web, correct issue in GEN_STARTADDROFS, apply pitch at playing (Pitch Change). WebGL will be soon officialy available!
+		Correct soundfont importing with truncated samples name. Can conduct to samples missing. It's a rare issue but in case of you need to re-import your specific soundfont.
 
 V2.14.0 2024-12-22
 	New Features

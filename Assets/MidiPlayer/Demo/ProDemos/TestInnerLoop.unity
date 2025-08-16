@@ -590,6 +590,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1390109913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5fc8a054b054664d86e518b31d75b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyReverb: 0
+  reverbRoom: 0.9
+  reverbRoomHF: 0.99
+  reverbRoomLF: 1
+  reverbReflectionLevel: 0.67254543
+  reverbReflectionDelay: 0
+  reverbDryLevel: 1
+  reverbDecayTime: 1.49
+  reverbDecayHFRatio: 0.83
+  reverbLevel: 0.85
+  reverbDelay: 0.011
+  reverbHfReference: 5000
+  reverbLfReference: 250
+  reverbDiffusion: 1
+  reverbDensity: 1
+  applyChorus: 0
+  chorusDryMix: 0.5
+  chorusWetMix1: 0.5
+  chorusWetMix2: 0.5
+  chorusWetMix3: 0.5
+  chorusDelay: 40
+  chorusRate: 0.8
+  chorusDepth: 0.03
 --- !u!1001 &1419822952
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -654,6 +689,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 13
       objectReference: {fileID: 0}
@@ -661,12 +701,22 @@ PrefabInstance:
         type: 3}
       propertyPath: MPTK_EffectUnity
       value: 
-      objectReference: {fileID: 1683195512}
+      objectReference: {fileID: 1390109913}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: MPTK_EffectSoundFont
       value: 
       objectReference: {fileID: 1096184057}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -730,41 +780,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1683195512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 640821a822ed18746b442c67347df779, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  applyReverb: 0
-  reverbRoom: 0.9
-  reverbRoomHF: 0.99
-  reverbRoomLF: 1
-  reverbReflectionLevel: 0.67254543
-  reverbReflectionDelay: 0
-  reverbDryLevel: 1
-  reverbDecayTime: 1.49
-  reverbDecayHFRatio: 0.83
-  reverbLevel: 0.85
-  reverbDelay: 0.011
-  reverbHfReference: 5000
-  reverbLfReference: 250
-  reverbDiffusion: 1
-  reverbDensity: 1
-  applyChorus: 0
-  chorusDryMix: 0.5
-  chorusWetMix1: 0.5
-  chorusWetMix2: 0.5
-  chorusWetMix3: 0.5
-  chorusDelay: 40
-  chorusRate: 0.8
-  chorusDepth: 0.03
 --- !u!1 &1731703702
 GameObject:
   m_ObjectHideFlags: 0

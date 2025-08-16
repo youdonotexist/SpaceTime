@@ -67,7 +67,7 @@ namespace MidiPlayerTK
 
         static public void DrawHelp(string urlHelp)
         {
-            
+
             if (GUILayout.Button(EditorGUIUtility.IconContent("P4_Conflicted", "|Get some help on MPTK web site"), EditorStyles.miniButton, GUILayout.Width(32f), GUILayout.Height(16f)))
                 Application.OpenURL(urlHelp);
         }
@@ -110,7 +110,7 @@ namespace MidiPlayerTK
                 if (GUILayout.Button(EditorGUIUtility.IconContent("IN_foldout_act_on", "|Expand all"), EditorStyles.miniButton, GUILayout.Width(32f), GUILayout.Height(16f)))
                     SetShowParameter(instance, true);
                 if (GUILayout.Button(EditorGUIUtility.IconContent("IN_foldout_act", "|Collapse all  "), EditorStyles.miniButton, GUILayout.Width(32f), GUILayout.Height(16f)))
-                    SetShowParameter(instance ,false);
+                    SetShowParameter(instance, false);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -121,19 +121,21 @@ namespace MidiPlayerTK
 
         private void SetShowParameter(MidiSynth instance, bool showParameter)
         {
-            instance.showDefault= showParameter;
-            instance.showEvents= showParameter;
-            instance.showMidiInfo= showParameter;
-            instance.showMidiParameter= showParameter;
-            instance.showMidiPerformanceParameter= showParameter;
-            instance.showMidiPlaying= showParameter;
-            instance.showSoundFontEffect= showParameter;
-            instance.showSpatialization= showParameter;
+            instance.showDefault = showParameter;
+            instance.showEvents = showParameter;
+            instance.showMidiInfo = showParameter;
+            instance.showMidiParameter = showParameter;
+            instance.showMidiPerformanceParameter = showParameter;
+            instance.showMidiPlaying = showParameter;
+            instance.showSoundFontEffect = showParameter;
+            instance.showSpatialization = showParameter;
             instance.showSynthEvents = showParameter;
             instance.showSynthParameter = showParameter;
             instance.showUnityPerformanceParameter = showParameter;
+            instance.showExperimentalFeature = showParameter;
             instance.showUnitySynthEffect = showParameter;
             instance.showUnitySynthParameter = showParameter;
+            instance.showVerbose = showParameter;
         }
 
         public void AllPrefab(MidiSynth instance)
@@ -278,8 +280,8 @@ namespace MidiPlayerTK
                     string.Format(" - {0:00}:{1:00}:{2:00}:{3:000}", times.Hours, times.Minutes, times.Seconds, times.Milliseconds) +
                     string.Format(" / {0:00}:{1:00}:{2:00}:{3:000}", instance.MPTK_Duration.Hours, instance.MPTK_Duration.Minutes, instance.MPTK_Duration.Seconds, instance.MPTK_Duration.Milliseconds);
             }
-                instance.showMidiPlaying = DrawFoldoutAndHelp(instance.showMidiPlaying, "Show MIDI Player" + playTime, "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Midi-Parameters");
-            
+            instance.showMidiPlaying = DrawFoldoutAndHelp(instance.showMidiPlaying, "Show MIDI Player" + playTime, "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Midi-Parameters");
+
             if (instance.showMidiPlaying)
             {
                 EditorGUI.indentLevel++;
@@ -308,7 +310,7 @@ namespace MidiPlayerTK
                                 else
                                     instance.MPTK_Pause();
                             else
-                                Debug.Log("Paused because focus lost, refocusing your app to unpause");
+                                Debug.Log("Paused because focus lost");
                         GUI.color = Color.white;
 
                         if (GUILayout.Button(new GUIContent("Stop", ""))) instance.MPTK_Stop();
@@ -351,8 +353,8 @@ namespace MidiPlayerTK
                         string.Format(" / {0:00}:{1:00}:{2:00}:{3:000}", instance.MPTK_Duration.Hours, instance.MPTK_Duration.Minutes, instance.MPTK_Duration.Seconds, instance.MPTK_Duration.Milliseconds);
                     EditorGUILayout.LabelField(new GUIContent("Real Time", tooltip), new GUIContent(playTime, tooltip));
                     /*
-                    infotime = "Time from start and total duration regarding the current tempo and the position in the MIDI file";
-                    EditorGUILayout.LabelField(new GUIContent("MIDI Time", infotime), new GUIContent(instance.playTimeEditorModeOnly + " / " + instance.durationEditorModeOnly, infotime));
+                    info_time = "Time from start and total duration regarding the current tempo and the position in the MIDI file";
+                    EditorGUILayout.LabelField(new GUIContent("MIDI Time", info_time), new GUIContent(instance.playTimeEditorModeOnly + " / " + instance.durationEditorModeOnly, infotime));
                     */
                     //EditorGUILayout.BeginHorizontal();
                     //EditorGUILayout.PrefixLabel(new GUIContent("", "Set real time position since the startup regarding the current tempo"));
@@ -437,7 +439,7 @@ namespace MidiPlayerTK
                 if (instance.showMidiPerformanceParameter)
                 {
                     EditorGUI.indentLevel++;
-                    string integratedThreadExplanation = "If not enabled, MIDI Reader runs in a dedicated thread.\n" +
+                    string integratedThreadExplanation = "If not enabled, MIDI Reader runs in a dedicated thread (core mode only).\n" +
                         "For reasons of playback precision, enable 'Audio Thread' to run the Reader in the audio thread. " +
                         "This guarantees excellent stability even on low-performance devices.\n" +
                         "The downside is that the MIDI reading frequency depends on the audio configuration." +
@@ -523,17 +525,18 @@ namespace MidiPlayerTK
 
         public void SynthParameters(MidiSynth instance, SerializedObject sobject)
         {
-            instance.showSynthParameter = DrawFoldoutAndHelp(instance.showSynthParameter, "Show Synth Parameters", "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Synth-Parameters");
+            string titleCore = (instance.MPTK_CorePlayer ? "Core" : "Legacy");
+            titleCore += " - ";
+            titleCore += (instance.MPTK_AudioSettingFromUnity ? "Unity Audio Setting" : "MPTK Audio Setting");
+            if (EditorApplication.isPlaying)
+                titleCore += " - Rate " + instance.OutputRate + " Hz - Buffer " + (instance.DspBufferSize > 0 ? instance.DspBufferSize.ToString() : "");
+            
+            instance.showSynthParameter = DrawFoldoutAndHelp(instance.showSynthParameter, $"Show Synth Parameters - {titleCore}", "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Synth-Parameters");
             if (instance.showSynthParameter)
             {
                 EditorGUI.indentLevel++;
 
                 GUIContent labelCore = new GUIContent("Core Player", "Play music with a non Unity thread. Change this properties only when not running");
-                string titleCore = (instance.MPTK_CorePlayer ? "Core" : "Non Core");
-                titleCore += " - ";
-                titleCore += (instance.MPTK_AudioSettingFromUnity ? "Unity Audio Setting" : "MPTK Audio Setting");
-                if (EditorApplication.isPlaying)
-                    titleCore += " - Rate " + instance.OutputRate + " Hz - Buffer " + (instance.DspBufferSize > 0 ? instance.DspBufferSize.ToString() : "");
                 string foldoutTitle = $"Show Unity Audio Parameters - {titleCore}";
                 instance.showUnitySynthParameter = DrawFoldoutAndHelp(instance.showUnitySynthParameter, foldoutTitle, "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Audio-Parameters");
                 if (instance.showUnitySynthParameter)
@@ -541,13 +544,13 @@ namespace MidiPlayerTK
                     EditorGUI.indentLevel++;
                     if (MPTKGui.myStyle == null) MPTKGui.myStyle = new CustomStyle();
                     EditorGUILayout.LabelField(
-                        "With Core Player checked (fluidsynth mode), the synthesizer is working on a thread apart from the main Unity thread. " +
-                        "Accuracy is much better. The legacy mode which is using many AudioSource will be removed with the next major version.", MPTKGui.myStyle.LabelGreen);
+                        "When Core Player is enabled, the MIDI reader and synthesizer work on a separate thread from the main Unity thread to provide excellent accuracy. Core mode is disabled when web builder is selected.", MPTKGui.myStyle.LabelGreen);
+#if !UNITY_WEBGL
                     if (!EditorApplication.isPlaying)
-                        instance.MPTK_CorePlayer = EditorGUILayout.Toggle(labelCore, instance.MPTK_CorePlayer);
+                        instance.mPTK_CorePlayer = EditorGUILayout.Toggle(labelCore, instance.mPTK_CorePlayer);
                     else
-                        EditorGUILayout.LabelField(labelCore, new GUIContent(instance.MPTK_CorePlayer ? "True" : "False"));
-
+#endif
+                    EditorGUILayout.LabelField(labelCore, new GUIContent(instance.MPTK_CorePlayer ? "True" : "False"));
                     if (NoErrorValidator.CantChangeAudioConfiguration)
                     {
                         EditorGUILayout.LabelField("Warning: Audio configuration change is disabled on this platform.", MPTKGui.myStyle.LabelAlert);
@@ -575,7 +578,7 @@ namespace MidiPlayerTK
                             GUI.enabled = !instance.MPTK_AudioSettingFromUnity;
                             EditorGUILayout.LabelField("Changing synthesizer rate and buffer size can produce unexpected effect according to the hardware. Save your work before!", MPTKGui.myStyle.LabelGreen);
                             if (EditorApplication.isPlaying)
-                                EditorGUILayout.LabelField("Changing these setting when playing is not recommmended. it's only for test purpose because weird sounds can occurs", MPTKGui.myStyle.LabelAlert);
+                                EditorGUILayout.LabelField("Changing these setting when playing is not recommended. it's only for test purpose because weird sounds can occurs", MPTKGui.myStyle.LabelAlert);
                             EditorGUILayout.Space();
                             EditorGUILayout.LabelField("Increase the rate to get a better sound but with a cost on performance.", MPTKGui.myStyle.LabelGreen);
 
@@ -622,15 +625,14 @@ namespace MidiPlayerTK
                     }
                     else
                         EditorGUILayout.LabelField(
-                            "Warning: with non core mode, all voices will be played in separate Audio Source. " +
-                            "SoundFont synth is not fully implemented. This mode will be removed with a future version.", MPTKGui.myStyle.LabelAlert);
+                            "Warning: with Core Player disabled, all voices are played in separate Audio Source and some MPTK features are disabled.", MPTKGui.myStyle.LabelAlert);
 
                     EditorGUI.indentLevel--;
                 }
 
-                EditorGUILayout.LabelField("DSP Interpolation is the core of the synth process. Linear is a good balacing between quality and performance", MPTKGui.myStyle.LabelGreen);
+                EditorGUILayout.LabelField("DSP interpolation is at the heart of the synth process. Linear is a good balance between quality and performance.", MPTKGui.myStyle.LabelGreen);
                 instance.InterpolationMethod = (fluid_interp)EditorGUILayout.IntPopup("Interpolation Method", (int)instance.InterpolationMethod, synthInterpolationLabel, synthInterpolationIndex);
-                instance.MPTK_Dsp64 = EditorGUILayout.Toggle(new GUIContent("DSP 64", "Enabled DSP and filter based on 64-bits values (Fluidsynth standard) else 32-bits (default).\nEnabling 64-bit could increase CPU and memory consumption without significantly improving audio quality (contact us if you find an improvment!)."), instance.MPTK_Dsp64);
+                instance.MPTK_Dsp64 = EditorGUILayout.Toggle(new GUIContent("DSP 64", "Enabled DSP and filter based on 64-bits values (fluidsynth standard) else 32-bits (default).\nEnabling 64-bit could increase CPU and memory consumption without significantly improving audio quality (contact us if you find an improvement!)."), instance.MPTK_Dsp64);
                 // move in first inspector setting instance.MPTK_LogEvents = EditorGUILayout.Toggle(new GUIContent("Log MIDI Events Played", "Log information about each MIDI events played.\nIt's recommended to enable \"Monospace font\" in the setting of the console (three vertical dot in the panel)."), instance.MPTK_LogEvents);
                 instance.MPTK_LogWave = EditorGUILayout.Toggle(new GUIContent("Log Samples Used", "Log information about sample played by a NoteOn event."), instance.MPTK_LogWave);
 
@@ -638,16 +640,34 @@ namespace MidiPlayerTK
                 //instance.MPTK_WeakDevice = EditorGUILayout.Toggle(new GUIContent("Weak Device", "Playing Midi files with WeakDevice activated could cause some bad interpretation of Midi Event, consequently bad sound."), instance.MPTK_WeakDevice);
                 instance.MPTK_EnablePanChange = EditorGUILayout.Toggle(new GUIContent("Pan Change", "Enable MIDI event pan change when playing. Uncheck if you want to manage Pan in your application."), instance.MPTK_EnablePanChange);
 
-                instance.MPTK_ApplyRealTimeModulator = EditorGUILayout.Toggle(new GUIContent("Apply Modulator", "Real-Time change Modulator from Midi and ADSR enveloppe Modulator parameters from SoundFont could have an impact on CPU. Initial value of Modulator set at Note On are keep. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyRealTimeModulator);
-                instance.MPTK_ApplyModLfo = EditorGUILayout.Toggle(new GUIContent("Apply Mod LFO", "LFO modulation are defined in SoudFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyModLfo);
-                instance.MPTK_ApplyVibLfo = EditorGUILayout.Toggle(new GUIContent("Apply Vib LFO", "LFO vibrato are defined in SoudFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyVibLfo);
-
-                // Moved from Midi Parameters (V2.85)
-                instance.MPTK_ReleaseSameNote = EditorGUILayout.Toggle(new GUIContent("Release Same Note", "Enable release note if the same note is hit twice on the same channel."), instance.MPTK_ReleaseSameNote);
-                instance.MPTK_ReleaseTimeMod = EditorGUILayout.Slider(new GUIContent("Release Time Modifier", "Multiplier to increase or decrease the default release time defined in the SoundFont for each instrument.Warning: high value could lowering the performance."), instance.MPTK_ReleaseTimeMod, 0.1f, 10f);
-                instance.MPTK_KillByExclusiveClass = EditorGUILayout.Toggle(new GUIContent("Kill By Exclusive Class", "Find the exclusive class of the voice. If set, kill all voices that match the exclusive class and are younger than the first voice process created by this noteon event."), instance.MPTK_KillByExclusiveClass);
+                instance.MPTK_ApplyRealTimeModulator = EditorGUILayout.Toggle(new GUIContent("Apply Modulator", "Real-Time change Modulator from Midi and ADSR envelope Modulator parameters from SoundFont could have an impact on CPU. Initial value of Modulator set at Note On are keep. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyRealTimeModulator);
+                instance.MPTK_ApplyModLfo = EditorGUILayout.Toggle(new GUIContent("Apply Mod LFO", "LFO modulation are defined in SoundFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyModLfo);
+                instance.MPTK_ApplyVibLfo = EditorGUILayout.Toggle(new GUIContent("Apply Vib LFO", "LFO vibrato are defined in SoundFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_ApplyVibLfo);
+                instance.MPTK_KillByExclusiveClass = EditorGUILayout.Toggle(new GUIContent("Kill By Exclusive Class", "Find the exclusive class of the voice. If set, kill all voices that match the exclusive class and are younger than the first voice process created by this note-on event."), instance.MPTK_KillByExclusiveClass);
                 instance.MPTK_LeanSynthStarting = EditorGUILayout.Slider(new GUIContent("Lean Synth Starting", "Sets the speed of the increase of the volume of the audio source when synth is starting. Set to 1 for an immediate full volume at start."), instance.MPTK_LeanSynthStarting, 0.001f, 1f);
                 instance.MPTK_KeepPlayingNonLooped = EditorGUILayout.Toggle(new GUIContent("Keep Playing Non Looped", "When the option is on, non looped samples (drum samples for the most part) are play through to the end."), instance.MPTK_KeepPlayingNonLooped);
+
+                instance.showExperimentalFeature = DrawFoldoutAndHelp(instance.showExperimentalFeature, "Show Experimental Features", "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Performance");
+                if (instance.showExperimentalFeature)
+                {
+                    EditorGUILayout.LabelField("These features change the default behavior of the MIDI synth designed with fluidsynth. This can lead to unexpected results.", MPTKGui.myStyle.LabelGreen);
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Experimental", GUILayout.Width(150), GUILayout.Height(15));
+                    if (GUILayout.Button(new GUIContent("Set Default", ""), GUILayout.Width(100), GUILayout.Height(15)))
+                    {
+                        instance.MPTK_ReleaseSameNote = true;
+                        instance.MPTK_ReleaseTimeMod = 1f;
+                        instance.MPTK_VelocityAttenuation = 960f;
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    instance.MPTK_ReleaseSameNote = EditorGUILayout.Toggle(new GUIContent("Release Same Note", "Enable release note if the same note is hit twice on the same channel."), instance.MPTK_ReleaseSameNote);
+                    instance.MPTK_ReleaseTimeMod = EditorGUILayout.Slider(new GUIContent("Release Time Modifier", "Multiplier to increase or decrease the default release time defined in the SoundFont for each instrument.Warning: high value could lowering the performance."), instance.MPTK_ReleaseTimeMod, 0.1f, 10f);
+                    float dynamics = EditorGUILayout.Slider(new GUIContent("Velocity Attenuation", "Changes the way each note-on velocity affects the attenuation of a voice. A higher value increases the volume at low velocity (the fluidsynth constant FLUID_PEAK_ATTENUATION is modified)."), instance.MPTK_VelocityAttenuation, 100f, 2440f);
+                    if (dynamics != instance.MPTK_VelocityAttenuation)
+                        instance.MPTK_VelocityAttenuation = dynamics;
+                    EditorGUI.indentLevel--;
+                }
 
                 instance.showUnityPerformanceParameter = DrawFoldoutAndHelp(instance.showUnityPerformanceParameter, "Show Performance Parameters", "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Performance");
                 if (instance.showUnityPerformanceParameter)
@@ -655,7 +675,7 @@ namespace MidiPlayerTK
                     EditorGUI.indentLevel++;
                     instance.MaxDspLoad = EditorGUILayout.IntSlider(new GUIContent("Max Level DSP Load", "When DSP is over the 'Max Level DSP Load' (by default 50%), some actions are taken on current playing voices for better performance"), (int)instance.MaxDspLoad, 0, 100);
                     instance.DevicePerformance = EditorGUILayout.IntSlider(new GUIContent("Device Performance", "Define amount of cleaning of the voice. 1 for weak device and high cleaning. If <=25 some voice could be stopped."), instance.DevicePerformance, 1, 100);
-                    instance.MPTK_CutOffVolume = EditorGUILayout.Slider(new GUIContent("Cut Off Volume", "When amplitude of a sample is below this value the playing of sample is stopped.\nCan be increase for better performance (when a lot of samples are played concurrently) but with degraded quality because sample could be stopped too early."), instance.MPTK_CutOffVolume, 0.0001f, 0.5f);
+                    instance.MPTK_CutOffVolume = EditorGUILayout.Slider(new GUIContent("Cut Off Volume", "When amplitude of a sample is below this value the playing of sample is stopped.\nCan be increase for better performance (when a lot of samples are played concurrently) but with degraded quality because sample could be stopped too early."), instance.MPTK_CutOffVolume, 0.000001f, 0.5f);
                     EditorGUI.indentLevel--;
                 }
 
@@ -711,7 +731,7 @@ namespace MidiPlayerTK
                 EditorGUI.indentLevel++;
                 EditorGUILayout.LabelField("These effects will be applied independently on each voices. Effects values are defined in the SoundFont, weird sound can occurs when changing these settings.", MPTKGui.myStyle.LabelGreen);
 
-                instance.MPTK_EffectSoundFont.EnableFilter = EditorGUILayout.Toggle(new GUIContent("Apply Low Pass Filter", "Low pass filter is defined in each preset of the SoudFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_EffectSoundFont.EnableFilter);
+                instance.MPTK_EffectSoundFont.EnableFilter = EditorGUILayout.Toggle(new GUIContent("Apply Low Pass Filter", "Low pass filter is defined in each preset of the SoundFont. Uncheck to gain some % CPU on weak device."), instance.MPTK_EffectSoundFont.EnableFilter);
 #if MPTK_PRO
                 if (instance.MPTK_EffectSoundFont.EnableFilter)
                     CommonProEditor.EffectSoundFontParametersFilter(instance, MPTKGui.myStyle);
@@ -754,8 +774,45 @@ namespace MidiPlayerTK
             }
 
 #endif
+            instance.showVerbose = DrawFoldoutAndHelp(instance.showVerbose, "Show Verbose Mode", "https://paxstellar.fr/midi-file-player-detailed-view-2/#Foldout-Audio-Parameters");
+            if (instance.showVerbose)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField("Enable or disable verbose mode for log. A good solution to understand how MPTK is working.");
+                EditorGUILayout.LabelField("Warning: Enabling verbose mode can dramatically increase CPU usage. Disable it when building your solution.", MPTKGui.myStyle.LabelAlert);
 
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("", GUILayout.Width(13), GUILayout.Height(15));
+                if (GUILayout.Button("Disable all", GUILayout.Width(120f), GUILayout.Height(20f)))
+                {
+                    instance.VerboseSynth = instance.VerboseSoundfont = instance.VerboseSample = instance.VerboseOverload = instance.VerboseVoice = instance.VerboseSpecialNoteOff = instance.VerboseChannel =
+                    instance.VerboseGenerator = instance.VerboseCalcGen = instance.VerboseCalcMod = instance.VerboseCalcVolADSR =
+                    instance.VerboseCalcModADSR = instance.VerboseController = instance.VerboseEnvVolume = instance.VerboseEnvModulation =
+                    instance.VerboseFilter = instance.VerboseVolume = instance.VerboseSpatialSynth = false;
+                }
+                EditorGUILayout.EndHorizontal();
 
+                instance.VerboseSynth = EditorGUILayout.Toggle(new GUIContent("MIDI Synth", "VerboseSynth"), instance.VerboseSynth);
+                instance.VerboseSoundfont = EditorGUILayout.Toggle(new GUIContent("Soundfont loading", "VerboseSoundfont"), instance.VerboseSoundfont);
+                instance.VerboseSample = EditorGUILayout.Toggle(new GUIContent("Sample loaded", "VerboseSample"), instance.VerboseSample);
+                instance.VerboseOverload = EditorGUILayout.Toggle(new GUIContent("Audio overload detected", "VerboseOverload"), instance.VerboseOverload);
+                instance.VerboseVoice = EditorGUILayout.Toggle(new GUIContent("Voice management", "VerboseVoice"), instance.VerboseVoice);
+                instance.VerboseSpecialNoteOff = EditorGUILayout.Toggle(new GUIContent("Special note-off", "VerboseSpecialNoteOff"), instance.VerboseSpecialNoteOff);
+                instance.VerboseChannel = EditorGUILayout.Toggle(new GUIContent("Channel management", "VerboseChannel"), instance.VerboseChannel);
+                instance.VerboseGenerator = EditorGUILayout.Toggle(new GUIContent("Generator setting", "VerboseGenerator"), instance.VerboseGenerator);
+                instance.VerboseCalcGen = EditorGUILayout.Toggle(new GUIContent("Generator runtime", "VerboseCalcGen"), instance.VerboseCalcGen);
+                instance.VerboseCalcMod = EditorGUILayout.Toggle(new GUIContent("Modulator Calculation", "VerboseCalcMod"), instance.VerboseCalcMod);
+                instance.VerboseCalcVolADSR = EditorGUILayout.Toggle(new GUIContent("ADSR volume", "VerboseCalcVolADSR"), instance.VerboseCalcVolADSR);
+                instance.VerboseCalcModADSR = EditorGUILayout.Toggle(new GUIContent("ADSR modulation", "VerboseCalcModADSR"), instance.VerboseCalcModADSR);
+                instance.VerboseController = EditorGUILayout.Toggle(new GUIContent("Controller", "VerboseController"), instance.VerboseController);
+                instance.VerboseEnvVolume = EditorGUILayout.Toggle(new GUIContent("Envelope volume", "VerboseEnvVolume"), instance.VerboseEnvVolume);
+                instance.VerboseEnvModulation = EditorGUILayout.Toggle(new GUIContent("Envelope modulation", "VerboseEnvModulation"), instance.VerboseEnvModulation);
+                // not used instance.VerboseFilter = EditorGUILayout.Toggle(new GUIContent("Synth", "Effect low pass filter"), instance.VerboseFilter);
+                instance.VerboseVolume = EditorGUILayout.Toggle(new GUIContent("Voice volume (high CPU)", "VerboseVolume"), instance.VerboseVolume);
+                instance.VerboseSpatialSynth = EditorGUILayout.Toggle(new GUIContent("Spatial synth", "VerboseSpatialSynth"), instance.VerboseSpatialSynth);
+
+                EditorGUI.indentLevel--;
+            }
         }
 
         public static void ErrorNoSoundFont()

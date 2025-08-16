@@ -137,7 +137,7 @@ namespace MidiPlayerTK
 
             try
             {
-                // Path to the XML soundfonts file for this SF
+                // Path to the XML soundfont file for this SF
                 TextAsset sfxml = Resources.Load<TextAsset>(path + "/" + name);
                 if (sfxml == null || sfxml.bytes.Length == 0)
                     Debug.LogWarningFormat("SoundFont {0} not found in Unity resource {1}", name, path);
@@ -218,6 +218,7 @@ namespace MidiPlayerTK
                 {
                     if (imsf.Banks[p.Bank] == null)
                     {
+                        //Debug.Log($"Create bank {p.Bank}");
                         // New bank, create it
                         imsf.Banks[p.Bank] = new ImBank()
                         {
@@ -225,6 +226,9 @@ namespace MidiPlayerTK
                             defpresets = new HiPreset[MAXBANKPRESET]
                         };
                     }
+                    //if (p.Bank == 24 || p.Bank == 25 || p.Bank == 26)
+                    //    Debug.Log($"Add preset num:{p.Num} id:{p.ItemId} zone:{p.Zone.Length} to bank {p.Bank}");
+                    
                     imsf.Banks[p.Bank].defpresets[p.Num] = p;
                 }
             }

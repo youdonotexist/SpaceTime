@@ -682,13 +682,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
       propertyPath: MPTK_EffectUnity
       value: 
       objectReference: {fileID: 472587003}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
@@ -698,7 +708,17 @@ PrefabInstance:
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnityPerformanceParameter
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2749,6 +2769,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 14
       objectReference: {fileID: 0}
@@ -2759,8 +2784,13 @@ PrefabInstance:
       objectReference: {fileID: 555828064}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -2770,11 +2800,16 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: MPTK_DirectSendToPlayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

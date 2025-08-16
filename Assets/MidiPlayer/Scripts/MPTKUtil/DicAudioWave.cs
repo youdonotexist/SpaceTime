@@ -7,10 +7,10 @@ namespace MidiPlayerTK
     //! @cond NODOC
 
     /// <summary>
-    /// HiSample cache wich contains samples (core mode) 
+    /// HiSample cache which contains samples (core mode) 
     /// </summary>
     public class DicAudioWave
-    {
+    { 
         private static Dictionary<string, HiSample> dicWave;
         public static void Init()
         {

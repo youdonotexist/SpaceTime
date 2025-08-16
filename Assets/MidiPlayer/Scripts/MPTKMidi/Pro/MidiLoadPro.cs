@@ -230,19 +230,18 @@ namespace MidiPlayerTK
         }
 
         /// <summary>@brief
-        /// Sort MIDI event list based on tick value, but for the same tick value, 'preset change' and 'meta' events 
-        /// are placed before other events such as 'noteon'.
+        /// Sort MIDI event list based on tick value, but for the same tick value, priority for 'bank change' then 'preset change'
         /// @note
-        ///    - Realloc of the list is done, the new sorted list is available at return.
+        ///    - Before v2.14.1 Realloc of the list is done, the new sorted list is available at return.
+        ///    - v2.14.1 sort in place, no realloc but MIDI list in parameter will be sorted
         ///    - Good performance for high disorder.
         /// </summary>
         /// <param name="midiEvents"></param>
         /// <param name="logPerf"></param>
-        /// <returns>sorted list</returns>
+        /// <returns></returns>
         /// @snippet TestMidiFilePlayerScripting.cs Example_GUI_PreloadAndAlterMIDI
         public static List<MPTKEvent> MPTK_SortEvents(List<MPTKEvent> midiEvents, bool logPerf = false)
         {
-            List<MPTKEvent> sortedEvents = midiEvents;
             if (midiEvents != null)
             {
                 System.Diagnostics.Stopwatch watch = null;
@@ -252,17 +251,23 @@ namespace MidiPlayerTK
                     watch.Start();
                 }
 
-                // Quick sort (realloc new list)
-                sortedEvents = midiEvents.OrderBy(o => o.Tick).ToList();
+                //  Before v2.14.1
+                //// Quick sort (realloc new list)
+                //List<MPTKEvent> sortedEvents = midiEvents;
+                //sortedEvents = midiEvents.OrderBy(o => o.Tick).ToList();
 
-                if (logPerf)
-                {
-                    Debug.Log($"Quick sort time:  {watch.ElapsedMilliseconds} millisecond     {watch.ElapsedTicks} system timer ticks");
-                    watch.Restart();
-                }
+                //if (logPerf)
+                //{
+                //    Debug.Log($"Quick sort time:  {watch.ElapsedMilliseconds} millisecond     {watch.ElapsedTicks} system timer ticks");
+                //    watch.Restart();
+                //}
 
-                // Then sort with priotity on meta and preset change event (too long for a not pre-sorted list)
-                Sort(sortedEvents, 0, sortedEvents.Count - 1, new MidiEventComparer());
+                //// Then sort with priority of bank change, preset change, meta end (pre-sort by ticks is mandatory)
+                //Sort(sortedEvents, 0, sortedEvents.Count - 1, new MidiEventComparer());
+
+                // v2.14.1 - Sort by ticks with priority by bank change, preset change, note ... meta end the lower.
+                midiEvents.Sort((x, y) => x.Compare(y));
+
                 if (logPerf)
                 {
                     Debug.Log($"Stable sort time: {watch.ElapsedMilliseconds} millisecond     {watch.ElapsedTicks} system timer ticks");
@@ -271,7 +276,7 @@ namespace MidiPlayerTK
             }
             else
                 Debug.LogWarning("MidiLoad - MPTK_SortEvents - MIDI Event list is null");
-            return sortedEvents;
+            return midiEvents;
         }
     }
 }

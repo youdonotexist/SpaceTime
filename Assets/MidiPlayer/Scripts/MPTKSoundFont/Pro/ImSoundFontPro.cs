@@ -1,5 +1,4 @@
-﻿using MEC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -46,8 +45,7 @@ namespace MidiPlayerTK
             }
         }
 
-        // v2.14.0 saveCache
-        static public IEnumerator<float> LoadLiveSF(string pathSF, int defaultBank = -1, int drumBank = -1, MidiSynth[] synths = null, bool restartPlayer = true, bool useCache = true, bool saveCache = true, bool log = false)
+        static public IEnumerator<float> LoadLiveSF(string pathSF, int defaultBank = -1, int drumBank = -1, MidiSynth[] synths = null, bool restartPlayer = true, bool useCache = true, bool log = false)
         {
             if (log) Debug.Log("LoadLiveSF " + pathSF);
             MidiPlayerGlobal.MPTK_SoundFontLoaded = false;
@@ -66,11 +64,13 @@ namespace MidiPlayerTK
                             player.MPTK_Stop(); // stop and clear all sound
                         }
                     }
+                    // Take too longer, seems working well without. v2.14.1.
                     //synth.MPTK_ClearAllSound();
-                    if (Application.isPlaying)
-                        yield return Routine.WaitUntilDone(Routine.RunCoroutine(synth.ThreadWaitAllStop(), Segment.RealtimeUpdate), false);
-                    else
-                        yield return Routine.WaitUntilDone(Routine.RunCoroutine(synth.ThreadWaitAllStop(), Segment.EditorUpdate), false);
+                    //if (Application.isPlaying)
+                    //    yield return Routine.WaitUntilDone(Routine.RunCoroutine(synth.ThreadWaitAllStop(), Segment.RealtimeUpdate), false);
+                    //else
+                    //    yield return Routine.WaitUntilDone(Routine.RunCoroutine(synth.ThreadWaitAllStop(), Segment.EditorUpdate), false);
+                    //if (log) Debug.Log($"Time to ThreadStop player:  '{(synth != null ? synth.GetType() : "null")}'   {Math.Round((DateTime.Now - startStopPlaying).TotalSeconds, 3)} second");
                     synth.MPTK_StopSynth();
                 }
             }
@@ -79,24 +79,24 @@ namespace MidiPlayerTK
             DicAudioWave.Init();
 
             Uri uri = new Uri(pathSF);
-            string sfName = uri.Segments.Last();
+            MidiPlayerGlobal.MPTK_SoundFontName = uri.Segments.Last();
             string soundPath = MidiPlayerGlobal.MPTK_PathSoundFontCache;
             if (!Directory.Exists(soundPath)) Directory.CreateDirectory(soundPath);
-            string soundFile = Path.Combine(soundPath, sfName);
+            string soundFile = Path.Combine(soundPath, MidiPlayerGlobal.MPTK_SoundFontName);
             if (log) Debug.Log($"Start Loading SF {uri}, save to {soundFile}");
             System.Diagnostics.Stopwatch watchLoadSF = new System.Diagnostics.Stopwatch(); // High resolution time
             watchLoadSF.Start();
 
             if (useCache && File.Exists(soundFile))
             {
-                if (log) Debug.Log($"Load SF {sfName} from cache");
+                if (log) Debug.Log($"Load SF {MidiPlayerGlobal.MPTK_SoundFontName} from cache");
 
                 try
                 {
                     MidiPlayerGlobal.timeToDownloadSoundFont = watchLoadSF.Elapsed;
                     watchLoadSF.Restart();
                     SFLoad sf = new SFLoad(soundFile, SFFile.SfSource.SF2);
-                    CreateSoundFont(sf.SfData, defaultBank, drumBank, synths, restartPlayer, playerToRestart);
+                    CreateSoundFont(sf.SfData, defaultBank, drumBank, synths, restartPlayer, false, playerToRestart);
                 }
                 catch (System.Exception ex)
                 {
@@ -108,7 +108,7 @@ namespace MidiPlayerTK
             {
                 using (UnityEngine.Networking.UnityWebRequest req = UnityEngine.Networking.UnityWebRequest.Get(uri))
                 {
-                    if (log) Debug.Log($"Download SF {sfName}");
+                    if (log) Debug.Log($"Download SF {MidiPlayerGlobal.MPTK_SoundFontName}");
 
                     yield return Routine.WaitUntilDone(req.SendWebRequest());
                     //Debug.Log($"result:{req.result} {pathSF}");
@@ -139,7 +139,7 @@ namespace MidiPlayerTK
                             {
                                 //Debug.Log("Load with header " + System.Text.Encoding.Default.GetString(data, 0, 8));
                                 SFLoad sf = new SFLoad(data, SFFile.SfSource.SF2);
-                                CreateSoundFont(sf.SfData, defaultBank, drumBank, synths, restartPlayer, playerToRestart);
+                                CreateSoundFont(sf.SfData, defaultBank, drumBank, synths, restartPlayer, false, playerToRestart);
                                 File.WriteAllBytes(soundFile, data);
                             }
                         }
@@ -157,20 +157,8 @@ namespace MidiPlayerTK
                 }
             }
 
-            try
-            {
-                if (!saveCache && File.Exists(soundFile))
-                {
-                    File.Delete(soundFile);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MidiPlayerGlobal.ErrorDetail(ex);
-            }
-
             if (MidiPlayerGlobal.ImSFCurrent != null)
-                MidiPlayerGlobal.ImSFCurrent.SoundFontName = sfName;
+                MidiPlayerGlobal.ImSFCurrent.SoundFontName = MidiPlayerGlobal.MPTK_SoundFontName;
             MidiPlayerGlobal.timeToLoadSoundFont = watchLoadSF.Elapsed;
 
             if (MidiPlayerGlobal.MPTK_StatusLastSoundFontLoaded == LoadingStatusSoundFontEnum.InProgress)
@@ -186,10 +174,9 @@ namespace MidiPlayerTK
                 Debug.LogError("OnEventPresetLoaded: exception detected. Check the callback code");
                 Debug.LogException(ex);
             }
-
         }
 
-        public static void CreateSoundFont(SFData sfData, int defaultBank, int drumBank, MidiSynth[] synths = null, bool restartPlayer = true, List<MidiFilePlayer> playerToRestart = null)
+        public static void CreateSoundFont(SFData sfData, int defaultBank, int drumBank, MidiSynth[] synths = null, bool restartPlayer = true, bool unpausePlayer = true, List<MidiFilePlayer> playerToRestart = null)
         {
             ImSoundFont imsf = new ImSoundFont();
             imsf.HiSf = sfData;
@@ -271,7 +258,15 @@ namespace MidiPlayerTK
                 }
                 if (restartPlayer && playerToRestart != null)
                     foreach (MidiFilePlayer player in playerToRestart)
-                        player.MPTK_RePlay();
+                    {
+                        Debug.Log($"was at position {player.MPTK_Position} {player.MPTK_TickCurrent} ");
+                        // Force a raw seek
+                        player.MPTK_TickCurrent = player.MPTK_TickCurrent;
+                        if (restartPlayer)
+                            player.MPTK_RePlay();
+                        else if (unpausePlayer)
+                            player.MPTK_UnPause();
+                    }
             }
         }
 

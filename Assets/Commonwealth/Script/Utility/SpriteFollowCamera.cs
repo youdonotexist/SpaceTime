@@ -83,7 +83,7 @@ namespace Commonwealth.Script.Utility
             if (!_camera.orthographic)
             {
                 Debug.LogWarning("Camera is not orthographic! Setting to orthographic for proper 2D following.");
-                _camera.orthographic = true;
+                //_camera.orthographic = true;
             }
             
             // Detach the camera from any parent to prevent unexpected movement

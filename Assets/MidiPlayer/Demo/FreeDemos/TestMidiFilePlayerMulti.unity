@@ -356,7 +356,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 256909473}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 3
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -2341,6 +2341,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 55
       objectReference: {fileID: 0}
@@ -2352,12 +2357,17 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSpatialization
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -2367,7 +2377,12 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -2860,6 +2875,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 53
       objectReference: {fileID: 0}
@@ -2871,12 +2891,17 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSpatialization
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -2886,7 +2911,12 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -3090,6 +3120,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 54
       objectReference: {fileID: 0}
@@ -3101,7 +3136,7 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSpatialization
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -3111,7 +3146,7 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -3121,7 +3156,12 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -4294,6 +4334,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
       propertyPath: midiIndexToPlay
       value: 56
       objectReference: {fileID: 0}
@@ -4305,12 +4350,17 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSpatialization
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showSoundFontEffect
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
@@ -4320,7 +4370,12 @@ PrefabInstance:
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}
       propertyPath: showUnitySynthEffect
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114662785300262660, guid: 32a8d8859acf18d4ba134834a876d5ea,
         type: 3}

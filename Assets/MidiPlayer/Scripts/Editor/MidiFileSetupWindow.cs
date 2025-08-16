@@ -15,7 +15,7 @@ namespace MidiPlayerTK
     [ExecuteAlways, InitializeOnLoadAttribute]
     public partial class MidiFileSetupWindow : EditorWindow
     {
-        static private MidiEditorLib MidiPlayerEditor;
+        static private MidiEditorLib midiPlayerLib;
 
         private static MidiFileSetupWindow window;
 
@@ -77,7 +77,7 @@ namespace MidiPlayerTK
         private void Awake()
         {
             //Debug.Log($"Awake");
-            MidiPlayerEditor = new MidiEditorLib("MidiEditorPlayer", _logSoundFontLoaded: false, _logDebug: false);
+            midiPlayerLib = new MidiEditorLib("MidiEditorPlayer", _logSoundFontLoaded: false, _logDebug: false);
             IndexEditItem = -1;
             IndexKeyItem = -1;
             //InitPlayer();
@@ -94,8 +94,8 @@ namespace MidiPlayerTK
         {
             EditorApplication.playModeStateChanged -= ChangePlayModeState;
             CompilationPipeline.compilationStarted -= CompileStarted;
-            if (MidiPlayerEditor != null) //strangely, this property can be null when window is close
-                MidiPlayerEditor.DestroyMidiObject();
+            if (midiPlayerLib != null) //strangely, this property can be null when window is close
+                midiPlayerLib.DestroyMidiObject();
             //else
             //    Debug.LogWarning("MidiPlayerEditor is null");
         }
@@ -208,7 +208,7 @@ namespace MidiPlayerTK
                         {
                             AutoMidiPlay = !AutoMidiPlay;
                             if (!AutoMidiPlay)
-                                MidiPlayerEditor.MidiPlayer.MPTK_Stop();
+                                midiPlayerLib.MidiPlayer.MPTK_Stop();
                             else
                             {
                                 LoadMidiFileSelected(IndexEditItem, true);
@@ -239,7 +239,7 @@ namespace MidiPlayerTK
                         {
                             IndexKeyItem = selected_index;
                             // 'cause an exception in GUILayout.BeginHorizontal more later
-                            //RefreshDislayMidi();
+                            //RefreshDisplayMidi();
                         }
                         // interesting post
                         // https://forum.unity.com/threads/unexplained-guilayout-mismatched-issue-is-it-a-unity-bug-or-a-miss-understanding.158375/
@@ -258,7 +258,7 @@ namespace MidiPlayerTK
                     {
                         IndexEditItem = IndexKeyItem;
                         IndexKeyItem = -1;
-                        RefreshDislayMidi();
+                        RefreshDisplayMidi();
                         SetMidiSelectedVisible();
                         GUI.changed = true;
                         Repaint();
@@ -315,7 +315,7 @@ namespace MidiPlayerTK
                     {
                         IndexEditItem = index;
                         SetMidiSelectedVisible();
-                        RefreshDislayMidi();
+                        RefreshDisplayMidi();
                     }
                 }
 
@@ -396,7 +396,7 @@ namespace MidiPlayerTK
                             IndexEditItem = i;
                             try
                             {
-                                RefreshDislayMidi();
+                                RefreshDisplayMidi();
                             }
                             catch (Exception)
                             {
@@ -485,11 +485,11 @@ namespace MidiPlayerTK
                     string smode = ModeDisplay == 0 ? "Player" : ModeDisplay == 1 ? "Raw" : "Stat";
                     GUILayout.Label($"Mode Display {smode}", MPTKGui.LabelBoldCentered, GUILayout.Width(130), GUILayout.Height(24));
                     if (modeChanged)
-                        RefreshDislayMidi();
+                        RefreshDisplayMidi();
 
                     string titleMidi;
                     if (ModeDisplay == 0)
-                        titleMidi = MidiPlayerEditor.MidiPlayer.MPTK_IsPaused ? "Paused" : MidiPlayerEditor.MidiPlayer.MPTK_IsPlaying ? "Playing" : "Loaded";
+                        titleMidi = midiPlayerLib.MidiPlayer.MPTK_IsPaused ? "Paused" : midiPlayerLib.MidiPlayer.MPTK_IsPlaying ? "Playing" : "Loaded";
                     else
                         titleMidi = "Raw MIDI";
                     //  {MidiPlayerEditor.MidiPlayer.CoreAudioSource.isPlaying}
@@ -537,9 +537,9 @@ namespace MidiPlayerTK
             // End MIDI events list
         }
 
-        private void RefreshDislayMidi()
+        private void RefreshDisplayMidi()
         {
-            //Debug.Log("RefreshDislayMidi ...");
+            //Debug.Log("RefreshDisplayMidi ...");
 
             if (ModeDisplay == 0)
             {
@@ -549,12 +549,12 @@ namespace MidiPlayerTK
             }
             else if (ModeDisplay == 1)
             {
-                MidiPlayerEditor.MidiPlayer.MPTK_Stop();
+                midiPlayerLib.MidiPlayer.MPTK_Stop();
                 ReadRawMidiEvents();
             }
             else if (ModeDisplay == 2)
             {
-                MidiPlayerEditor.MidiPlayer.MPTK_Stop();
+                midiPlayerLib.MidiPlayer.MPTK_Stop();
                 CalculateStat();
             }
 
@@ -569,7 +569,7 @@ namespace MidiPlayerTK
             {
                 string selectedFile = EditorUtility.OpenFilePanelWithFilters(
                     "Open and import MIDI file", ToolsEditor.lastDirectoryMidi,
-                    new string[] { "MIDI files", "mid,midi", "Karoke files", "kar", "All", "*" });
+                    new string[] { "MIDI files", "mid,midi", "Karaoke files", "kar", "All", "*" });
                 if (!string.IsNullOrEmpty(selectedFile))
                 {
                     // selectedFile contins also the folder 
@@ -580,7 +580,7 @@ namespace MidiPlayerTK
                 ToolsEditor.LoadMidiSet();
                 ToolsEditor.CheckMidiSet();
                 AssetDatabase.Refresh();
-                window.RefreshDislayMidi();
+                window.RefreshDisplayMidi();
             }
             catch (System.Exception ex)
             {

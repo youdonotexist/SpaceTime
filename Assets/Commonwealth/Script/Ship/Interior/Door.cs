@@ -29,8 +29,10 @@ namespace Commonwealth.Script.Ship.Interior
             {
                 if (_timeSinceSensor > _doorCloseTime)
                 {
-                    BoxCollider2D c = GetComponent<BoxCollider2D>();
-                    if (!Physics2D.OverlapBox(c.transform.position, c.size, 0.0f, _doorSensorLayer))
+                    BoxCollider c = GetComponent<BoxCollider>();
+                    Collider[] results = new Collider[10];
+                    var size = Physics.OverlapBoxNonAlloc(c.bounds.center, c.bounds.size, results, Quaternion.identity, _doorSensorLayer);
+                    if (size == 0)
                     {
                         _spriteRenderer.sprite = _closeSprite;
                         _timeSinceSensor = 0.0f;

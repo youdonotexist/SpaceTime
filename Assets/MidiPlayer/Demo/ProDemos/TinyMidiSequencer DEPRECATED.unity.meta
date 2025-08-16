@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9bd601b6687e57f42944008e82f849e2
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 115331
+  packageName: Maestro - Midi Player Tool Kit - Pro
+  packageVersion: 2.16.0
+  assetPath: Assets/MidiPlayer/Demo/ProDemos/TinyMidiSequencer DEPRECATED.unity
+  uploadId: 767291

@@ -12,6 +12,7 @@ namespace MidiPlayerTK
         public int ColWidth = 200;
         public int ColHeight = 30;
         public bool KeepOpen;
+        public bool Option;
         public object Tag;
         public int EspaceX = 5;
         public int EspaceY = 5;
@@ -23,6 +24,7 @@ namespace MidiPlayerTK
         /// </summary>
         private int selectedItem;
 
+        private GUIContent labelOption;
         private CustomStyle myStyle;
         private Vector2 positionbt;
         private List<MPTKListItem> list;
@@ -32,7 +34,7 @@ namespace MidiPlayerTK
         private int calculatedColCount;
         private int realItemCount;
         private int countRow;
-        private string filterItem="";
+        private string filterItem = "";
 
         //// the method call int+bool and retur string
         //Func<int, bool, string> myMethodName1;
@@ -45,19 +47,26 @@ namespace MidiPlayerTK
         public int CountRow { get { return countRow; } }
 
         private Rect windowRect = new Rect(0, 0, 100, 100);
+        private GUIContent buttonClose;
 
-        public void Draw(List<MPTKListItem> plist, int pselected, CustomStyle style)
+
+        public void Draw(List<MPTKListItem> plist, int pselected, CustomStyle style, GUIContent pLabelOption = null)
         {
             list = plist;
             selectedItem = pselected;
             myStyle = style;
+            labelOption = pLabelOption;
+
+            if (buttonClose == null)
+                buttonClose = new GUIContent(Resources.Load<Texture2D>("Textures/Delete_32x32"));
+
             if (Show)
             {
                 realItemCount = 0;
                 foreach (MPTKListItem item in list)
                     if (item != null && (string.IsNullOrWhiteSpace(filterItem) || item.Label.ToLower().Contains(filterItem.ToLower())))
                         realItemCount++;
-                
+
                 // Min, one column
                 if (realItemCount < 3) realItemCount = 3;
                 if (ColCount < 1) ColCount = 1;
@@ -67,9 +76,16 @@ namespace MidiPlayerTK
                 calculatedColCount = realItemCount < ColCount ? realItemCount : ColCount;
                 countRow = calculatedColCount > 1 ? (int)((float)realItemCount / (float)calculatedColCount + 1f) : realItemCount;
 
-                // Try to fit all col without H scroll
+                // Try to fit all col without H scroll but with a minimum for the title
                 resizedWidth = calculatedColCount * (ColWidth + EspaceX) + EspaceX;
-                if (resizedWidth < 100) resizedWidth = 100;
+                if (labelOption != null)
+                {
+                    if (resizedWidth < 600) resizedWidth = 600;
+                }
+                else
+                {
+                    if (resizedWidth < 300) resizedWidth = 300;
+                }
                 if (resizedHeight < 35) resizedHeight = 35;
 
                 // Try to fit all row without V scroll
@@ -101,27 +117,34 @@ namespace MidiPlayerTK
 
             // Draw text title list box
             if (resizedWidth > 250)
-                GUI.Label(new Rect(localstartX, localstartY , 200, TitleHeight), new GUIContent(Title), myStyle.TitleLabel2);
+                GUI.Label(new Rect(localstartX, localstartY, 200, TitleHeight), new GUIContent(Title), myStyle.TitleLabel2);
 
             // Draw X to close the popup at the right corner
             int width = 30;
             boxX = resizedWidth - width;
-            if (GUI.Button(new Rect(boxX, localstartY, width, TitleHeight), "C", myStyle.BtStandard))
+            if (GUI.Button(new Rect(boxX, localstartY, width, TitleHeight), buttonClose, myStyle.BtStandard))
                 Show = false;
+            // GUI.Label(rectClear, new GUIContent(MPTKGui.IconDeleteGray, "Clear Filter"), MPTKGui.Label);
 
             // Draw toggle to keep open from the right corner 
             width = 100;
             boxX = boxX - EspaceX - width;
-
             //Debug.Log($"DrawWindow:{KeepOpen}");
+            KeepOpen = GUI.Toggle(new Rect(boxX, localstartY + 4, width, TitleHeight), KeepOpen, new GUIContent("Keep Open", "Whether to keep this popup open when a soundfont is selected"));
 
-            KeepOpen = GUI.Toggle(new Rect(boxX, localstartY + 4, width, TitleHeight), KeepOpen, new GUIContent("Keep Open"));
+            if (labelOption != null)
+            {
+                // Draw toggle option
+                width = 100;
+                boxX = boxX - EspaceX - width;
+                Option = GUI.Toggle(new Rect(boxX, localstartY + 4, width, TitleHeight), Option, labelOption);
+            }
 
             // Draw text field to filter from the right corner
             width = 150;
-            boxX = boxX - 3*EspaceX - width;
+            boxX = boxX - 3 * EspaceX - width;
             filterItem = GUI.TextField(new Rect(boxX, localstartY + 4, width, 20), filterItem, 10);//, myStyle.TitleLabel2);
-            GUI.Label(new Rect(boxX-33, localstartY + 4, 30, 20), "filter:");
+            GUI.Label(new Rect(boxX - 33, localstartY + 4, 30, 20), "filter:");
 
             localstartY += TitleHeight + EspaceY;
 
@@ -132,7 +155,7 @@ namespace MidiPlayerTK
 
             boxX = 0;
             boxY = 0;
-            
+
             int indexList = -1;
             int indexItem = -1;
             foreach (MPTKListItem item in list)
@@ -180,7 +203,7 @@ namespace MidiPlayerTK
         public void PositionWithScroll(ref Vector2 scrollerWindow)
         {
             Event e = Event.current;
-            if (e==null || e.type == EventType.Repaint)
+            if (e == null || e.type == EventType.Repaint)
             {
                 // Get the position of the button to set the position popup near the button : same X and above
                 Rect lastRect = GUILayoutUtility.GetLastRect();
@@ -192,7 +215,7 @@ namespace MidiPlayerTK
         }
         public void Position(Vector2 positionbt)
         {
-                windowRect.position = positionbt;
+            windowRect.position = positionbt;
         }
     }
 }

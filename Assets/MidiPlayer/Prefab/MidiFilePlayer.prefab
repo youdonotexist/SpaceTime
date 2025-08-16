@@ -99,7 +99,7 @@ MonoBehaviour:
   StatProcessListMS: 0
   StatProcessListAVG: 0
   keepPlayingNonLooped: 0
-  MPTK_CorePlayer: 1
+  mPTK_CorePlayer: 1
   MPTK_AudioSettingFromUnity: 1
   MPTK_EnableFreeSynthRate: 0
   indexSynthRate: -1
@@ -125,10 +125,11 @@ MonoBehaviour:
   InterpolationMethod: 1
   gain: 1
   VerboseSynth: 0
+  VerboseSoundfont: 0
+  VerboseSample: 0
   VerboseOverload: 0
   VerboseVoice: 0
   VerboseChannel: 0
-  VerboseKillByExclusive: 0
   VerboseGenerator: 0
   VerboseCalcGen: 0
   VerboseCalcMod: 0
@@ -136,10 +137,11 @@ MonoBehaviour:
   VerboseCalcModADSR: 0
   VerboseController: 0
   VerboseEnvVolume: 0
+  VerboseSpecialNoteOff: 0
   VerboseEnvModulation: 0
   VerboseFilter: 0
   VerboseVolume: 0
-  state: 0
+  VerboseSpatialSynth: 0
   AudiosourceTemplate: {fileID: 114184350103546348}
   AdsrSimplified: 0
   MPTK_WeakDevice: 0
@@ -154,10 +156,12 @@ MonoBehaviour:
   showMidiInfo: 0
   showSynthParameter: 0
   showSpatialization: 0
-  showUnitySynthParameter: 0
+  showUnitySynthParameter: 1
   showUnityPerformanceParameter: 0
+  showExperimentalFeature: 0
   showMidiPerformanceParameter: 0
   showSoundFontEffect: 0
+  showVerbose: 0
   showUnitySynthEffect: 0
   showMidiParameter: 0
   showMidiPlaying: 0
@@ -579,6 +583,7 @@ MonoBehaviour:
   PathToResources: 
   LoadSoundFontAtStartup: 1
   LoadWaveAtStartup: 0
+  verboseGlobal: 0
   InstanceOnEventPresetLoaded:
     m_PersistentCalls:
       m_Calls: []

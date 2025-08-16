@@ -1,5 +1,5 @@
 ﻿//#define DEBUGPERF
-using MEC;
+using MPTK.NAudio.Midi;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -110,7 +110,7 @@ namespace MidiPlayerTK
         {
             try
             {
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     if (!MPTK_CorePlayer)
                         Routine.RunCoroutine(TheadPlay(mptkEvent), Segment.RealtimeUpdate);
@@ -123,7 +123,7 @@ namespace MidiPlayerTK
                     }
                 }
                 else
-                    Debug.LogWarningFormat("SoundFont not yet loaded, MIDI Event cannot be processed Code:{0} Channel:{1}", mptkEvent.Command, mptkEvent.Channel);
+                    Debug.LogWarning($"SoundFont not yet loaded, MIDI Event cannot be processed Code:{mptkEvent.Command} Channel:{mptkEvent.Channel}");
             }
             catch (System.Exception ex)
             {
@@ -142,7 +142,7 @@ namespace MidiPlayerTK
         {
             try
             {
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     if (!MPTK_CorePlayer)
                         Routine.RunCoroutine(TheadPlay(mptkEvents), Segment.RealtimeUpdate);
@@ -156,7 +156,7 @@ namespace MidiPlayerTK
                     }
                 }
                 else
-                    Debug.LogWarningFormat("SoundFont not yet loaded, MIDI Events cannot be processed");
+                    Debug.LogWarning($"SoundFont not yet loaded");
             }
             catch (System.Exception ex)
             {

@@ -75,6 +75,27 @@ namespace MidiPlayerTK
             Debug.Log(string.Format(fmt, list));
         }
 
+        public static void CheckSampleName(SFData sf)
+        {
+            foreach (HiSample s in sf.Samples)
+                while (SearchSampleByName(sf, s))
+                {
+                    if (s.Name.Length > 15)
+                        s.Name = s.Name.Remove(15); // sample name must not exceed 20 characters
+                    s.Name += $"_{s.ItemId}";
+                }
+
+        }
+        private static bool SearchSampleByName(SFData sf, HiSample hiSample)
+        {
+            foreach (HiSample s in sf.Samples)
+                if (string.Compare(s.Name, hiSample.Name) == 0 && s.Start != hiSample.Start && s.End != hiSample.End)
+                    // Same name but different sample
+                    return true;
+            return false;
+        }
+
+
         public static void DumpSFToFile(SFData sf, string filename)
         {
             using (StreamWriter writer = File.CreateText(filename))

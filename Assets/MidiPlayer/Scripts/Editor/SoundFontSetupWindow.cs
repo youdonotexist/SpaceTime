@@ -234,7 +234,7 @@ namespace MidiPlayerTK
 #endif
                 if (GUI.Button(new Rect(startX + localstartX + width - 65, startY + localstartY - 18, 35, 35), MPTKGui.IconHelp, MPTKGui.Button))
                 {
-                    //CreateWave createwave = new CreateWave();
+                    //CreateWave createWave = new CreateWave();
                     //string path = System.IO.Path.Combine(MidiPlayerGlobal.MPTK_PathToResources, "unitySample") + ".wav";
                     ////string path = "unitySample.wav";
                     //HiSample sample = new HiSample();
@@ -243,7 +243,7 @@ namespace MidiPlayerTK
                     //for (int i = 0; i < data.Length; i++) data[i] = (byte)255;
                     //sample.SampleRate = 44100;
                     //sample.End = (uint)data.Length/2;
-                    //createwave.Build(path, sample, data);
+                    //createWave.Build(path, sample, data);
                     Application.OpenURL("https://paxstellar.fr/setup-mptk-add-soundfonts-v2/");
                 }
 
@@ -286,23 +286,33 @@ namespace MidiPlayerTK
                         EditorGUI.LabelField(new Rect(boxX + 1, boxY + 2, colw, itemHeight - 5), sf.Name, MPTKGui.styleLabelLeft);
                         boxX += colw;
 
-                        // col 2 - Presets count
-                        colw = columnSF[1].Width;
-                        EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sf.PatchCount.ToString(), MPTKGui.styleLabelRight);
-                        boxX += colw;
 
-                        // col 3 - wave count
-                        colw = columnSF[2].Width;
-                        EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sf.WaveCount.ToString(), MPTKGui.styleLabelRight);
-                        boxX += colw;
+                        if (sf.PatchCount == 0)
+                        {
+                            colw = columnSF[1].Width + columnSF[2].Width + columnSF[3].Width;
+                            EditorGUI.LabelField(new Rect(boxX - 60, boxY + 3, colw+60, itemHeight - 7), "Presets have not yet been extracted.", MPTKGui.styleAlertRed);
+                            boxX += colw;
+                        }
+                        else
+                        {
+                            // col 2 - Presets count
+                            colw = columnSF[1].Width;
+                            EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sf.PatchCount.ToString(), MPTKGui.styleLabelRight);
+                            boxX += colw;
 
-                        // col 4 - size
-                        colw = columnSF[3].Width;
-                        string sizew = (sf.WaveSize < 1000000) ?
-                             Math.Round((double)sf.WaveSize / 1000d).ToString() + " Ko" :
-                             Math.Round((double)sf.WaveSize / 1000000d).ToString() + " Mo";
-                        EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sizew, MPTKGui.styleLabelRight);
-                        boxX += colw;
+                            // col 3 - wave count
+                            colw = columnSF[2].Width;
+                            EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sf.WaveCount.ToString(), MPTKGui.styleLabelRight);
+                            boxX += colw;
+
+                            // col 4 - size
+                            colw = columnSF[3].Width;
+                            string sizew = (sf.WaveSize < 1000000) ?
+                                 Math.Round((double)sf.WaveSize / 1000d).ToString() + " Ko" :
+                                 Math.Round((double)sf.WaveSize / 1000000d).ToString() + " Mo";
+                            EditorGUI.LabelField(new Rect(boxX, boxY + 3, colw, itemHeight - 7), sizew, MPTKGui.styleLabelRight);
+                            boxX += colw;
+                        }
 
                         string textselect = "Select";
                         if (MidiPlayerGlobal.ImSFCurrent != null && sf.Name == MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo.Name)
@@ -311,6 +321,7 @@ namespace MidiPlayerTK
                         // col 5 - select and remove buttons
                         colw = columnSF[4].Width;
                         boxX += 10;
+
                         if (GUI.Button(new Rect(boxX, boxY + 3, buttonMediumWidth, buttonHeight), textselect, MPTKGui.Button))
                         {
 #if MPTK_PRO
@@ -617,10 +628,11 @@ namespace MidiPlayerTK
                     content.tooltip = "";
                     content.text = "Setup recommended: 'Compressed In Memory' and 'PCM'";
                     GUILayout.Label(content, MPTKGui.styleBold);
-                    content.text = "but 'Decompressed On Load' for WebGL.";
-                    GUILayout.Label(content, MPTKGui.styleBold);
-                    content.text = "Parameters comes from Unity and can't be applied in all cases (error will be displayed).";
-                    GUILayout.Label(content, MPTKGui.styleBold);
+                    // v2.16: recommended setup works also for webGL
+                    // content.text = "but 'Decompressed On Load' for WebGL.";
+                    // GUILayout.Label(content, MPTKGui.styleBold);
+                    // content.text = "Parameters comes from Unity and can't be applied in all cases (error will be displayed).";
+                    // GUILayout.Label(content, MPTKGui.styleBold);
 
                     if (CompressionFormat != MidiPlayerGlobal.ImSFCurrent.CompressionFormat || LoadType != MidiPlayerGlobal.ImSFCurrent.LoadType)
                         GUILayout.Label("You need to extract to apply the changes.", MPTKGui.styleAlertRed);
@@ -651,6 +663,9 @@ namespace MidiPlayerTK
                         }
                     }
 
+                    Color savedColor = GUI.backgroundColor;
+                    if (MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo != null && MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo.PatchCount == 0)
+                        GUI.backgroundColor = Color.red;
                     if (GUILayout.Button(new GUIContent("Extract All Presets", "Extract all presets and samples from the Soundfont for the selected banks."), MPTKGui.Button, GUILayout.Height(35)))
                     {
                         if (Application.isPlaying)
@@ -670,6 +685,7 @@ namespace MidiPlayerTK
 #endif
                         }
                     }
+                    GUI.backgroundColor = savedColor;
                     GUILayout.EndHorizontal();
 
                 }
@@ -730,16 +746,15 @@ namespace MidiPlayerTK
 #if MPTK_PRO
                 if (MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo != null && MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo.PatchCount == 0)
                 {
-                    GUILayout.Label($"No presets and samples has yet been extracted", MPTKGui.styleAlertRed);
-                    //GUILayout.Label($"the Soundfont ", MPTKGui.styleAlertRed);
-                    GUILayout.Label("On the top-right panel keep the default selection or:", MPTKGui.styleAlertRed);
-                    GUILayout.Label("   - Select banks you want to keep.", MPTKGui.styleAlertRed);
-                    GUILayout.Label("   - Change default bank for instruments and drums kit.", MPTKGui.styleAlertRed);
-                    GUILayout.Label("   - In doubt, do nothing!", MPTKGui.styleAlertRed);
-                    GUILayout.Label("On the bottom-left panel, click on buttons:", MPTKGui.styleAlertRed);
-                    GUILayout.Label("   'Extract Only Required' to keep only presets found in your MIDIs.", MPTKGui.styleAlertRed);
+                    GUILayout.Label("Presets have not yet been extracted.", MPTKGui.styleAlertRed);
+                    GUILayout.Label("In the top-right panel, either keep the default selection or:", MPTKGui.styleAlertRed);
+                    GUILayout.Label("   - Select the banks you want to keep.", MPTKGui.styleAlertRed);
+                    GUILayout.Label("   - Set the default bank for instruments and drum kits.", MPTKGui.styleAlertRed);
+                    GUILayout.Label("   - Not sure what to do? Leave it as is!", MPTKGui.styleAlertRed);
+                    GUILayout.Label("In the bottom-left panel, choose one of the following options:", MPTKGui.styleAlertRed);
+                    GUILayout.Label("   'Extract Only Required' – keeps only presets used in your MIDI files.", MPTKGui.styleAlertRed);
                     GUILayout.Label("      or", MPTKGui.styleAlertRed);
-                    GUILayout.Label("   'Extract All' to keep all samples and presets from selected banks.", MPTKGui.styleAlertRed);
+                    GUILayout.Label("   'Extract All' – keeps all samples and presets from the selected banks.", MPTKGui.styleAlertRed);
                 }
                 else
                 {

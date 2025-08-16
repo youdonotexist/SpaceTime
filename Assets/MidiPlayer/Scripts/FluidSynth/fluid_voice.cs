@@ -138,7 +138,7 @@ namespace MidiPlayerTK
         public bool is_looping; // moved from local fluid_rvoice_write
         public bool has_looped; /* Flag that is set as soon as the first loop is completed. */
         fluid_interp interp_method; // MPTK used at synth level
-        public fluid_loop samplemode;
+        public fluid_loop samplemode; // Set at SF instrument level. 0: no loop, 1: loop when released
 
         public byte check_sample_sanity_flag;   /* Flag that initiates, that sample-related parameters have to be checked. */
         // To be closer FS
@@ -361,6 +361,62 @@ namespace MidiPlayerTK
                 (int)fluid_gen_type.GEN_CUSTOM_FILTERQ   /*  Not used with MPTK              ---  */
              };
 
+        static int[] list_of_non_core_generators_to_initialize =
+        {
+                (int)fluid_gen_type.GEN_STARTADDROFS,                    /* SF2.01 page 48 #0  - Unity load wave from wave file, no real time change possible on wave attribute */
+                (int)fluid_gen_type.GEN_ENDADDROFS,                      /*                #1  - Unity load wave from wave file, no real time change possible on wave attribute */
+                //(int)fluid_gen_type.GEN_STARTLOOPADDROFS,                /*                #2  - Unity load wave from wave file, no real time change possible on wave attribute */
+                //(int)fluid_gen_type.GEN_ENDLOOPADDROFS,                  /*                #3  - Unity load wave from wave file, no real time change possible on wave attribute */
+                /* (int)fluid_gen_type.GEN_STARTADDRCOARSEOFS see comment below [1]        #4  - Unity load wave from wave file, no real time change possible on wave attribute */
+                (int)fluid_gen_type.GEN_MODLFOTOPITCH,                   /*                #5   */
+                (int)fluid_gen_type.GEN_VIBLFOTOPITCH,                   /*                #6   */
+                (int)fluid_gen_type.GEN_MODENVTOPITCH,                   /*                #7   */
+                //(int)fluid_gen_type.GEN_FILTERFC,                        /*                #8   */
+                //(int)fluid_gen_type.GEN_FILTERQ,                         /*                #9   */
+                //(int)fluid_gen_type.GEN_MODLFOTOFILTERFC,                /*                #10  */
+                //(int)fluid_gen_type.GEN_MODENVTOFILTERFC,                /*                #11  */
+                /* (int)fluid_gen_type.GEN_ENDADDRCOARSEOFS [1]                            #12  - Unity load wave from wave file, no real time change possible on wave attribute */
+                (int)fluid_gen_type.GEN_MODLFOTOVOL,                     /*                #13  */
+                /* not defined                                         #14  */
+                //(int)fluid_gen_type.GEN_CHORUSSEND,                      /*                #15  */
+                //(int)fluid_gen_type.GEN_REVERBSEND,                      /*                #16  */
+                (int)fluid_gen_type.GEN_PAN,                             /*                #17  */
+                /* not defined                                         #18  */
+                /* not defined                                         #19  */
+                /* not defined                                         #20  */
+                (int)fluid_gen_type.GEN_MODLFODELAY,                     /*                #21  */
+                //(int)fluid_gen_type.GEN_MODLFOFREQ,                      /*                #22  */
+                (int)fluid_gen_type.GEN_VIBLFODELAY,                     /*                #23  */
+                //(int)fluid_gen_type.GEN_VIBLFOFREQ,                      /*                #24  */
+                (int)fluid_gen_type.GEN_MODENVDELAY,                     /*                #25  */
+                (int)fluid_gen_type.GEN_MODENVATTACK,                    /*                #26  */
+                (int)fluid_gen_type.GEN_MODENVHOLD,                      /*                #27  */
+                (int)fluid_gen_type.GEN_MODENVDECAY,                     /*                #28  */
+                /* (int)fluid_gen_type.GEN_MODENVSUSTAIN [1]                               #29  */
+                (int)fluid_gen_type.GEN_MODENVRELEASE,                   /*                #30  */
+                /* (int)fluid_gen_type.GEN_KEYTOMODENVHOLD [1]                             #31  */
+                /* (int)fluid_gen_type.GEN_KEYTOMODENVDECAY [1]                            #32  */
+                (int)fluid_gen_type.GEN_VOLENVDELAY,                     /*                #33  */
+                (int)fluid_gen_type.GEN_VOLENVATTACK,                    /*                #34  */
+                (int)fluid_gen_type.GEN_VOLENVHOLD,                      /*                #35  */
+                (int)fluid_gen_type.GEN_VOLENVDECAY,                     /*                #36  */
+                /* (int)fluid_gen_type.GEN_VOLENVSUSTAIN [1]                               #37  */
+                (int)fluid_gen_type.GEN_VOLENVRELEASE,                   /*                #38  */
+                /* (int)fluid_gen_type.GEN_KEYTOVOLENVHOLD [1]                             #39  */
+                /* (int)fluid_gen_type.GEN_KEYTOVOLENVDECAY [1]                            #40  */
+                /* (int)fluid_gen_type.GEN_STARTLOOPADDRCOARSEOFS [1]                      #45 - Unity load wave from wave file, no real time change possible on wave attribute */
+                (int)fluid_gen_type.GEN_KEYNUM,                          /*                #46  */
+                (int)fluid_gen_type.GEN_VELOCITY,                        /*                #47  */
+                (int)fluid_gen_type.GEN_ATTENUATION,                     /*                #48  */
+                /* (int)fluid_gen_type.GEN_ENDLOOPADDRCOARSEOFS [1]                        #50  - Unity load wave from wave file, no real time change possible on wave attribute */
+                /* (int)fluid_gen_type.GEN_COARSETUNE           [1]                        #51  */
+                /* (int)fluid_gen_type.GEN_FINETUNE             [1]                        #52  */
+                (int)fluid_gen_type.GEN_OVERRIDEROOTKEY,                 /*                #58  */
+                (int)fluid_gen_type.GEN_PITCH,                           /*                ---  */
+                (int)fluid_gen_type.GEN_CUSTOM_BALANCE,  /*  Not used with MPTK              ---  */
+                //(int)fluid_gen_type.GEN_CUSTOM_FILTERFC, /*  Not used with MPTK              ---  */
+                //(int)fluid_gen_type.GEN_CUSTOM_FILTERQ   /*  Not used with MPTK              ---  */
+             };
         static int[] list_of_weakgenerators_to_initialize =
      {
                 (int)fluid_gen_type.GEN_STARTADDROFS,                    /* SF2.01 page 48 #0  - Unity load wave from wave file, no real time change possible on wave attribute */
@@ -514,6 +570,8 @@ namespace MidiPlayerTK
          * of the voice.
          * When playing legato (n1,n2) in mono mode, n2 will use n1 voices
          * as far as n2 still enters in Keyrange,Velrange of n1.
+         * 
+         * Defined default voice value. Called also when a voice is reused.
          */
         public void fluid_voice_init(
             MPTKChannel pchannel, int pkey, int pvel)
@@ -597,7 +655,7 @@ namespace MidiPlayerTK
             //gain=
 
 #if DEBUGPERF
-            synth.DebugPerf("After fluid_gen_init voice:");
+            synth.DebugPerf("After fluid_voice_init voice:");
 #endif
         }
 
@@ -793,7 +851,7 @@ namespace MidiPlayerTK
             //time = 0.0;
 
             if (VoiceAudio != null)
-                // Play sound with an AudioSource component
+                // Play sound with an AudioSource component (legacy mode)
                 VoiceAudio.RunUnityThread();
         }
 
@@ -838,8 +896,7 @@ namespace MidiPlayerTK
 
                 float valMod = mod.fluid_mod_get_value(this);
 
-                if (synth.VerboseCalcMod)
-                    mod.fluid_dump_modulator(valMod);
+                if (synth.VerboseCalcMod) mod.fluid_dump_modulator(valMod);
 
                 gen[mod.dest].Mod += valMod;
             }
@@ -856,23 +913,36 @@ namespace MidiPlayerTK
              * parameters.  Same with GEN_XXX and GEN_XXXCOARSE: the
              * initialisation list contains only GEN_XXX.
              */
+
+            // Calculate the voice parameter(s) dependent on each generator.
+            int[] list_of_generators;
+            if (!weakDevice)
+                if (synth.MPTK_CorePlayer)
+                    list_of_generators = list_of_generators_to_initialize;
+                else
+                    list_of_generators = list_of_non_core_generators_to_initialize;
+            else
+                list_of_generators = list_of_weakgenerators_to_initialize;
+
             if (synth.VerboseCalcGen)
             {
                 Debug.Log("list_of_generators_to_initialize:");
-                for (int n = 0; n < list_of_generators_to_initialize.Length; n++)
+                for (int n = 0; n < list_of_generators.Length; n++)
                 {
-                    int g = list_of_generators_to_initialize[n];
+                    int g = list_of_generators[n];
                     Debug.Log($"  ({g,-2:00}) {(fluid_gen_type)g,-25} {(int)gen[g].flags} val:{gen[g].Val,10:F2} mod:{gen[g].Mod,10:F2}");
                 }
                 Debug.Log("fluid_voice_update_param:");
             }
-            // Calculate the voice parameter(s) dependent on each generator.
-            if (!weakDevice)
-                foreach (int igen in list_of_generators_to_initialize)
+            foreach (int igen in list_of_generators)
+                try
+                {
                     fluid_voice_update_param(igen);
-            else
-                foreach (int igen in list_of_weakgenerators_to_initialize)
-                    fluid_voice_update_param(igen);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Channel:{chan} Sample:{sample.Name} Generator:[{igen} {(fluid_gen_type)igen}] {ex.Message}");
+                }
 
             /* Start portamento if enabled TO BE DONE
             {
@@ -952,7 +1022,10 @@ namespace MidiPlayerTK
 
             lower_bound = attenuation - possible_att_reduction_cB;
 
-            if (synth.VerboseCalcMod) Debug.Log($"fluid_voice_get_lower_boundary_for_attenuation lower_bound:{lower_bound}");
+            // Same values with FS2.3
+            // C60-100 possible_att_reduction_cB 44.25, lower_bound 57.52
+            // C60-30  possible_att_reduction_cB:44,24804 lower_bound:220,5466 
+            if (synth.VerboseCalcMod) Debug.Log($"fluid_voice_get_lower_boundary_for_attenuation possible_att_reduction_cB:{possible_att_reduction_cB} lower_bound:{lower_bound} ");
 
             /* SF2.01 specs do not allow negative attenuation */
             if (lower_bound < 0f)
@@ -986,24 +1059,34 @@ namespace MidiPlayerTK
                 case (int)fluid_gen_type.GEN_PAN:
                     /* range checking is done in the fluid_pan function: range from -500 to 500 */
                     pan = genVal;
-                    //if (midiChannel.preset.Num % 2 == 0)
-                    //    pan = 500;
-                    //else
-                    //    pan = -500;
-                    if (synth.MPTK_CorePlayer)
+                    // Init with default volume channel value
+                    amp_left = channel.Volume;
+                    amp_right = channel.Volume;
+
+                    if (synth.MPTK_EnablePanChange)
                     {
-                        // Init with default volume channel value
-                        amp_left = channel.Volume;
-                        amp_right = channel.Volume;
-
-                        if (synth.MPTK_EnablePanChange)
+                        if (synth.MPTK_CorePlayer)
                         {
-                            amp_left *= fluid_conv.fluid_pan(pan, true);
-                            amp_right *= fluid_conv.fluid_pan(pan, false);
+                            float left = fluid_conv.fluid_pan(pan, true); // from 0 to 1
+                            float right = fluid_conv.fluid_pan(pan, false); // from 0 to 1 
+                            amp_left *= left;
+                            amp_right *= right;
+                            if (synth.VerboseCalcGen)
+                                Debug.LogFormat($"{header} EnablePanChange={synth.MPTK_EnablePanChange} synth.gain={synth.gain:0.00} pan={pan:0.00} amp_left={left:0.00} amp_right={right:0.00} mptkChannel.volume={channel.Volume}");
                         }
-
-                        if (synth.VerboseCalcGen)
-                            Debug.LogFormat($"{header} EnablePanChange={synth.MPTK_EnablePanChange} synth.gain={synth.gain:0.00} pan={pan:0.00} amp_left={amp_left:0.00} amp_right={amp_right:0.00} mptkChannel.volume={channel.Volume}");
+                        else
+                        {
+                            // Not useful! 
+                            // Pan change is handle in VoiceAudioSource.cs
+                            //if (VoiceAudio != null && VoiceAudio.Audiosource != null)
+                            //    // Values range from -1.0 to 1.0.
+                            //    // -1.0 = full left
+                            //    //  0.0 = center
+                            //    //  1.0 = full right
+                            //    VoiceAudio.Audiosource.panStereo = pan / 500f; // from pan -500 to 500 to audio source pan -1 to 1
+                            //if (synth.VerboseCalcGen)
+                            //    Debug.LogFormat($"{header} EnablePanChange={synth.MPTK_EnablePanChange} pan={pan:0.00} --> panStereo={VoiceAudio.Audiosource.panStereo:0.00}");
+                        }
                     }
                     break;
 
@@ -1235,7 +1318,7 @@ namespace MidiPlayerTK
                         start = (int)(sample.Start
                             + (int)gen[(int)fluid_gen_type.GEN_STARTADDROFS].Val + gen[(int)fluid_gen_type.GEN_STARTADDROFS].Mod /*+ gens[(int)fluid_gen_type.GEN_STARTADDROFS].nrpn*/
                             + 32768 * (int)gen[(int)fluid_gen_type.GEN_STARTADDRCOARSEOFS].Val + gen[(int)fluid_gen_type.GEN_STARTADDRCOARSEOFS].Mod /*+ gens[(int)fluid_gen_type.GEN_STARTADDRCOARSEOFS].nrpn*/);
-                        if (start >= sample.Data.Length) start = sample.Data.Length - 1;
+                        if (sample.Data != null && start >= sample.Data.Length) start = sample.Data.Length - 1;
                         check_sample_sanity_flag |= FLUID_SAMPLESANITY_CHECK;
                         //if (synth.VerboseCalcGen) Debug.LogFormat("Calc {0} start={1} val={2:0.00} mod={3:0.00}", (fluid_gen_type)igen, start, gens[igen].Val, gens[igen].Mod);
                     }
@@ -1247,7 +1330,7 @@ namespace MidiPlayerTK
                         end = (int)(sample.End - 1
                             + (int)gen[(int)fluid_gen_type.GEN_ENDADDROFS].Val + gen[(int)fluid_gen_type.GEN_ENDADDROFS].Mod /*+ gens[(int)fluid_gen_type.GEN_ENDADDROFS].nrpn*/
                             + 32768 * (int)gen[(int)fluid_gen_type.GEN_ENDADDRCOARSEOFS].Val + gen[(int)fluid_gen_type.GEN_ENDADDRCOARSEOFS].Mod /*+ gens[(int)fluid_gen_type.GEN_ENDADDRCOARSEOFS].nrpn*/);
-                        if (end >= sample.Data.Length) end = sample.Data.Length - 1;
+                        if (sample.Data != null && end >= sample.Data.Length) end = sample.Data.Length - 1;
                         check_sample_sanity_flag |= FLUID_SAMPLESANITY_CHECK;
                         //if (synth.VerboseCalcGen) Debug.LogFormat("Calc {0} end={1} val={2:0.00} mod={3:0.00}", (fluid_gen_type)igen, end, gens[igen].Val, gens[igen].Mod);
                     }
@@ -1906,8 +1989,7 @@ namespace MidiPlayerTK
                         this.gen[gen].Mod = modval; //fluid_gen_set_mod(_gen, _val)  { (_gen).mod = (double)(_val); }
 
                         // step 3: now that we have the new value of the generator, recalculate the parameter values that are derived from the generator */
-                        if (synth.VerboseController)
-                            Debug.Log($"Modulate Generator Channel:{channel.Channel} Controller:{(fluid_mod_src)ctrl} Continue={cc} Gen:{(fluid_gen_type)gen} Value:{modval:F2}");
+                        if (synth.VerboseController) Debug.Log($"Modulate Generator Channel:{channel.Channel} Controller:{(fluid_mod_src)ctrl} Continue={cc} Gen:{(fluid_gen_type)gen} Value:{modval:F2}");
 
                         fluid_voice_update_param(gen);
 
@@ -2160,21 +2242,32 @@ namespace MidiPlayerTK
             //Debug.Log(this.sample.Name);
             Array.Clear(dsp_buf, 0, synth.FLUID_BUFSIZE);
 
-            // A single tick represents one hundred nanoseconds or one ten-millionth of a second.
-            // There are 10,000 ticks in a millisecond, or 10 million ticks in a second. 
-            if (DurationTick >= 0 && volenv_section != fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE && ticks > TimeAtEnd)
+            // Check time for the note-off (no note_off with MPTK)
+            // A tick represents = 100 nanoseconds or one ten-millionth of a second. There are 10,000 ticks in a millisecond, or 10 million ticks in a second. 
+            if (DurationTick >= 0 && ticks > TimeAtEnd)
             {
-                // V2.89.0 The old soundcards would play any sample that didn't have loop points as a one-shot.  
-                // In other words, once the sample was triggered by a NoteOn event it would be played once through to the end and could not be interrupted by a NoteOff event.  
-                // This was used for drum samples for the most part.  I have several old MIDI files that take advantage of this.  
-                // In one extreme example, nearly every NoteOn for the drum part is immediately followed by a NoteOff on the next tick.
-                if (!synth.keepPlayingNonLooped || samplemode == fluid_loop.FLUID_LOOP_UNTIL_RELEASE || samplemode == fluid_loop.FLUID_LOOP_DURING_RELEASE)
-                //if (IsLoop || !synth.keepPlayingNonLooped)
+                // No note_off in attack phase (sure ?) or already in release phase
+                if (volenv_section > fluid_voice_envelope_index.FLUID_VOICE_ENVATTACK && volenv_section < fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE)
                 {
-                    if (synth.VerboseEnvVolume) DebugVolEnv("Over Time, send noteoff");
-                    fluid_rvoice_noteoff();
+                    // V2.89.0 The old soundcards would play any sample that didn't have loop points as a one-shot.  
+                    // In other words, once the sample was triggered by a NoteOn event it would be played once through to the end and could not be interrupted by a NoteOff event.  
+                    // This was used for drum samples for the most part.  I have several old MIDI files that take advantage of this.  
+                    // In one extreme example, nearly every NoteOn for the drum part is immediately followed by a NoteOff on the next tick.
+                    // if (synth.keepPlayingNonLooped == false || samplemode == fluid_loop.FLUID_LOOP_UNTIL_RELEASE || samplemode == fluid_loop.FLUID_LOOP_DURING_RELEASE)
+                    if (synth.keepPlayingNonLooped && samplemode == fluid_loop.FLUID_UNLOOPED)
+                    {
+                        if (synth.VerboseSpecialNoteOff) //Ignore note-off
+                        {
+                            string title = $"Ignore note-off Channel:{chan} key:{key} ADSR:{volenv_section} Ignore:{synth.keepPlayingNonLooped} DurationTick:{DurationTick} Name:{sample.Name}";
+                            DebugVolEnv(title);
+                        }
+                    }
+                    else
+                    {
+                        if (synth.VerboseEnvVolume) DebugVolEnv("Over Time, send note-off");
+                        fluid_rvoice_noteoff();
+                    }
                 }
-                //else Debug.Log($"ignore noteoff Channel:{chan} key:{key} Isloop:{IsLoop} Ignore:{synth.keepPlayingNonLooped} DurationTick:{DurationTick} Name:{sample.Name}");
             }
 
             /******************* sample **********************/
@@ -2343,6 +2436,7 @@ namespace MidiPlayerTK
                 // MPTK 2.11.3 update related to FS 2.3
                 target_amp = (float)fluid_conv.fluid_cb2amp(attenuation) * (float)fluid_conv.fluid_cb2amp(modlfo_val * -modlfo_to_vol) * volenv_val;
                 //Debug.Log($"FLUID_VOICE_ENVATTACK target_amp {target_amp} attenuation:{attenuation} min:{min_attenuation_cB}");
+                if (synth.VerboseVolume) DebugVolume($"amp_max:no_max target_amp:{target_amp:F5} amp:{amp:F5} CutOff:no_cutoff");
             }
             else
             {
@@ -2352,7 +2446,7 @@ namespace MidiPlayerTK
                 //              see C:\Devel\fluidsynth-2.3.1\src\rvoice\fluid_rvoice.c line 56
                 // MPTK 2.11.2  target_amp = fluid_conv.fluid_atten2amp(attenuation) * fluid_conv.fluid_cb2amp(960f * (1f - volenv_val) + modlfo_val * -modlfo_to_vol);
                 // MPTK 2.11.3 update related to FS 2.3
-                target_amp = (float)fluid_conv.fluid_cb2amp(attenuation) * (float)fluid_conv.fluid_cb2amp(960f * (1f - volenv_val) + modlfo_val * -modlfo_to_vol);
+                target_amp = (float)fluid_conv.fluid_cb2amp(attenuation) * (float)fluid_conv.fluid_cb2amp(fluid_conv.FLUID_PEAK_ATTENUATION * (1f - volenv_val) + modlfo_val * -modlfo_to_vol);
                 //Debug.Log($"FLUID_VOICE_ENVxxxxx target_amp {target_amp} {attenuation}");
 
 
@@ -2391,7 +2485,8 @@ namespace MidiPlayerTK
                 // MPTK 2.11.3 update related to FS 2.3
                 amp_max = (float)fluid_conv.fluid_cb2amp(min_attenuation_cB) * volenv_val;
 
-                //Debug.LogFormat("t:{0} calc amp_max:{1:F7} volenv_val:{2:F7} section:{3} ({4})", (System.DateTime.UtcNow.Ticks - TimeAtStart) / fluid_voice.Nano100ToMilli, amp_max, volenv_val, volenv_section, (int)volenv_section);
+                //Debug.LogFormat($"t:{(DateTime.UtcNow.Ticks - TimeAtStart) / fluid_voice.Nano100ToMilli} "+
+                //    $"calc amp_max:{amp_max:F7} volenv_val:{volenv_val:F7} section:{volenv_section} ({(int)volenv_section})");
 
                 /* And if amp_max is already smaller than the known amplitude,
                  * which will attenuate the sample below the noise floor, then we
@@ -2402,6 +2497,7 @@ namespace MidiPlayerTK
                     fluid_voice_off();
                     goto post_process;
                 }
+                if (synth.VerboseVolume) DebugVolume($"amp_max:{amp_max:F5} target_amp:{target_amp:F5} amp:{amp:F5} CutOff:{synth.MPTK_CutOffVolume:F6}");
             }
 
             /* Volume increment to go from amp to target_amp in FLUID_BUFSIZE steps */
@@ -2409,8 +2505,6 @@ namespace MidiPlayerTK
             //Debug.Log($"{volenv_section} {target_amp} {amp}");
 
             //fluid_check_fpe("voice_write amplitude calculation");
-            if (synth.VerboseVolume)
-                DebugVolume($"amp_max:{amp_max:F2} target_amp:{target_amp:F2} amp:{amp:F2} CutOff:{synth.MPTK_CutOffVolume:F2}");
 
             /* no volume and not changing? - No need to process 
                 removed in 2.9.1 - not sure of its utility
@@ -2614,7 +2708,7 @@ namespace MidiPlayerTK
         }
 
         /// <summary>@brief
-        /// Move phase enveloppe to release
+        /// Move phase enveloppe to release //FS fluid_rvoice_noteoff_LOCAL
         /// </summary>
         public void fluid_rvoice_noteoff(bool force = false)
         {
@@ -2624,6 +2718,8 @@ namespace MidiPlayerTK
                 {
                     if (!force && channel != null && channel.Controller(MPTKController.Sustain) >= 64)
                     {
+                        if (synth.VerboseController)
+                            if (status != fluid_voice_status.FLUID_VOICE_SUSTAINED) Debug.Log($"fluid_voice_noteoff Channel:{chan} key:{key} set status to FLUID_VOICE_SUSTAINED");
                         status = fluid_voice_status.FLUID_VOICE_SUSTAINED;
                     }
                     else
@@ -2642,13 +2738,25 @@ namespace MidiPlayerTK
                                 float env_value;
                                 if (synth.MPTK_ApplyModLfo)
                                 {
+                                    /* FS 2.3
+                                        fluid_real_t lfo = voice->envlfo.modlfo.val * -voice->envlfo.modlfo_to_vol;
+                                        fluid_real_t amp = voice->envlfo.volenv.val * fluid_cb2amp(lfo);
+                                        fluid_real_t env_value = - (((-200.f / FLUID_M_LN10) * FLUID_LOGF(amp) - lfo) / FLUID_PEAK_ATTENUATION - 1);
+                                        fluid_clip(env_value, 0.0f, 1.0f);
+                                        voice->envlfo.volenv= env_value;
+                                    */
                                     float lfo = modlfo_val * -modlfo_to_vol;
-                                    float vol = volenv_val * Mathf.Pow(10f, lfo / -200f);
-                                    env_value = -((-200f * Mathf.Log(vol) / Mathf.Log(10f) - lfo) / 960f - 1f);
+                                    float amp = volenv_val * (float)fluid_conv.fluid_cb2amp(lfo);
+                                    env_value = -(((-200f / fluid_conv.M_LN10) * Mathf.Log(amp) - lfo) / fluid_conv.FLUID_PEAK_ATTENUATION - 1);
+                                    // before 2.14.1
+                                    // float lfo = modlfo_val * -modlfo_to_vol;
+                                    // float vol = volenv_val * Mathf.Pow(10f, lfo / -200f);
+                                    // env_value = -((-200f * Mathf.Log(vol) / Mathf.Log(10f) - lfo) / fluid_conv.FLUID_PEAK_ATTENUATION - 1f);
                                 }
                                 else
                                 {
-                                    env_value = Convert.ToInt64(-((-200f * Mathf.Log(volenv_val) / Mathf.Log(10f)) / 960f - 1f));
+                                    env_value = -(((-200f / fluid_conv.M_LN10) * Mathf.Log(amp)) / fluid_conv.FLUID_PEAK_ATTENUATION - 1);
+                                    //env_value = Convert.ToInt64(-((-200f * Mathf.Log(volenv_val) / Mathf.Log(10f)) / fluid_conv.FLUID_PEAK_ATTENUATION - 1f));
                                 }
                                 volenv_val = env_value > 1 ? 1 : env_value < 0 ? 0 : env_value;
                             }
@@ -2694,7 +2802,7 @@ namespace MidiPlayerTK
             gen[(int)fluid_gen_type.GEN_EXCLUSIVECLASS].Val = 0f;
             gen[(int)fluid_gen_type.GEN_EXCLUSIVECLASS].flags = fluid_gen_flags.GEN_SET;
 
-            if (synth.VerboseKillByExclusive) DebugKillByExclusive($"Release sample with class {gen[(int)fluid_gen_type.GEN_EXCLUSIVECLASS].Val}");
+            if (synth.VerboseSpecialNoteOff) DebugKillByExclusive($"Release sample with class {gen[(int)fluid_gen_type.GEN_EXCLUSIVECLASS].Val}");
 
             /* If the voice is not yet in release state, put it into release state */
             if (volenv_section != fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE)

@@ -1,5 +1,5 @@
-﻿#if UNITY_EDITOR
-using MEC;
+﻿#define MPTK_PRO
+#if UNITY_EDITOR
 using System;
 using UnityEngine;
 
@@ -48,7 +48,9 @@ namespace MidiPlayerTK
             goSequencer = new GameObject();
             goSequencer.name = nameComponent;
             goSequencer.hideFlags = HideFlags.DontSave;
+
             MidiPlayer = goSequencer.AddComponent<MidiFileEditorPlayer>();
+            MidiPlayer.CoreAudioSource.enabled = true;
             //MidiPlayer.VerboseSynth = true;
             //MidiPlayer.MPTK_IndexSynthBuffSize = 3;
 
@@ -78,11 +80,12 @@ namespace MidiPlayerTK
                 if (logDebug && midiPlayerGlobal == null)
                     Debug.LogWarning("     ... midiPlayerGlobal is null");
             }
+            MidiPlayerGlobal.VerboseGlobal = logDebug;
 
             MidiPlayerGlobal.InitPath();
             ToolsEditor.LoadMidiSet();
             if (logDebug) Debug.Log($"{(DateTime.Now - startLoad).TotalSeconds:F3} Load MidiPlayerGlobal instance");
-            midiPlayerGlobal.InitInstance(logDebug);
+            midiPlayerGlobal.InitInstance();
             if (logSoundFontLoaded)
                 MidiPlayerGlobal.OnEventPresetLoaded.AddListener(SoundFontIsReadyEvent);
             //MidiPlayerGlobal.MPTK_LoadLiveSF("file://" + MidiPlayerGlobal.CurrentMidiSet.ActiveSounFontInfo.SF2Path, -1, -1, false);
@@ -90,7 +93,11 @@ namespace MidiPlayerTK
             MidiPlayerGlobal.LoadCurrentSF();
 
             MidiPlayer.MPTK_CorePlayer = true;
-            // Effect instance not yet avaialable
+#if MPTK_PRO
+            MidiPlayer.MPTK_InnerLoop = new MPTKInnerLoop();
+#endif
+
+            // Effect instance not yet available
             //MidiPlayer.MPTK_EffectSoundFont.EnableChorus = false;
             //MidiPlayer.MPTK_EffectSoundFont.EnableFilter = false;
             //MidiPlayer.MPTK_EffectSoundFont.EnableReverb = false;
@@ -99,7 +106,7 @@ namespace MidiPlayerTK
 
             //MidiPlayer.MPTK_LogEvents = true;
             //MidiPlayer.MPTK_LogWave = true;
-            MidiPlayer.MPTK_EnablePresetDrum = true;
+            MidiPlayer.MPTK_EnablePresetDrum = false; // was true version < 2.14.1
             MidiPlayer.MPTK_StartPlayAtFirstNote = true;
             MidiPlayer.MPTK_DirectSendToPlayer = true;
             MidiPlayer.MPTK_AutoCleanVoiceLimit = 100;
@@ -124,11 +131,11 @@ namespace MidiPlayerTK
         // create a short empty clip (or a sin wave for testing purpose)
         private AudioClip Create()
         {
-            int samplerate = 44100;
+            int sampleRate = 44100;
             int sampleCount = 10;
             int sampleChannel = 1;
             //float frequency = 440;
-            AudioClip myClip = AudioClip.Create("blank", sampleCount, sampleChannel, samplerate, false);
+            AudioClip myClip = AudioClip.Create("blank", sampleCount, sampleChannel, sampleRate, false);
             float[] samples = new float[sampleCount * sampleChannel];
             for (int i = 0; i < samples.Length; ++i)
             {

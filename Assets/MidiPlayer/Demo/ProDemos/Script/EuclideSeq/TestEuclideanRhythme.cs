@@ -1,5 +1,6 @@
 ﻿using MidiPlayerTK;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -93,8 +94,10 @@ namespace MPTKDemoEuclidean
 
         private System.Diagnostics.Stopwatch watchThreadPlayHits = new System.Diagnostics.Stopwatch();
         Thread threadPlayHits;
-        bool threadMode = true;
 
+#if !UNITY_WEBGL  // WebGL not compliant with thread
+        bool threadMode = false;
+#endif
         void Start()
         {
 
@@ -192,7 +195,7 @@ namespace MPTKDemoEuclidean
             {
                 IsPlaying = !IsPlaying;
                 SetLabelBtPlay();
-                Play();
+                StartOrStopPlaying();
             });
 
             BtNextStat.onClick.AddListener(() =>
@@ -265,7 +268,7 @@ namespace MPTKDemoEuclidean
             });
             ComboSelectBank.value = 0;
             SetLabelBtMidi();
-            Play();
+            StartOrStopPlaying();
             Application.wantsToQuit += Application_wantsToQuit;
 
             Debug.Log("Add a track 'Euclidean Drums' to experiment this interesting way for drums.");
@@ -415,57 +418,68 @@ namespace MPTKDemoEuclidean
         }
 
         /// <summary>@brief
-        /// Play or stop playing.
+        /// Play or stop playing from the GUI button BtPlay.\n
         /// Set the PlayHits function to process midi generated music at each audio frame
         /// </summary>
         /// 
-        public void Play()
+        public void StartOrStopPlaying()
         {
             lastSynthTime = 0f;
             timeMidiFromStartPlay = 0d;
             timeSinceLastBeat = 999999d; // start with a first beat
             CurrentBeat = -1; // start with a first beat
+            watchThreadPlayHits.Reset();
 
+#if !UNITY_WEBGL // WebGL not compliant with thread and OnAudioFrameStart
             if (threadMode && threadPlayHits == null)
             {
                 //Debug.Log($"thread start");
                 threadPlayHits = new Thread(ThreadPlayHits);
             }
-
-            //Debug.Log($"{IsPlaying}");
+#endif
+            Debug.Log($"Is Playing: {IsPlaying}");
 
             if (IsPlaying)
             {
+#if !UNITY_WEBGL // WebGL not compliant with thread and OnAudioFrameStart
+                // WebGL not compliant with thread 
                 if (threadMode)
                 {
-                    watchThreadPlayHits.Reset();
                     watchThreadPlayHits.Start();
                     threadPlayHits.Start();
                 }
                 else
-                    midiStreamPlayer.OnAudioFrameStart += SynthPlayHits;
+                    midiStreamPlayer.OnAudioFrameStart += OnAudioFramePlayHits;
+#else
+                watchThreadPlayHits.Start();
+                StartCoroutine(WebGLPlayHits());
+#endif
             }
             else
             {
+#if !UNITY_WEBGL // WebGL not compliant with thread and OnAudioFrameStart
                 if (threadMode)
                 {
                     watchThreadPlayHits.Stop();
                     //midiThread.Stop();
                 }
                 else
-                    midiStreamPlayer.OnAudioFrameStart -= SynthPlayHits;
+                    midiStreamPlayer.OnAudioFrameStart -= OnAudioFramePlayHits;
+#else
+                // coroutine exit when IsPlaying is false ... nothing to do
+#endif
             }
         }
 
         /// <summary>@brief
-        /// This function will be called at each audio frame.
+        /// When threadMode=false and not WebGL, this function is called at each audio frame (midiStreamPlayer.OnAudioFrameStart += OnAudioFramePlayHits)
         /// The frequency depends on the buffer size and the synth rate (see inspector of the MidiStreamPlayer prefab)
         /// Recommended values: Freq=48000 Buffer Size=1024 --> call every 11 ms with a high accuracy.
         /// You can't call Unity API in this function (only Debug.Log) but the most part of MPTK API are available.
         /// For example : MPTK_PlayDirectEvent or MPTK_PlayEvent to play music note from MPTKEvent (see PlayEuclideanRhythme)
         /// </summary>
         /// <param name="synthTimeMS"></param>
-        private void SynthPlayHits(double synthTimeMS)
+        private void OnAudioFramePlayHits(double synthTimeMS)
         {
             //Debug.Log($"{synthTimeMS:F0}");
 
@@ -511,13 +525,9 @@ namespace MPTKDemoEuclidean
         }
 
         /// <summary>@brief
-        /// This function will be called at each audio frame.
-        /// The frequency depends on the buffer size and the synth rate (see inspector of the MidiStreamPlayer prefab)
-        /// Recommended values: Freq=48000 Buffer Size=1024 --> call every 11 ms with a high accuracy.
-        /// You can't call Unity API in this function (only Debug.Log) but the most part of MPTK API are available.
-        /// For example : MPTK_PlayDirectEvent or MPTK_PlayEvent to play music note from MPTKEvent (see PlayEuclideanRhythme)
+        /// When threadMode=true and not WebGL, this function is called from a thread (threadPlayHits = new Thread(ThreadPlayHits))
+        /// So, it's an infinite loop able to calculate if a drum hit must be played.
         /// </summary>
-        /// <param name="synthTimeMS"></param>
         private void ThreadPlayHits()
         {
             while (IsPlaying)
@@ -568,7 +578,63 @@ namespace MPTKDemoEuclidean
                 Thread.Sleep(10);
             }
         }
+        /// <summary>@brief
+        /// When WebGL, this function is called from a coroutine 
+        /// So, it's an infinite loop able to calculate if a drum hit must be played.
+        /// </summary>
+        /// <param name="synthTimeMS"></param>
+        private IEnumerator WebGLPlayHits()
+        {
+            while (IsPlaying)
+            {
+                double timeMS = ((double)watchThreadPlayHits.ElapsedTicks) / ((double)System.Diagnostics.Stopwatch.Frequency / 1000d);
+                //Debug.Log($"{timeMS:F0}");
 
+                if (lastSynthTime <= 0d)
+                {
+                    // First call, init the last time
+                    lastSynthTime = timeMS;
+                }
+                //Debug.Log($"{timeMS:F0}");
+
+                // Calculate time in millisecond since the last loop
+                double deltaTime = timeMS - lastSynthTime;
+                lastSynthTime = timeMS;
+                timeMidiFromStartPlay += deltaTime;
+
+                // Calculate time since last beat played
+                timeSinceLastBeat += deltaTime;
+
+                /// SldTempo in BPM.
+                ///  60 BPM means 60 beats in each minute, 1 beat per second, 1000 ms between beat.
+                /// 120 BPM would be twice as fast: 120 beats in each minute, 2 per second, 500 ms between beat.
+                /// Calculate the delay between two quarter notes in millisecond
+                CurrentTempo = (60d / (double)SldTempo.Value) * 1000d;
+
+                // Is it time to play a hit ?
+                if (IsPlaying && timeSinceLastBeat >= CurrentTempo)
+                {
+                    //Debug.Log($"{synthMidiMS:F0} {midiStream.DeltaTimeAudioCall:F2} {deltaTime:F2} {timeSinceLastBeat:F2}");
+                    timeSinceLastBeat = 0d;
+
+                    // could overflow after 273 days (frequency 11 ms) ;-))) 
+                    if (CurrentBeat >= int.MaxValue - 1) CurrentBeat = 0;
+
+                    CurrentBeat++;
+                    //   lock (this)
+                    {
+                        for (int c = 0; c < Controllers.Count; c++)
+                        {
+                            if (Controllers[c].PlayMode == PanelController.Mode.EuclideDrums)
+                                Controllers[c].PlayEuclideanRhythme();
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(0.01f);
+            }
+            Debug.Log($"WebGLPlayHits exit");
+
+        }
         private void Update()
         {
             // Search for each controller in case of multiple controller must be deleted (quite impossible!)
@@ -653,7 +719,6 @@ namespace MPTKDemoEuclidean
 
         void OnDisable()
         {
-            //midiStreamPlayer.OnAudioFrameStart -= PlayHits;
         }
 
 

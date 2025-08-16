@@ -30,7 +30,7 @@ namespace MidiPlayerTK
             int index = 1;
             foreach (Demonstrator demo in loadedDemos.Demos)
             {
-                // Take only scene defined in builder settings
+                // Take only scene defined in builder settings or the first one (wich must be the scene demo itself)
                 if (index == 1 || SceneUtility.GetBuildIndexByScenePath(demo.SceneName) >= 0)
                     loadedDemos.AddRow(demo, index++, 0);
             }

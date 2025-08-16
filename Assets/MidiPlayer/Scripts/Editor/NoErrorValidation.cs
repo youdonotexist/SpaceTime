@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 #define MPTK_PRO
-using MEC;
 using System.IO;
 using System.Linq;
 using UnityEditor;

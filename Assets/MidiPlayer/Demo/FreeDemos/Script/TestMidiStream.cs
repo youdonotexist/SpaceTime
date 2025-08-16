@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using MidiPlayerTK;
-using UnityEditor;
 
 namespace DemoMPTK
 {
@@ -83,6 +82,9 @@ namespace DemoMPTK
 
         [Range(0, 127)]
         public int CurrentBank;
+
+        [Range(0, 127)]
+        public int CurrentBankDrum;
 
         [Range(0, 127)]
         public int CurrentPatchDrum;
@@ -265,7 +267,7 @@ namespace DemoMPTK
             // Mandatory for updating UI list but not for playing sample.
             // The default instrument and drum banks are defined with the popup "SoundFont Setup Alt-F" in the Unity editor.
             // This method can be used by script to change the instrument bank and build presets available for it: MPTK_ListPreset.
-            MidiPlayerGlobal.MPTK_SelectBankInstrument(CurrentBank);
+            midiStreamPlayer.MPTK_SoundFont.SelectBankInstrument(CurrentBank);
 
             // Don't forget to initialize your MidiStreamPlayer variable, see link below:
             // https://paxstellar.fr/api-mptk-v2/#DefinedVariablePrefab
@@ -297,7 +299,7 @@ namespace DemoMPTK
         public bool Test_MPTK_ChannelPresetChange = false;
 
         /// <summary>@brief
-        /// Two method are avaliable for changing preset and bank : 
+        /// Two method are available for changing preset and bank : 
         ///         MPTK_ChannelPresetChange(channel, preset, bank)
         ///     or standard MIDI 
         ///         // change bank
@@ -318,7 +320,7 @@ namespace DemoMPTK
                     CurrentBank = index;
                     // This method build the preset list for the selected bank.
                     // This call doesn't change the MIDI bank used to play an instrument.
-                    MidiPlayerGlobal.MPTK_SelectBankInstrument(index);
+                    midiStreamPlayer.MPTK_SoundFont.SelectBankInstrument(index);
                     if (Test_MPTK_ChannelPresetChange)
                     {
                         // Before v2.10.1
@@ -331,7 +333,7 @@ namespace DemoMPTK
                         midiStreamPlayer.MPTK_Channels[StreamChannel].BankNum = index;
                     }
                     else
-                        // Change bank withe the standard MIDI message
+                        // Change bank with the standard MIDI message
                         midiStreamPlayer.MPTK_PlayEvent(new MPTKEvent() { Command = MPTKCommand.ControlChange, Controller = MPTKController.BankSelectMsb, Value = index, Channel = StreamChannel, });
 
                     Debug.Log($"Instrument Bank change - channel:{StreamChannel} bank:{midiStreamPlayer.MPTK_Channels[StreamChannel].BankNum} preset:{midiStreamPlayer.MPTK_Channels[StreamChannel].PresetNum}");
@@ -357,7 +359,8 @@ namespace DemoMPTK
                 case "BANK_DRUM":
                     // This method build the preset list for the selected bank.
                     // This call doesn't change the MIDI bank used to play an instrument.
-                    MidiPlayerGlobal.MPTK_SelectBankDrum(index);
+                    CurrentBankDrum = index;
+                    midiStreamPlayer.MPTK_SoundFont.SelectBankDrum(index);
                     if (Test_MPTK_ChannelPresetChange)
                         // From v2.10.1
                         midiStreamPlayer.MPTK_Channels[DrumChannel].BankNum = index;
@@ -403,20 +406,30 @@ namespace DemoMPTK
             {
 
                 // +25 to avoid useless HScroll
-                scrollerWindow = GUILayout.BeginScrollView(scrollerWindow, false, false, GUILayout.Width(Screen.width / scale.x ), GUILayout.Height(Screen.height / scale.y));
+                scrollerWindow = GUILayout.BeginScrollView(scrollerWindow, false, false, GUILayout.Width(Screen.width / scale.x), GUILayout.Height(Screen.height / scale.y));
 
                 HelperDemo.GUI_Horizontal(HelperDemo.Zone.INIT);
                 HelperDemo.GUI_Vertical(HelperDemo.Zone.INIT);
 
 
                 // If need, display the popup  before any other UI to avoid trigger it hidden
-                if (HelperDemo.CheckSFExists())
+                //if (HelperDemo.CheckSFExists() || midiStreamPlayer.sfLocal != null)
+                if (midiStreamPlayer.MPTK_SoundFont.SoundFont != null)
                 {
-                    PopBankInstrument.Draw(MidiPlayerGlobal.MPTK_ListBank, CurrentBank, myStyle);
-                    PopPatchInstrument.Draw(MidiPlayerGlobal.MPTK_ListPreset, CurrentPreset, myStyle);
-                    PopBankDrum.Draw(MidiPlayerGlobal.MPTK_ListBank, MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber, myStyle);
-                    PopPatchDrum.Draw(MidiPlayerGlobal.MPTK_ListPresetDrum, CurrentPatchDrum, myStyle);
+                    {
+                        PopBankInstrument.Draw(midiStreamPlayer.MPTK_SoundFont.ListBank, CurrentBank, myStyle);
+                        PopPatchInstrument.Draw(midiStreamPlayer.MPTK_SoundFont.ListPreset, CurrentPreset, myStyle);
+                        PopBankDrum.Draw(midiStreamPlayer.MPTK_SoundFont.ListBank, CurrentBankDrum, myStyle);
+                        PopPatchDrum.Draw(midiStreamPlayer.MPTK_SoundFont.ListPresetDrum, CurrentPatchDrum, myStyle);
+                    }
+                    //else
+                    //{
+                    //    PopBankInstrument.Draw(MidiPlayerGlobal.MPTK_ListBank, CurrentBank, myStyle);
+                    //    PopPatchInstrument.Draw(MidiPlayerGlobal.MPTK_ListPreset, CurrentPreset, myStyle);
+                    //    PopBankDrum.Draw(MidiPlayerGlobal.MPTK_ListBank, MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber, myStyle);
+                    //    PopPatchDrum.Draw(MidiPlayerGlobal.MPTK_ListPresetDrum, CurrentPatchDrum, myStyle);
 
+                    //}
                     for (int i = 0; i < nbrGenerator; i++)
                         PopGenerator[i].Draw(GenModifier.RealTimeGenerator, indexGenerator[i], myStyle);
 
@@ -566,6 +579,14 @@ namespace DemoMPTK
 
         }
 
+        private void CloseAllPopup()
+        {
+            PopBankInstrument.Show = false;
+            PopPatchInstrument.Show = false;
+            PopBankDrum.Show = false;
+            PopPatchDrum.Show = false;
+        }
+
         private void OnGUI_SelectBankAndPatchForInstrument()
         {
             HelperDemo.GUI_Horizontal(HelperDemo.Zone.BEGIN);
@@ -573,15 +594,26 @@ namespace DemoMPTK
 
             // Open the popup to select a bank
             if (GUILayout.Button(MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber + " - Bank", GUILayout.Width(buttonWidth)))
+            {
+                PopPatchInstrument.Show = false;
+                PopBankDrum.Show = false;
+                PopPatchDrum.Show = false;
                 PopBankInstrument.Show = !PopBankInstrument.Show;
+            }
             PopBankInstrument.PositionWithScroll(ref scrollerWindow);
 
             // Open the popup to select an instrument
             if (GUILayout.Button(CurrentPreset.ToString() + " - " + MidiPlayerGlobal.MPTK_GetPatchName(MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber, CurrentPreset), GUILayout.Width(buttonWidth)))
+            {
+                PopBankInstrument.Show = false;
+                PopBankDrum.Show = false;
+                PopPatchDrum.Show = false;
                 PopPatchInstrument.Show = !PopPatchInstrument.Show;
+            }
+            // disable, list too long
             //PopPatchInstrument.PositionWithScroll(ref scrollerWindow);
 
-            int channel = (int)HelperDemo.GUI_Slider("Channel", StreamChannel, 0, MAX_CHANNEL-1, alignCaptionRight: true, enableButton: true, widthLabelValue: 20, widthCaption: 70, widthSlider: 100);
+            int channel = (int)HelperDemo.GUI_Slider("Channel", StreamChannel, 0, MAX_CHANNEL - 1, alignCaptionRight: true, enableButton: true, widthLabelValue: 20, widthCaption: 70, widthSlider: 100);
             if (channel != StreamChannel)
             {
                 StreamChannel = channel;
@@ -600,7 +632,12 @@ namespace DemoMPTK
 
             // Open the popup to select a bank for drum
             if (GUILayout.Button(MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber + " - Bank", GUILayout.Width(buttonWidth)))
+            {
+                PopBankInstrument.Show = false;
+                PopPatchInstrument.Show = false;
+                PopPatchDrum.Show = false;
                 PopBankDrum.Show = !PopBankDrum.Show;
+            }
             PopBankDrum.PositionWithScroll(ref scrollerWindow);
 
             // Open the popup to select an instrument for drum
@@ -608,7 +645,12 @@ namespace DemoMPTK
                 CurrentPatchDrum.ToString() + " - " +
                 MidiPlayerGlobal.MPTK_GetPatchName(MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber, CurrentPatchDrum),
                 GUILayout.Width(buttonWidth)))
+            {
+                PopBankInstrument.Show = false;
+                PopPatchInstrument.Show = false;
+                PopBankDrum.Show = false;
                 PopPatchDrum.Show = !PopPatchDrum.Show;
+            }
             PopPatchDrum.PositionWithScroll(ref scrollerWindow);
 
             GUILayout.Label(" ", GUILayout.Width(11));
@@ -835,6 +877,7 @@ namespace DemoMPTK
                 midiStreamPlayer.MPTK_InitSynth();
                 StreamChannel = 0; DrumChannel = 9;
                 CurrentPreset = CurrentPatchDrum = CurrentBank = 0;
+                CurrentBankDrum = 128; // only for GS compliant soundfont
                 CurrentDuration = 1; CurrentDelay = 0; CurrentNote = 50; CurrentVelocity = 100;
                 LoopDelay = 1; StartLoopingNote = 50; EndLoopingNote = 60; StartLoopPreset = 0; EndLoopPreset = 127;
                 RealtimeRelatif = FoldOutLooping = FoldOutChord = FoldOutRealTimeMidiChange = FoldOutRealTimeVoiceChange = false;
@@ -1198,8 +1241,8 @@ namespace DemoMPTK
         void Update()
         {
 
-            // Check that SoundFont is loaded and add a little wait (0.5 s by default) because Unity AudioSource need some time to be started
-            if (!MidiPlayerGlobal.MPTK_IsReady())
+            // Check that SoundFont is loaded
+            if (!midiStreamPlayer.MPTK_SoundFont.IsReady)
                 return;
 
             //

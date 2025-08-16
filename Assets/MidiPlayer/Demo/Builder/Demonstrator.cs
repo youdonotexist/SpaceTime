@@ -98,8 +98,16 @@ namespace MidiPlayerTK
             scrollView = Root.Q<ScrollView>("scrollView");
             scrollView.style.backgroundColor = ColorContentList;
             scrollView.style.color = Color.black;
+            Root.Q<Label>("labTitle").text = "Midi Player Tool Kit Demonstration Loader - V" + Constant.version + " - " + Constant.releaseDate;
+#if UNITY_WEBGL
+            string title = "Welcome to the first WebGL demo of Maestro MPTK! Please note that due to WebGL constraints,\n";
+            title += "timing precision and audio quality might be slightly affected.";
+#else
+            string title = "";
+#endif
+            title += "\nAll sources are available, see the Script column to find them in Assets/MidiPlayer/Demo folders";
 
-            Root.Q<Label>("labTitle").text = "Maestro MPTK Demonstration Loader - All sources are available, see the Script column to find them - V" + Constant.version;
+            Root.Q<Label>("labTitle2").text = title;
             Root.Q<Button>("btQuit").RegisterCallback<ClickEvent>(evt => { MidiPlayerGlobal.MPTK_Quit(); });
             Root.Q<Button>("btWebSite").RegisterCallback<ClickEvent>(evt => { Application.OpenURL("https://paxstellar.fr/"); });
         }

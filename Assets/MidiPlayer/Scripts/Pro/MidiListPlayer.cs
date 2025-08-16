@@ -1,6 +1,4 @@
-﻿
-using MEC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -226,7 +224,7 @@ namespace MidiPlayerTK
                             mps1.PctVolume = 0f;
                             mps1.UpdateVolume();
                             mps1.MPTK_MidiFilePlayer.MPTK_MidiName = MPTK_PlayList[playIndex].MidiName;
-                            if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                            if (mps1.MPTK_MidiFilePlayer.MPTK_SoundFont.IsReady)
                             {
                                 mps1.MPTK_MidiFilePlayer.MPTK_UnPause();
                                 mps1.MPTK_MidiFilePlayer.MPTK_Position = 0d;
@@ -264,7 +262,7 @@ namespace MidiPlayerTK
                                             Routine.RunCoroutine(mps1.MPTK_MidiFilePlayer.ThreadCorePlay(null,
                                                 MPTK_PlayList[playIndex].StartFrom, endAt).CancelWith(gameObject), Segment.RealtimeUpdate);
                                         else
-                                            Routine.RunCoroutine(mps1.MPTK_MidiFilePlayer.ThreadLegacyPlay(null,
+                                            Routine.RunCoroutine(mps1.MPTK_MidiFilePlayer.ThreadLegacyPlay(null,"",
                                                 MPTK_PlayList[playIndex].StartFrom, endAt).CancelWith(gameObject), Segment.RealtimeUpdate);
                                     }
                                     else
@@ -783,15 +781,12 @@ namespace MidiPlayerTK
         {
             try
             {
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
-                {
-                    // Load description of available soundfont
-                    if (MidiPlayerGlobal.ImSFCurrent != null && MidiPlayerGlobal.CurrentMidiSet != null && MidiPlayerGlobal.CurrentMidiSet.MidiFiles != null && MidiPlayerGlobal.CurrentMidiSet.MidiFiles.Count > 0)
-                        // Force to start the current midi index
-                        MPTK_PlayIndex = MPTK_PlayIndex;
-                    else
-                        Debug.LogWarning(MidiPlayerGlobal.ErrorNoMidiFile);
-                }
+                // Load description of available soundfont
+                if (MidiPlayerGlobal.ImSFCurrent != null && MidiPlayerGlobal.CurrentMidiSet != null && MidiPlayerGlobal.CurrentMidiSet.MidiFiles != null && MidiPlayerGlobal.CurrentMidiSet.MidiFiles.Count > 0)
+                    // Force to start the current midi index
+                    MPTK_PlayIndex = MPTK_PlayIndex;
+                else
+                    Debug.LogWarning(MidiPlayerGlobal.ErrorNoMidiFile);
             }
             catch (System.Exception ex)
             {

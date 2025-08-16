@@ -1,5 +1,4 @@
 ﻿
-using MEC;
 #if UNITY_ANDROID && UNITY_OBOE
 using Oboe.Stream;
 #endif
@@ -39,7 +38,7 @@ namespace MidiPlayerTK
         int countInf64;
         int countNot64;
 #endif
- 
+
 #if UNITY_ANDROID && UNITY_OBOE
         int minOboeLatency;
         int maxOboeLatency;
@@ -86,7 +85,7 @@ namespace MidiPlayerTK
         /// <returns>Contains all results</returns>
         public StringBuilder MPTK_BuildInfoSynth(MidiSynth synth)
         {
-            try 
+            try
             {
                 if (synth != null)
                 {
@@ -119,15 +118,23 @@ namespace MidiPlayerTK
                     logSynthInfo.Append($"\n<b>Voice Stats</b>   Played:{synth.MPTK_StatVoicePlayed,-4}   Active:{synth.MPTK_StatVoiceCountActive,-3}");
 
                     logSynthInfo.Append($"  Reused:{synth.MPTK_StatVoiceCountReused,-3}  Ratio:{Mathf.RoundToInt(synth.MPTK_StatVoiceRatioReused),-2}%");
-                    logSynthInfo.Append($"   In Cache:{synth.MPTK_StatVoiceCountFree,-3}");
+                    logSynthInfo.Append($"   In Cache:{synth.MPTK_StatVoiceCountFree,-3} Free:{synth.FreeVoices?.Count,-3}"); 
 
 #if DEBUG_STATUS_STAT
-                    if (synth.StatusStat != null && synth.StatusStat.Length >= (int)fluid_voice_status.FLUID_VOICE_OFF + 2)
-                    {
-                        logSynthInfo.Append($"\n              Voice On:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_ON],-4}");
-                        logSynthInfo.Append($" Sustain:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_SUSTAINED],-4}");
-                        logSynthInfo.Append($"Release:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF + 1],-4}");
-                    }
+                    /* FLUID_VOICE_CLEAN FLUID_VOICE_ON FLUID_VOICE_SUSTAINED FLUID_VOICE_OFF*/
+                    logSynthInfo.Append($"\n              ");
+                    //logSynthInfo.Append($"Clean:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_CLEAN],-2}");
+                    logSynthInfo.Append($"On:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_ON],-10}");
+                    logSynthInfo.Append($" Sustain:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_SUSTAINED],-2}");
+                    //logSynthInfo.Append($" Off:{synth.StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF],-2}");
+
+                    logSynthInfo.Append($"  Enveloppe:  Delay:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVDELAY],-2}");
+                    logSynthInfo.Append($" Attack:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVATTACK],-2}");
+                    logSynthInfo.Append($" Hold:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVHOLD],-2}");
+                    logSynthInfo.Append($" Dec:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVDECAY],-2}");
+                    logSynthInfo.Append($" Sus:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVSUSTAIN],-2}");
+                    logSynthInfo.Append($" Rel:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE],-2}");
+                    //logSynthInfo.Append($" Finish:{synth.EnveloppeStat[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVFINISHED],-2}");
 #endif
 
                     logSynthInfo.Append($"\n<b>Process Synth</b> Delta:{Math.Round(synth.DeltaTimeAudioCall, 2),5}   Time:{Math.Round(synth.StatAudioFilterReadMS, 2),5}");

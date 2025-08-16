@@ -511,7 +511,7 @@ namespace MidiPlayerTK
                     position += $"C:{Channel,-2:00} ";
                 else
                     position += "     ";
-                position += $"{RealTime / 1000f:F3} s. {Tick,-7:0000000} t. M:{Measure}/{Beat}";
+                position += $"{RealTime / 1000f:F3} s. {Tick,-7:0000000} t. M/B:{Measure}/{Beat}";
             }
             else if (Command == MPTKCommand.NoteOn || Command == MPTKCommand.NoteOff || Command == MPTKCommand.KeyAfterTouch || Command == MPTKCommand.ControlChange ||
                     Command == MPTKCommand.PatchChange || Command == MPTKCommand.ChannelAfterTouch || Command == MPTKCommand.PitchWheelChange)
@@ -578,5 +578,28 @@ namespace MidiPlayerTK
             }
             return result;
         }
+        // @cond NODOC
+        public int Compare(MPTKEvent y)
+        {
+            int tickComparison = Tick.CompareTo(y.Tick);
+
+            // If Ticks are equal, apply MIDI event type priority, incredible ChatGPT help!
+            if (tickComparison == 0)
+            {
+                // Helper function to get priority (lower number = higher priority)
+                int GetTypePriority(MPTKEvent midi) => midi.Command switch
+                {
+                    MPTKCommand.ControlChange => 1,
+                    MPTKCommand.PatchChange => 2,
+                    MPTKCommand.MetaEvent => (midi.Meta == MPTKMeta.EndTrack ? 99 : 50),
+                    _ => 50  // All other types get middle priority
+                };
+
+                return GetTypePriority(this).CompareTo(GetTypePriority(y));
+            }
+            return tickComparison;
+        }
+        // @endcond
+
     }
 }

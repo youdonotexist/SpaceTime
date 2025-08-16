@@ -1,7 +1,6 @@
 ﻿#define MPTK_PRO
 //#define DEBUG_GC
 
-using MEC;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,6 +58,8 @@ namespace MidiPlayerTK
     public partial class MidiSynth : MonoBehaviour
     {
 #endif
+        // @cond NODOC
+
         public const float FLUID_REVERB_DEFAULT_ROOMSIZE = 0.5f;    /**< Default reverb room size */
         public const float FLUID_REVERB_DEFAULT_DAMP = 0.3f;     /**< Default reverb damping */
         public const float FLUID_REVERB_DEFAULT_WIDTH = 0.8f; /**< Default reverb width */
@@ -70,8 +71,6 @@ namespace MidiPlayerTK
         public const float FLUID_CHORUS_DEFAULT_DEPTH = 4.25f;               /**< Default chorus depth */
         public const float FLUID_CHORUS_DEFAULT_WIDTH = 10f;               /**< Default chorus width gradually stereo effect*/
 
-        // @cond NODOC
-        //[HideInInspector] // defined at startup by script
         [HideInInspector, NonSerialized]
         public AudioSource CoreAudioSource;
 
@@ -148,7 +147,6 @@ namespace MidiPlayerTK
         [HideInInspector, NonSerialized]
         public int DspBufferSize;
 
-        // @endcond
 
         ///// <summary>@brief 
         ///// Enable the reset Maestro channel extension information when MIDI start playing. Default is true.
@@ -169,17 +167,52 @@ namespace MidiPlayerTK
         // Set to be true when playing from MidiFileWriter
         public bool playNoteOff = false;
 
+        // @endcond
+
+        /* GM and GS  soundfonts are the most popular soundfonts. I was not able to find MMA and XG soundfont for testing.
+           The default bank style for MPTK is GS (127 banks, CC32 ignored) which is compliant with GM (one bank, CC0 and CC32 ignored, also there is no bank change)
+                /// <summary>
+                /// GM(General MIDI) : A standard soundfont that provides 128 basic instrument sounds for consistent playback across different devices.
+                /// GS(General Standard): An extended MIDI standard by Roland, offering additional instruments, effects, and enhanced control.
+                /// MMA(Musical Instrument Digital Interface Manufacturers Association): High-quality, versatile soundfont designed for a wide range of software and hardware compatibility.
+                /// XG(Extended General MIDI): Yamaha's expanded MIDI standard, providing more instrument sounds, effects, and detailed control over MIDI performance.
+                /// </summary>
+                public enum StyleBank
+                {
+                    FLUID_BANK_STYLE_GM,  // GM style, bank = 0 always (CC0/MSB and CC32/LSB ignored)
+                    FLUID_BANK_STYLE_GS,  // GS style, bank = CC0/MSB (CC32/LSB ignored) - Default
+                    FLUID_BANK_STYLE_XG,  // XG style, bank = CC32/LSB (CC0/MSB ignored) 
+                    FLUID_BANK_STYLE_MMA, // MMA style bank = 128*MSB+LSB 
+                }
+                static public string[] StyleBankLabel = { "GM - General MIDI", "GS - General Standard", "MMA - Musical Instrument Digital Interface Manufacturers Association", "XG - Extended General MIDI"};
+                public StyleBank MPTK_StyleBank;
+        */
+        // @endcond
+
+        /// <summary>@brief
+        /// When your application is running, SoundFonts can be dynamically loaded either from a local file system or directly from the web.\n
+        /// This means you don't need to include a SoundFont in your build, making it ideal for scenarios like in-app purchases or downloadable content. \n
+        /// For compatibility, the legacy mode still allows loading SoundFonts from the internal MPTK database. \n
+        /// Additionally, Maestro MPTK supports assigning different SoundFonts to different MIDI players (MidiFilePlayer, MidiStreamPlayer, ...), enabling flexible and customized audio rendering across multiple instruments or scenes.\n
+        /// @version 2.15
+        /// An instance of this class is automatically created when the MPTK prefab is loaded in the scene. See MPTKSoundFont class for more details.\n
+        /// @note
+        /// @code
+        /// @endcode
+        /// </summary>
+        [HideInInspector, NonSerialized]
+        public MPTKSoundFont MPTK_SoundFont = null;
+
+
         /// <summary>@brief 
-        /// Should accept change Preset for Drum canal 9 (drum) ? \n
-        /// Could sometimes create unexpected music with MIDI files not compliant with the MIDI standard.
-        /// Example that could produce unexpected music.
-        /// Generally, default drum bank is set to 128. With these events on channel 9, \n
-        /// preset 0 of the bank 0 will be selected for the drum ... and that will be, in general, a piano
-        ///     - Bank change channel 9 = 0
-        ///     - Preset change channel 9 = 0 
-        /// @Attention
-        ///     - with MidiFilePlayer, MPTK_EnablePresetDrum isset to false by default 
-        ///     - with MidiStreamPlayer, MPTK_EnablePresetDrum is set to true by default (all the MIDI events are generated by your script. Also, you know what!) 
+        /// Accept preset changes for Drum Channel 9 (drum).\n
+        /// If set, this may sometimes produce unexpected results with MIDI files that are not compliant with the MIDI standard.\n
+        /// If not set, preset change on channel 9 will be disabled (preset 0 still used).
+        /// @note:
+        ///     - Generally bank 128 and preset 0 is used  for drum kit.
+        /// @Attention:
+        ///     - Set to false in MidiFilePlayer.
+        ///     - Set to true in MidiStreamPlayer (all MIDI events are generated by your script, so you are aware of what is happening).
         /// </summary>
         [HideInInspector]
         public bool MPTK_EnablePresetDrum;
@@ -223,10 +256,36 @@ namespace MidiPlayerTK
         /// Remember: Amplitude can varying between 0 and 1.\n
         ///  @version 2.9.1 // was 0.03 
         /// </summary>
-        [Range(0.0001f, 0.5f)]
+        [Range(0.000001f, 0.5f)]
         [Tooltip("Sample is stopped when amplitude is below this value")]
         public float MPTK_CutOffVolume = 0.0001f; // replace amplitude_that_reaches_noise_floor 
 
+        /// <summary>@brief 
+        /// Experimental feature: modify the Fluidsynth constant FLUID_PEAK_ATTENUATION to change how velocity affects the voice attenuation. 
+        /// The default value is 960 (96 Db)\n 
+        /// Other values may produce unwanted results, use with care!
+        /// </summary>
+        [Tooltip("Velocity attenuation")]
+        public float MPTK_VelocityAttenuation
+        {
+            get
+            {
+                return fluid_conv.FLUID_PEAK_ATTENUATION;
+            }
+            set
+            {
+                if (value >= 100f && value <= 2440f)
+                {
+                    fluid_conv.FLUID_PEAK_ATTENUATION = value;
+                    if (state == fluid_synth_status.FLUID_SYNTH_PLAYING)
+                        MPTK_InitModulators();
+                }
+                else
+                    Debug.LogWarning("MPTK_VelocityAttenuation must be between 10 and 2440, default is 960");
+            }
+        }
+
+        //
         /// <summary>@brief 
         /// A lean startup of the volume of the synth is useful to avoid weird sound at the beginning of the application (in some cases).\n
         /// This parameter sets the speed of the increase of the volume of the audio source.\n
@@ -404,7 +463,7 @@ namespace MidiPlayerTK
         public MovingAverage StatAudioFilterReadMA;
 
         /// <summary>@brief 
-        /// Time to process samples in active list of voices
+        /// Time to process samples in active list of voices: apply effect, WriteAllSamples, copy data to audio buffer.
         /// </summary>
         public float StatSampleWriteMS;
         public float StatSampleWriteAVG;
@@ -420,12 +479,13 @@ namespace MidiPlayerTK
         private System.Diagnostics.Stopwatch watchPerfAudio = new System.Diagnostics.Stopwatch(); // High resolution time
 #endif
 
-#if DEBUG_STATUS_STAT
+#if DEBUG_STATUS_STAT 
         [Header("Voice Status Count Clean / On / Sustain / Off / Release")]
         /// <summary>@brief 
-        /// Voice Status Count 
+        /// Voice Status and Volume Enveloppe Count 
         /// </summary>
         public int[] StatusStat;
+        public int[] EnveloppeStat;
 #endif
         public SynthInfo synthInfo = new SynthInfo();
 
@@ -469,8 +529,19 @@ namespace MidiPlayerTK
         /// The default is true.\n 
         /// Warning: The non core mode player (MPTK_CorePlayer=false) will be removed with the next major version (V3)
         /// </summary>
+        public bool MPTK_CorePlayer
+        {
+            get =>
+#if UNITY_WEBGL
+                false;
+#else
+            mPTK_CorePlayer;
+#endif
+            set => mPTK_CorePlayer = value;
+        }
+
         [HideInInspector]
-        public bool MPTK_CorePlayer;
+        public bool mPTK_CorePlayer;
 
         /// <summary>@brief 
         /// If true then rate synth and buffer size will be automatically defined by Unity in accordance of the capacity of the hardware. -  V2.89.0 - \n
@@ -568,8 +639,7 @@ namespace MidiPlayerTK
             set
             {
                 indexSynthRate = value;
-                if (VerboseSynth)
-                    Debug.Log("MPTK_ChangeSynthRate " + indexSynthRate);
+                if (VerboseSynth) Debug.Log("MPTK_ChangeSynthRate " + indexSynthRate);
                 if (indexSynthRate < 0)
                 {
 #if MPTK_PRO && UNITY_ANDROID && UNITY_OBOE
@@ -623,8 +693,7 @@ namespace MidiPlayerTK
 #else
                     DspBufferSize = tabDspBufferSize[indexBuffSize];
                     AudioConfiguration ac = AudioSettings.GetConfiguration();
-                    if (VerboseSynth)
-                        Debug.Log($"Change Buffer Size from {ac.dspBufferSize} to {DspBufferSize}");
+                    if (VerboseSynth) Debug.Log($"Change Buffer Size from {ac.dspBufferSize} to {DspBufferSize}");
                     ac.dspBufferSize = DspBufferSize;
                     ResetAudio(ac);
 #endif
@@ -781,14 +850,18 @@ namespace MidiPlayerTK
         }
 
         /// <summary>@brief 
-        /// Should change pan from MIDI Events or from SoundFont ?\n
+        /// Change pan from MIDI Events whether SoundFont.\n
         /// Pan is disabled when Spatialization is activated.
         /// </summary>
         [HideInInspector]
         public bool MPTK_EnablePanChange;
 
         /// <summary>@brief 
-        /// Global Volume between 0 and 1.
+        /// Set the global volume between 0 and 1 for the current MPTK Synth.
+        /// @note:
+        ///     - Unlock the maximum value to 10 (could be useful with Oboe) when the Unity script symbol MPTK_UNLOCK_VOLUME is defined (experimental). 
+        ///        - Unity 2022/2023: https://docs.unity3d.com/2022.3/Documentation/Manual/CustomScriptingSymbols.html
+        ///        - Unity 6: https://docs.unity3d.com/6000.0/Documentation/Manual/custom-scripting-symbols.html
         /// </summary>
         [HideInInspector]
         public float MPTK_Volume
@@ -928,7 +1001,7 @@ namespace MidiPlayerTK
         public MPTKChannels Channels;
         public List<fluid_voice> ActiveVoices;
 
-        private List<fluid_voice> FreeVoices;
+        public List<fluid_voice> FreeVoices;
         protected Queue<SynthCommand> QueueSynthCommand;
         protected Queue<List<MPTKEvent>> QueueMidiEvents;
 
@@ -950,10 +1023,11 @@ namespace MidiPlayerTK
 
         // Set from the inspector 
         public bool VerboseSynth;
+        public bool VerboseSoundfont;
+        public bool VerboseSample;
         public bool VerboseOverload;
         public bool VerboseVoice;
         public bool VerboseChannel;
-        public bool VerboseKillByExclusive;
         public bool VerboseGenerator;
         public bool VerboseCalcGen;
         public bool VerboseCalcMod;
@@ -961,11 +1035,16 @@ namespace MidiPlayerTK
         public bool VerboseCalcModADSR;
         public bool VerboseController;
         public bool VerboseEnvVolume;
+        public bool VerboseSpecialNoteOff;
         public bool VerboseEnvModulation;
         public bool VerboseFilter;
         public bool VerboseVolume;
+        public bool VerboseSpatialSynth;
 
-        public fluid_synth_status state = fluid_synth_status.FLUID_SYNTH_CLEAN;
+
+        public fluid_synth_status MPTK_SynthState { get => state; set => state = value; }
+
+        private fluid_synth_status state = fluid_synth_status.FLUID_SYNTH_CLEAN;
 
         [Header("Attributes below applies only with AudioSource mode (Core Audio unchecked)")]
         public VoiceAudioSource AudiosourceTemplate;
@@ -1066,9 +1145,13 @@ namespace MidiPlayerTK
         [HideInInspector]
         public bool showUnityPerformanceParameter;
         [HideInInspector]
+        public bool showExperimentalFeature;
+        [HideInInspector]
         public bool showMidiPerformanceParameter;
         [HideInInspector]
         public bool showSoundFontEffect;
+        [HideInInspector]
+        public bool showVerbose;
         [HideInInspector]
         public bool showUnitySynthEffect;
         [HideInInspector]
@@ -1081,9 +1164,9 @@ namespace MidiPlayerTK
         public bool showEvents;
         [HideInInspector]
         public bool showDefault;
+
         [HideInInspector]
         public bool spatialize;
-
 
         // @endcond
 
@@ -1118,12 +1201,17 @@ namespace MidiPlayerTK
         {
             // for test
             //Time.timeScale = 0;
+#if DEBUG_STATUS_STAT
+            StatusStat = new int[(int)fluid_voice_status.FLUID_VOICE_OFF + 1];
+            EnveloppeStat = new int[(int)fluid_voice_envelope_index.FLUID_VOICE_ENVFINISHED + 1];
+#endif
 
             IdSynth = lastIdSynth++;
             sLogSampleUse = new StringBuilder(255);
 
-            if (VerboseSynth)
-                Debug.Log($"Awake MidiSynth IdSynth:{IdSynth}");
+            if (VerboseSynth) Debug.Log($"Awake MidiSynth IdSynth:{IdSynth}");
+            MPTK_SoundFont = new MPTKSoundFont(this);
+
             try
             {
                 if (OnEventSynthAwake != null)
@@ -1140,8 +1228,7 @@ namespace MidiPlayerTK
             // V2.83 Move these init from Start to Awake
             if (!MPTK_CorePlayer && AudiosourceTemplate == null)
             {
-                if (VerboseSynth)
-                    Debug.LogWarningFormat("AudiosourceTemplate not defined in the {0} inspector, search one", this.name);
+                if (VerboseSynth) Debug.LogWarningFormat("AudiosourceTemplate not defined in the {0} inspector, search one", this.name);
                 AudiosourceTemplate = FindFirstObjectByType<VoiceAudioSource>();
                 //if (AudiosourceTemplate == null)
                 //{
@@ -1150,13 +1237,24 @@ namespace MidiPlayerTK
             }
 
             // V2.83 Move these init from Start to Awake
-            if (CoreAudioSource == null)
+            if (MPTK_CorePlayer)
             {
-                //if (VerboseSynth) Debug.LogWarningFormat("CoreAudioSource not defined in the {0} inspector, search one", this.name);
-                CoreAudioSource = GetComponent<AudioSource>();
                 if (CoreAudioSource == null)
                 {
-                    Debug.LogErrorFormat("No AudioSource defined in the MPTK prefab '{0}'", this.name);
+                    CoreAudioSource = GetComponent<AudioSource>();
+                    if (CoreAudioSource == null)
+                    {
+                        Debug.LogErrorFormat("No AudioSource defined in the MPTK prefab '{0}'", this.name);
+                    }
+                }
+            }
+            else
+            {
+                // No need of the AudioSource 
+                CoreAudioSource = GetComponent<AudioSource>();
+                if (CoreAudioSource != null)
+                {
+                    CoreAudioSource.enabled = false;
                 }
             }
         }
@@ -1205,24 +1303,34 @@ namespace MidiPlayerTK
                 /* as soon as the synth is created it starts playing. */
                 // Too soon state = fluid_synth_status.FLUID_SYNTH_PLAYING;
 
-                if (CoreAudioSource != null)
+                if (MPTK_CorePlayer)
                 {
-                    //Debug.Log($"Create instance for effect.");
-
-                    if (MPTK_EffectSoundFont == null)
+                    if (CoreAudioSource != null)
                     {
-                        // Instance is deserialized when MidiSynth is loaded, but not at the first load
-                        //Debug.Log($"Create instance for MPTK_EffectSoundFont. <b>Set default setting in {this.name} Inspector / Synth Parameters / SoundFont Effect Parameters</b>");
-                        MPTK_EffectSoundFont = ScriptableObject.CreateInstance<MPTKEffectSoundFont>();
+                        // Special init for core mode
+
+                        //Debug.Log($"Create instance for effect.");
+                        if (MPTK_EffectSoundFont == null)
+                        {
+                            // Instance is deserialized when MidiSynth is loaded, but not at the first load
+                            //Debug.Log($"Create instance for MPTK_EffectSoundFont. <b>Set default setting in {this.name} Inspector / Synth Parameters / SoundFont Effect Parameters</b>");
+                            MPTK_EffectSoundFont = ScriptableObject.CreateInstance<MPTKEffectSoundFont>();
 #if MPTK_PRO
-                        MPTK_EffectSoundFont.DefaultAll();
+                            MPTK_EffectSoundFont.DefaultAll();
+#endif
+                        }
+                        MPTK_EffectSoundFont.Init(this);
+#if MPTK_PRO
+                        InitEffectUnity();
 #endif
                     }
-                    MPTK_EffectSoundFont.Init(this);
-#if MPTK_PRO
-                    InitEffectUnity();
-#endif
                 }
+                else
+                {
+                    // Special init for legacymode
+
+                }
+
                 //cur = FLUID_BUFSIZE;
                 //dither_index = 0;
 
@@ -1283,7 +1391,7 @@ namespace MidiPlayerTK
             AudioConfiguration GetConfiguration = AudioSettings.GetConfiguration();
             OutputRate = GetConfiguration.sampleRate;
             DspBufferSize = GetConfiguration.dspBufferSize;
-            if (VerboseSynth)
+            if (VerboseSynth) // OnAudioConfigurationChanged
             {
                 Debug.Log("OnAudioConfigurationChanged - " + (deviceWasChanged ? "Device was changed" : "Reset was called"));
                 Debug.Log("   dspBufferSize:" + DspBufferSize);
@@ -1302,8 +1410,7 @@ namespace MidiPlayerTK
             AudioConfiguration ac = AudioSettings.GetConfiguration();
             OutputRate = ac.sampleRate;
             DspBufferSize = ac.dspBufferSize;
-            if (VerboseSynth)
-                LogInfoAudio();
+            if (VerboseSynth) LogInfoAudio();
 
             if (ac.dspBufferSize % FLUID_BUFSIZE != 0)
             {
@@ -1317,7 +1424,7 @@ namespace MidiPlayerTK
         public void LogInfoAudio()
         {
 #if MPTK_PRO && UNITY_ANDROID && UNITY_OBOE
-            Debug.Log("------InfoAudio Oboe------");
+            Debug.Log($"------InfoAudio Oboe---{name}---");
             Debug.Log($"    MPTKRate:{MPTK_SynthRate} Oboe  SampleRate:{oboeAudioStream.SampleRate}");
             Debug.Log($"    DspBufferSize:{DspBufferSize}");
             Debug.Log($"    ChannelCount:{oboeAudioStream.ChannelCount}");
@@ -1335,7 +1442,7 @@ namespace MidiPlayerTK
             Debug.Log("---------------------");
 #else
             AudioConfiguration ac = AudioSettings.GetConfiguration();
-            Debug.Log("------InfoAudio FMOD------");
+            Debug.Log($"------InfoAudio FMOD---{name}---");
             Debug.Log("  " + (MPTK_CorePlayer ? "Core Player Activated" : "AudioSource Player Activated"));
             Debug.Log("  bufferLenght:" + AudioBufferLenght + " 2nd method: " + ac.dspBufferSize);
             Debug.Log("  numBuffers:" + AudioNumBuffers);
@@ -1344,6 +1451,8 @@ namespace MidiPlayerTK
             Debug.Log("---------------------");
 #endif
         }
+
+        private CoroutineHandle handleManageCacheVoice;
 
         /// <summary>@brief 
         /// Initialize the synthetizer: 
@@ -1355,8 +1464,9 @@ namespace MidiPlayerTK
         /// </summary>
         /// <param name="channelCount">Number of channel to create. Default is 16. Any other values are experimental!</param>
         /// <param name="preserveChannelInfo">if true, the channel information will not be reset, Default is false: reinit also channel information</param>
-        public void MPTK_InitSynth(int channelCount = 16, bool preserveChannelInfo = false)
+        public void MPTK_InitSynth(int channelCount = 16, bool preserveChannelInfo = false, bool preserveActivVoice = true)
         {
+            if (VerboseSynth) Debug.Log($"MPTK_InitSynth. IdSynth:{IdSynth}, Name:{name}, Channels:{channelCount}, preserveChannelInfo:{preserveChannelInfo}, state was {state}");
             fluid_voice.LastId = 0;
 
             if (channelCount > 256)
@@ -1368,14 +1478,17 @@ namespace MidiPlayerTK
             // no more experimental with 2.12.2 - Debug.Log($"MPTK_InitSynth. Experimental feature activated, {channelCount} channels are used");
 
             // v2.10.1 possibility to not reset channels information.
-            if (Channels == null || Channels.EnableResetChannel || Channels.Length != channelCount)
+            if (Channels == null || Channels.EnableResetChannel || Channels.Length != channelCount || !preserveChannelInfo)
+            {
                 Channels = new MPTKChannels(this, channelCount);
-
-            if (VerboseSynth)
-                Debug.Log($"MPTK_InitSynth. IdSynth:{IdSynth}, Channels:{Channels.Length} {state}");
+            }
 
             if (ActiveVoices == null)
                 ActiveVoices = new List<fluid_voice>();
+
+            if (!preserveActivVoice)
+                // Needed when another soundfont is loaded
+                ActiveVoices.Clear();
 
             if (!MPTK_Spatialize)
                 // Warning: this a static member, it retains value across scene loading.
@@ -1383,171 +1496,20 @@ namespace MidiPlayerTK
                 SpatialSynths = null;
 
             FreeVoices = new List<fluid_voice>();
+
             QueueSynthCommand = new Queue<SynthCommand>();
             QueueMidiEvents = new Queue<List<MPTKEvent>>();
 
             if (state != fluid_synth_status.FLUID_SYNTH_PLAYING)
-            {
-                fluid_conv.fluid_conversion_config();
-
-                //TBC fluid_dsp_float_config();
-                //fluid_sys_config();
-                //init_dither(); // pour fluid_synth_write_s16 ?
-
-                /* SF2.01 page 53 section 8.4.1: MIDI Note-On Velocity to Initial Attenuation
-                 * */
-                fluid_mod_set_source1(default_vel2att_mod, /* The modulator we are programming here */
-                    (int)fluid_mod_src.FLUID_MOD_VELOCITY,    /* Source. VELOCITY corresponds to 'index=2'. */
-                    (int)fluid_mod_flags.FLUID_MOD_GC           /* Not a MIDI continuous controller */
-                    | (int)fluid_mod_flags.FLUID_MOD_CONCAVE    /* Curve shape. Corresponds to 'type=1' */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR   /* Polarity. Corresponds to 'P=0' */
-                    | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE   /* Direction. Corresponds to 'D=1' */
-                );
-                fluid_mod_set_source2(default_vel2att_mod, 0, 0); /* No 2nd source */
-                fluid_mod_set_dest(default_vel2att_mod, (int)fluid_gen_type.GEN_ATTENUATION);  /* Target: Initial attenuation */
-                fluid_mod_set_amount(default_vel2att_mod, fluid_conv.FLUID_PEAK_ATTENUATION);          /* Modulation amount: 960 */
-
-                /* SF2.01 page 53 section 8.4.2: MIDI Note-On Velocity to Filter Cutoff
-                 * Have to make a design decision here. The specs don't make any sense this way or another.
-                 * One sound font, 'Kingston Piano', which has been praised for its quality, tries to
-                 * override this modulator with an amount of 0 and positive polarity (instead of what
-                 * the specs say, D=1) for the secondary source.
-                 * So if we change the polarity to 'positive', one of the best free sound fonts works...
-                 */
-
-                fluid_mod_set_source1(default_vel2filter_mod, (int)fluid_mod_src.FLUID_MOD_VELOCITY, /* Index=2 */
-                    (int)fluid_mod_flags.FLUID_MOD_GC                        /* CC=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                /* D=1 */
-                );
-                fluid_mod_set_source2(default_vel2filter_mod, (int)fluid_mod_src.FLUID_MOD_VELOCITY, /* Index=2 */
-                    (int)fluid_mod_flags.FLUID_MOD_GC                                 /* CC=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_SWITCH                           /* type=3 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                         /* P=0 */
-                    // do not remove       | FLUID_MOD_NEGATIVE                         /* D=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                         /* D=0 */
-                );
-                fluid_mod_set_dest(default_vel2filter_mod, (int)fluid_gen_type.GEN_FILTERFC);        /* Target: Initial filter cutoff */
-                fluid_mod_set_amount(default_vel2filter_mod, -2400);
-
-                /* SF2.01 page 53 section 8.4.3: MIDI Channel pressure to Vibrato LFO pitch depth
-                 * */
-                fluid_mod_set_source1(default_at2viblfo_mod, (int)fluid_mod_src.FLUID_MOD_CHANNELPRESSURE, /* Index=13 */
-                    (int)fluid_mod_flags.FLUID_MOD_GC                        /* CC=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                /* D=0 */
-                );
-                fluid_mod_set_source2(default_at2viblfo_mod, 0, 0); /* no second source */
-                fluid_mod_set_dest(default_at2viblfo_mod, (int)fluid_gen_type.GEN_VIBLFOTOPITCH);        /* Target: Vib. LFO => pitch */
-                fluid_mod_set_amount(default_at2viblfo_mod, 50);
-
-
-                /* SF2.01 page 53 section 8.4.4: Mod wheel (Controller 1) to Vibrato LFO pitch depth
-                 * */
-                fluid_mod_set_source1(default_mod2viblfo_mod, (int)MPTKController.Modulation, /* Index=1 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                        /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                /* D=0 */
-                );
-                fluid_mod_set_source2(default_mod2viblfo_mod, 0, 0); /* no second source */
-                fluid_mod_set_dest(default_mod2viblfo_mod, (int)fluid_gen_type.GEN_VIBLFOTOPITCH);        /* Target: Vib. LFO => pitch */
-                fluid_mod_set_amount(default_mod2viblfo_mod, 50);
-
-
-                /* SF2.01 page 55 section 8.4.5: MIDI continuous controller 7 to initial attenuation
-                 */
-                fluid_mod_set_source1(default_att_mod, (int)MPTKController.VOLUME_MSB,                     /* index=7 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_CONCAVE                       /* type=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                      /* D=1 */
-                );
-                fluid_mod_set_source2(default_att_mod, 0, 0);                 /* No second source */
-                fluid_mod_set_dest(default_att_mod, (int)fluid_gen_type.GEN_ATTENUATION);         /* Target: Initial attenuation */
-                fluid_mod_set_amount(default_att_mod, fluid_conv.FLUID_PEAK_ATTENUATION);                 /* Amount: 960 */
-
-
-                /* SF2.01 page 55 section 8.4.6 MIDI continuous controller 10 to Pan Position
-                 * */
-                fluid_mod_set_source1(default_pan_mod, (int)MPTKController.Pan,                    /* index=10 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_BIPOLAR                       /* P=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
-                );
-                fluid_mod_set_source2(default_pan_mod, 0, 0);                 /* No second source */
-                fluid_mod_set_dest(default_pan_mod, (int)fluid_gen_type.GEN_PAN);
-
-                // Target: pan - Amount: 500. The SF specs $8.4.6, p. 55 syas: "Amount = 1000 tenths of a percent". 
-                // The center value (64) corresponds to 50%, so it follows that amount = 50% x 1000/% = 500. 
-                fluid_mod_set_amount(default_pan_mod, 500.0f);
-
-
-                /* SF2.01 page 55 section 8.4.7: MIDI continuous controller 11 to initial attenuation
-                 * */
-                fluid_mod_set_source1(default_expr_mod, (int)MPTKController.Expression,                     /* index=11 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_CONCAVE                       /* type=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                      /* D=1 */
-                );
-                fluid_mod_set_source2(default_expr_mod, 0, 0);                 /* No second source */
-                fluid_mod_set_dest(default_expr_mod, (int)fluid_gen_type.GEN_ATTENUATION);         /* Target: Initial attenuation */
-                fluid_mod_set_amount(default_expr_mod, fluid_conv.FLUID_PEAK_ATTENUATION);                 /* Amount: 960 */
-
-
-                /* SF2.01 page 55 section 8.4.8: MIDI continuous controller 91 to Reverb send
-                 * */
-                fluid_mod_set_source1(default_reverb_mod, (int)MPTKController.EFFECTS_DEPTH1,                 /* index=91 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
-                );
-                fluid_mod_set_source2(default_reverb_mod, 0, 0);              /* No second source */
-                fluid_mod_set_dest(default_reverb_mod, (int)fluid_gen_type.GEN_REVERBSEND);       /* Target: Reverb send */
-                fluid_mod_set_amount(default_reverb_mod, 200);                /* Amount: 200 ('tenths of a percent') */
-
-
-                /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Reverb send
-                 * */
-                fluid_mod_set_source1(default_chorus_mod, (int)MPTKController.EFFECTS_DEPTH3,                 /* index=93 */
-                    (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
-                );
-                fluid_mod_set_source2(default_chorus_mod, 0, 0);              /* No second source */
-                fluid_mod_set_dest(default_chorus_mod, (int)fluid_gen_type.GEN_CHORUSSEND);       /* Target: Chorus */
-                fluid_mod_set_amount(default_chorus_mod, 200);                /* Amount: 200 ('tenths of a percent') */
-
-
-                /* SF2.01 page 57 section 8.4.10 MIDI Pitch Wheel to Initial Pitch ... */
-                /* Initial Pitch is not a "standard" generator, because it isn't mentioned in the
-                   list of generators in the SF2 specifications. That's why destination Initial Pitch
-                   is replaced here by fine tune generator.
-                 */
-                fluid_mod_set_source1(default_pitch_bend_mod, (int)fluid_mod_src.FLUID_MOD_PITCHWHEEL, /* Index=14 */
-                    (int)fluid_mod_flags.FLUID_MOD_GC                              /* CC =0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_BIPOLAR                       /* P=1 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
-                );
-                fluid_mod_set_source2(default_pitch_bend_mod, (int)fluid_mod_src.FLUID_MOD_PITCHWHEELSENS,  /* Index = 16 */
-                    (int)fluid_mod_flags.FLUID_MOD_GC                                        /* CC=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_LINEAR                                  /* type=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                                /* P=0 */
-                    | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                                /* D=0 */
-                );
-                fluid_mod_set_dest(default_pitch_bend_mod,/* (int)fluid_gen_type.GEN_PITCH replace with FS 2.3*/  (int)fluid_gen_type.GEN_FINETUNE);                 /* Destination: Initial pitch */
-                fluid_mod_set_amount(default_pitch_bend_mod, 12700.0f);                 /* Amount: 12700 cents */
-            }
+                MPTK_InitModulators();
 
             MPTK_ResetStat();
             state = fluid_synth_status.FLUID_SYNTH_PLAYING;
+
+            if (!MPTK_CorePlayer && !handleManageCacheVoice.IsRunning)
+                // To be run only one time
+                handleManageCacheVoice = Routine.RunCoroutine(RoutineManageCacheVoice(), Segment.RealtimeUpdate);
+            //else Debug.Log(handleManageCacheVoice.IsRunning);
 
             /* TU Synth 
             MPTK_PlayDirectEvent(new MPTKEvent() { Command= MPTKCommand.PatchChange, Value=18 });
@@ -1563,32 +1525,204 @@ namespace MidiPlayerTK
             */
         }
 
+        public void MPTK_InitModulators()
+        {
+            if (VerboseSynth) Debug.Log($"MPTK_InitModulators. IdSynth:{IdSynth}, Channels:{Channels.Length}, state was {state} {fluid_conv.FLUID_PEAK_ATTENUATION}");
+            fluid_conv.fluid_conversion_config();
+
+            //TBC fluid_dsp_float_config();
+            //fluid_sys_config();
+            //init_dither(); // pour fluid_synth_write_s16 ?
+
+            /* SF2.01 page 53 section 8.4.1: MIDI Note-On Velocity to Initial Attenuation
+             * */
+            fluid_mod_set_source1(default_vel2att_mod, /* The modulator we are programming here */
+                (int)fluid_mod_src.FLUID_MOD_VELOCITY,    /* Source. VELOCITY corresponds to 'index=2'. */
+                (int)fluid_mod_flags.FLUID_MOD_GC           /* Not a MIDI continuous controller */
+                | (int)fluid_mod_flags.FLUID_MOD_CONCAVE    /* Curve shape. Corresponds to 'type=1' */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR   /* Polarity. Corresponds to 'P=0' */
+                | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE   /* Direction. Corresponds to 'D=1' */
+            );
+            fluid_mod_set_source2(default_vel2att_mod, 0, 0); /* No 2nd source */
+            fluid_mod_set_dest(default_vel2att_mod, (int)fluid_gen_type.GEN_ATTENUATION);  /* Target: Initial attenuation */
+            fluid_mod_set_amount(default_vel2att_mod, fluid_conv.FLUID_PEAK_ATTENUATION);          /* Modulation amount: 960 */
+
+            /* SF2.01 page 53 section 8.4.2: MIDI Note-On Velocity to Filter Cutoff
+             * Have to make a design decision here. The specs don't make any sense this way or another.
+             * One sound font, 'Kingston Piano', which has been praised for its quality, tries to
+             * override this modulator with an amount of 0 and positive polarity (instead of what
+             * the specs say, D=1) for the secondary source.
+             * So if we change the polarity to 'positive', one of the best free sound fonts works...
+             */
+
+            fluid_mod_set_source1(default_vel2filter_mod, (int)fluid_mod_src.FLUID_MOD_VELOCITY, /* Index=2 */
+                (int)fluid_mod_flags.FLUID_MOD_GC                        /* CC=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                /* D=1 */
+            );
+            fluid_mod_set_source2(default_vel2filter_mod, (int)fluid_mod_src.FLUID_MOD_VELOCITY, /* Index=2 */
+                (int)fluid_mod_flags.FLUID_MOD_GC                                 /* CC=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_SWITCH                           /* type=3 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                         /* P=0 */
+                // do not remove       | FLUID_MOD_NEGATIVE                         /* D=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                         /* D=0 */
+            );
+            fluid_mod_set_dest(default_vel2filter_mod, (int)fluid_gen_type.GEN_FILTERFC);        /* Target: Initial filter cutoff */
+            fluid_mod_set_amount(default_vel2filter_mod, -2400);
+
+            /* SF2.01 page 53 section 8.4.3: MIDI Channel pressure to Vibrato LFO pitch depth
+             * */
+            fluid_mod_set_source1(default_at2viblfo_mod, (int)fluid_mod_src.FLUID_MOD_CHANNELPRESSURE, /* Index=13 */
+                (int)fluid_mod_flags.FLUID_MOD_GC                        /* CC=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                /* D=0 */
+            );
+            fluid_mod_set_source2(default_at2viblfo_mod, 0, 0); /* no second source */
+            fluid_mod_set_dest(default_at2viblfo_mod, (int)fluid_gen_type.GEN_VIBLFOTOPITCH);        /* Target: Vib. LFO => pitch */
+            fluid_mod_set_amount(default_at2viblfo_mod, 50);
+
+
+            /* SF2.01 page 53 section 8.4.4: Mod wheel (Controller 1) to Vibrato LFO pitch depth
+             * */
+            fluid_mod_set_source1(default_mod2viblfo_mod, (int)MPTKController.Modulation, /* Index=1 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                        /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                  /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                /* D=0 */
+            );
+            fluid_mod_set_source2(default_mod2viblfo_mod, 0, 0); /* no second source */
+            fluid_mod_set_dest(default_mod2viblfo_mod, (int)fluid_gen_type.GEN_VIBLFOTOPITCH);        /* Target: Vib. LFO => pitch */
+            fluid_mod_set_amount(default_mod2viblfo_mod, 50);
+
+
+            /* SF2.01 page 55 section 8.4.5: MIDI continuous controller 7 to initial attenuation
+             */
+            fluid_mod_set_source1(default_att_mod, (int)MPTKController.VOLUME_MSB,                     /* index=7 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_CONCAVE                       /* type=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                      /* D=1 */
+            );
+            fluid_mod_set_source2(default_att_mod, 0, 0);                 /* No second source */
+            fluid_mod_set_dest(default_att_mod, (int)fluid_gen_type.GEN_ATTENUATION);         /* Target: Initial attenuation */
+            fluid_mod_set_amount(default_att_mod, fluid_conv.FLUID_PEAK_ATTENUATION);                 /* Amount: 960 */
+
+
+            /* SF2.01 page 55 section 8.4.6 MIDI continuous controller 10 to Pan Position
+             * */
+            fluid_mod_set_source1(default_pan_mod, (int)MPTKController.Pan,                    /* index=10 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_BIPOLAR                       /* P=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
+            );
+            fluid_mod_set_source2(default_pan_mod, 0, 0);                 /* No second source */
+            fluid_mod_set_dest(default_pan_mod, (int)fluid_gen_type.GEN_PAN);
+
+            // Target: pan - Amount: 500. The SF specs $8.4.6, p. 55 syas: "Amount = 1000 tenths of a percent". 
+            // The center value (64) corresponds to 50%, so it follows that amount = 50% x 1000/% = 500. 
+            fluid_mod_set_amount(default_pan_mod, 500.0f);
+
+
+            /* SF2.01 page 55 section 8.4.7: MIDI continuous controller 11 to initial attenuation
+             * */
+            fluid_mod_set_source1(default_expr_mod, (int)MPTKController.Expression,                     /* index=11 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_CONCAVE                       /* type=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_NEGATIVE                      /* D=1 */
+            );
+            fluid_mod_set_source2(default_expr_mod, 0, 0);                 /* No second source */
+            fluid_mod_set_dest(default_expr_mod, (int)fluid_gen_type.GEN_ATTENUATION);         /* Target: Initial attenuation */
+            fluid_mod_set_amount(default_expr_mod, fluid_conv.FLUID_PEAK_ATTENUATION);                 /* Amount: 960 */
+
+
+            /* SF2.01 page 55 section 8.4.8: MIDI continuous controller 91 to Reverb send
+             * */
+            fluid_mod_set_source1(default_reverb_mod, (int)MPTKController.EFFECTS_DEPTH1,                 /* index=91 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
+            );
+            fluid_mod_set_source2(default_reverb_mod, 0, 0);              /* No second source */
+            fluid_mod_set_dest(default_reverb_mod, (int)fluid_gen_type.GEN_REVERBSEND);       /* Target: Reverb send */
+            fluid_mod_set_amount(default_reverb_mod, 200);                /* Amount: 200 ('tenths of a percent') */
+
+
+            /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Reverb send
+             * */
+            fluid_mod_set_source1(default_chorus_mod, (int)MPTKController.EFFECTS_DEPTH3,                 /* index=93 */
+                (int)fluid_mod_flags.FLUID_MOD_CC                              /* CC=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                      /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
+            );
+            fluid_mod_set_source2(default_chorus_mod, 0, 0);              /* No second source */
+            fluid_mod_set_dest(default_chorus_mod, (int)fluid_gen_type.GEN_CHORUSSEND);       /* Target: Chorus */
+            fluid_mod_set_amount(default_chorus_mod, 200);                /* Amount: 200 ('tenths of a percent') */
+
+
+            /* SF2.01 page 57 section 8.4.10 MIDI Pitch Wheel to Initial Pitch ... */
+            /* Initial Pitch is not a "standard" generator, because it isn't mentioned in the
+               list of generators in the SF2 specifications. That's why destination Initial Pitch
+               is replaced here by fine tune generator.
+             */
+            fluid_mod_set_source1(default_pitch_bend_mod, (int)fluid_mod_src.FLUID_MOD_PITCHWHEEL, /* Index=14 */
+                (int)fluid_mod_flags.FLUID_MOD_GC                              /* CC =0 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                        /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_BIPOLAR                       /* P=1 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                      /* D=0 */
+            );
+            fluid_mod_set_source2(default_pitch_bend_mod, (int)fluid_mod_src.FLUID_MOD_PITCHWHEELSENS,  /* Index = 16 */
+                (int)fluid_mod_flags.FLUID_MOD_GC                                        /* CC=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_LINEAR                                  /* type=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_UNIPOLAR                                /* P=0 */
+                | (int)fluid_mod_flags.FLUID_MOD_POSITIVE                                /* D=0 */
+            );
+            fluid_mod_set_dest(default_pitch_bend_mod,/* (int)fluid_gen_type.GEN_PITCH replace with FS 2.3*/  (int)fluid_gen_type.GEN_FINETUNE);                 /* Destination: Initial pitch */
+            fluid_mod_set_amount(default_pitch_bend_mod, 12700.0f);                 /* Amount: 12700 cents */
+        }
+
         /// <summary>@brief 
         /// Start the MIDI sequencer: each midi events are read and play in a dedicated thread.\n
         /// This thread is automatically started by prefabs MidiFilePlayer, MidiListPlayer, MidiExternalPlayer.
+        /// @note: available only in MPTK_CorePlayer mode. No effect in Legacy mode
         /// </summary>
         public void MPTK_StartSequencerMidi()
         {
-            if (!AudioThreadMidi)
+            if (MPTK_CorePlayer)
             {
-                if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi {this.name} {((midiThread == null ? "Null" : "Alive:" + midiThread.IsAlive))}");
-
-                if (midiThread == null)
+                if (!AudioThreadMidi)
                 {
-                    midiThread = new Thread(ThreadMidiPlayer);
-                }
+                    if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi {this.name} {((midiThread == null ? "Null" : "Alive:" + midiThread.IsAlive))}");
+                    if (midiThread != null)
+                    {
+                        //Debug.LogWarning($"MPTK_StartSequencerMidi {this.name} already alive {midiThread.IsAlive}");
+                        if (!midiThread.IsAlive)
+                            midiThread.Start();
+                    }
+                    else
+                    {
+                        if (midiThread == null)
+                        {
+                            midiThread = new Thread(ThreadMidiPlayer);
+                        }
 
-                if (midiThread != null && !midiThread.IsAlive)
-                {
-                    midiThread.Name = "MidiThread_" + IdSynth.ToString();
-                    midiThread.Priority = MPTK_ThreadMidiPriority + System.Threading.ThreadPriority.Normal;
-                    midiThread.Start();
-                    if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi Started {this.name} {IdSynth} ManagedThreadId:{midiThread.ManagedThreadId}");
+                        if (midiThread != null && !midiThread.IsAlive)
+                        {
+                            midiThread.Name = "MidiThread_" + IdSynth.ToString();
+                            midiThread.Priority = MPTK_ThreadMidiPriority + System.Threading.ThreadPriority.Normal;
+                            midiThread.Start();
+                            if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi Started {this.name} {IdSynth} ManagedThreadId:{midiThread.ManagedThreadId}");
+                        }
+                        else if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi: Alive  {this.name} {IdSynth} ManagedThreadId:{midiThread.ManagedThreadId} Priority:{midiThread.Priority}");
+                    }
                 }
-                else if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi: Alive  {this.name} {IdSynth} ManagedThreadId:{midiThread.ManagedThreadId} Priority:{midiThread.Priority}");
+                else if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi - MIDI MPTK Thread disabled, MIDI reader from Audio Thread");
             }
-            else if (VerboseSynth) Debug.Log($"MPTK_StartSequencerMidi - MIDI MPTK Thread disabled, MIDI reader from Audio Thread");
-
         }
 
         /// <summary>@brief 
@@ -1597,6 +1731,7 @@ namespace MidiPlayerTK
         /// </summary>
         public void MPTK_StopSynth()
         {
+            if (VerboseSynth) Debug.Log($"MPTK_StopSynth. IdSynth:{IdSynth}, state was {state}");
             state = fluid_synth_status.FLUID_SYNTH_STOPPED;
         }
 
@@ -1628,13 +1763,116 @@ namespace MidiPlayerTK
                 Routine.RunCoroutine(ThreadClearAllSound(true), Segment.EditorUpdate);
         }
 
+        /// <summary>@brief 
+        /// Stop immediately the MIDI event play with @MPTK_PlayDirectEvent.\n
+        /// It's a synchrone processing: method return after all voices of the notes has been processed by the MIDI synth.
+        /// </summary>
+        /// <param name="midiEvent"></param>
+        public void MPTK_StopDirectEvent(MPTKEvent midiEvent)
+        {
+            StopEvent(midiEvent);
+        }
+
+        /// <summary>@brief 
+        /// Play immediately one MIDI event.\n
+        /// It's a synchrone processing: method return after the MIDI has been treated by the MIDI synth.
+        /// @snippet TestMidiFilePlayerScripting.cs Example_OnBeatEvent
+        /// </summary>
+        /// <param name="midiEvent"></param>
+        public void MPTK_PlayDirectEvent(MPTKEvent midiEvent, bool playNoteOff = true)
+        {
+            //Debug.Log($">>> PlayEvent IdSynth:'{this.IdSynth}'");
+
+            try
+            {
+                if (MPTK_SoundFont.SoundFont == null)
+                {
+                    Debug.Log("No SoundFont selected for MPTK_PlayNote ");
+                    return;
+                }
+
+#if LOG_PERF_NOTEON
+                DebugPerf("-----> Init perf:", 0);
+#endif
+                if (MPTK_LogEvents && midiEvent != null)
+                    Debug.Log(/*state.ToString() + " " + */midiEvent.ToString());
+
+                switch (midiEvent.Command)
+                {
+                    case MPTKCommand.NoteOn:
+                        if (midiEvent.Velocity != 0)
+                        {
+#if DEBUGNOTE
+                            numberNote++;
+                            if (numberNote < startNote || numberNote > startNote + countNote - 1) return;
+#endif
+                            //if (note.Channel==4)
+                            fluid_defpreset_noteon(midiEvent);
+                        }
+                        else
+                        {
+                            //Debug.Log("PlayEvent: NoteOn velocity=0 " + midiEvent.Value);
+                            fluid_synth_noteoff(midiEvent.Channel, midiEvent.Value);
+                        }
+                        break;
+
+                    case MPTKCommand.NoteOff:
+                        if (playNoteOff)
+                            fluid_synth_noteoff(midiEvent.Channel, midiEvent.Value);
+                        break;
+
+                    case MPTKCommand.KeyAfterTouch:
+                        // Not processed by nAudio
+                        //Channels[midiEvent.Channel].key_pressure[key] = midiEvent.Value;
+                        break;
+
+                    case MPTKCommand.ControlChange:
+                        //if (midiEvent.Controller == MPTKController.Modulation) Debug.Log("midiEvent.Controller Modulation " + midiEvent.Value);
+                        if (MPTK_ApplyRealTimeModulator)
+                            //Channels[midiEvent.Channel].fluid_channel_cc(midiEvent.Controller, midiEvent.Value); // replace of fluid_synth_cc(note.Channel, note.Controller, (int)note.Value);
+                            Channels[midiEvent.Channel].Controller(midiEvent.Controller, midiEvent.Value); // replace of fluid_synth_cc(note.Channel, note.Controller, (int)note.Value);
+                        break;
+
+                    case MPTKCommand.PatchChange:
+                        if (midiEvent.Channel != 9 || MPTK_EnablePresetDrum == true)
+                        {
+                            Channels[midiEvent.Channel].LastPreset = midiEvent.Value;
+                            // before v2.11 fluid_synth_program_change(midiEvent.Channel, midiEvent.Value);
+                            Channels[midiEvent.Channel].fluid_synth_program_change(midiEvent.Value);
+                        }
+                        break;
+
+                    case MPTKCommand.PitchWheelChange:
+                        fluid_synth_pitch_bend(midiEvent.Channel, midiEvent.Value);
+                        break;
+                    case MPTKCommand.MetaEvent:
+#if MPTK_PRO
+                        if (midiEvent.Meta == MPTKMeta.TextEvent)
+                        {
+                            AnalyseActionMeta(midiEvent);
+                        }
+#endif
+                        break;
+                }
+#if LOG_PERF_NOTEON
+                DebugPerf("<---- ClosePerf perf:", 2);
+#endif
+            }
+            catch (System.Exception ex)
+            {
+                MidiPlayerGlobal.ErrorDetail(ex);
+            }
+            //Debug.Log($"<<< PlayEvent IdSynth:'{this.IdSynth}'");
+        }
+
+
         public IEnumerator<float> ThreadClearAllSound(bool destroyAudioSource = false, int _idSession = -1)
         {
 #if DEBUGNOTE
             numberNote = -1;
 #endif
             MPTK_ResetStat();
-            //Debug.Log($" >>> {DateTime.Now} ThreadClearAllSound {_idSession}");
+            //Debug.Log($" >>> {DateTime.Now} ThreadClearAllSound:{_idSession} destroyAudioSource:{destroyAudioSource}");
             if (MPTK_CorePlayer)
             {
                 if (SpatialSynths != null && spatialSynthIndex == -1) // apply only for the MidiSynth reader
@@ -1648,7 +1886,6 @@ namespace MidiPlayerTK
                 }
                 else
                 {
-
                     if (QueueSynthCommand != null)
                         QueueSynthCommand.Enqueue(new SynthCommand() { Command = SynthCommand.enCmd.NoteOffAll, IdSession = _idSession });
                     // V2.84 yield return Timing.WaitUntilDone(Timing.RunCoroutine(ThreadWaitAllStop()), false);
@@ -1661,18 +1898,47 @@ namespace MidiPlayerTK
                     for (int i = 0; i < ActiveVoices.Count; i++)
                     {
                         fluid_voice voice = ActiveVoices[i];
+                        //Debug.LogFormat($"Release Active id:{voice.id} / {ActiveVoices.Count} {voice.VoiceAudio.name} {voice.status} {(voice.VoiceAudio.Audiosource.clip != null ? voice.VoiceAudio.Audiosource.clip.name : "no clip")}");
                         if (voice != null && (voice.status == fluid_voice_status.FLUID_VOICE_ON || voice.status == fluid_voice_status.FLUID_VOICE_SUSTAINED))
                         {
-                            //Debug.LogFormat("ReleaseAll {0} / {1}", voice.IdVoice, ActiveVoices.Count);
-                            yield return Routine.WaitUntilDone(Routine.RunCoroutine(voice.Release(), Segment.RealtimeUpdate));
+                            //voice.fluid_rvoice_noteoff(true);
+                            Routine.RunCoroutine(voice.Release(), Segment.RealtimeUpdate);
+                            //yield return Routine.WaitUntilDone(Routine.RunCoroutine(voice.Release(), Segment.RealtimeUpdate));
                         }
-                    }
-                    if (destroyAudioSource)
-                    {
-                        yield return Routine.WaitUntilDone(Routine.RunCoroutine(ThreadDestroyAllVoice(), Segment.RealtimeUpdate), false);
                     }
                 }
             }
+            if (destroyAudioSource)
+            {
+                if (!MPTK_CorePlayer)
+                    Routine.RunCoroutine(ThreadDestroyAllVoice(), Segment.RealtimeUpdate);
+                else
+                    yield return Routine.WaitUntilDone(Routine.RunCoroutine(ThreadDestroyAllVoice(), Segment.RealtimeUpdate), false);
+            }
+
+            //Debug.Log($" <<< {DateTime.Now} ThreadClearAllSound {_idSession}");
+
+            yield return 0;
+        }
+
+        public IEnumerator<float> ThreadVoiceAudioSourceRemove(float wait, int _idSession = -1)
+        {
+            //Debug.Log($" >>> {DateTime.Now} ThreadClearAllSound:{_idSession} ");
+            DateTime dateTime = DateTime.Now;
+            if (wait <= 0f)
+                wait = 2000f;
+            while (true)
+            {
+                VoiceAudioSource[] voiceAudioSources = FindObjectsByType<VoiceAudioSource>(FindObjectsSortMode.InstanceID);
+                //Debug.Log($"    MPTK_Stop {(DateTime.Now - dateTime).TotalMilliseconds} {voiceAudioSources.Length}");
+                if (voiceAudioSources.Length == 0)
+                    break;
+                if ((DateTime.Now - dateTime).TotalMilliseconds > wait)
+                    break;
+                yield return Routine.WaitForSeconds(0.1f);
+
+            }
+
 
             //Debug.Log($" <<< {DateTime.Now} ThreadClearAllSound {_idSession}");
 
@@ -1706,7 +1972,6 @@ namespace MidiPlayerTK
         public IEnumerator MPTK_WaitAllNotesOff(int _idSession = -1) // V2.84: new param idsession and CoRoutine compatible
         {
             //Debug.Log($"<<< {DateTime.Now} MPTK_WaitAllNotesOff {_idSession}");
-            //yield return Timing.WaitUntilDone(Timing.RunCoroutine(ThreadWaitAllStop(_idSession)), false);
             int count = 999;
             DateTime start = DateTime.Now;
             //Debug.Log($"ThreadWaitAllStop " + start);
@@ -1756,58 +2021,42 @@ namespace MidiPlayerTK
 
         }
 
-
         /// Remove AudioSource not playing
         /// </summary>
         protected IEnumerator<float> ThreadDestroyAllVoice()
         {
-            //Debug.Log("ThreadDestroyAllVoice");
+            //Debug.Log(">>> ThreadDestroyAllVoice");
             try
             {
-                //VoiceAudioSource[] voicesList = GetComponentsInChildren<VoiceAudioSource>();
-                //Debug.LogFormat("DestroyAllVoice {0}", (voicesList != null ? voicesList.Length.ToString() : "no voice found"));
-                //if (voicesList != null)
-                //{
-                //    foreach (VoiceAudioSource voice in voicesList)
-                //        try
-                //        {
-                //            //Debug.Log("Destroy " + voice.IdVoice + " " + (voice.Audiosource.clip != null ? voice.Audiosource.clip.name : "no clip"));
-                //            //Don't delete audio source template
-                //            if (voice.name.StartsWith("VoiceAudioId_"))
-                //                Destroy(voice.gameObject);
-                //        }
-                //        catch (System.Exception ex)
-                //        {
-                //            MidiPlayerGlobal.ErrorDetail(ex);
-                //        }
-                //    Voices.Clear();
-                //}
-                if (ActiveVoices != null)
+                if (MPTK_CorePlayer)
                 {
-                    if (MPTK_CorePlayer)
+                    if (QueueSynthCommand != null)
+                        // ActiveVoices and FreVoices clear
                         QueueSynthCommand.Enqueue(new SynthCommand() { Command = SynthCommand.enCmd.ClearAllVoices });
-                    else
-                    {
-                        for (int i = 0; i < ActiveVoices.Count; i++)
+                }
+                else
+                {
+                    // Search voice audio source but not template which is inactive
+                    VoiceAudioSource[] voiceAudioSources = FindObjectsByType<VoiceAudioSource>(FindObjectsSortMode.InstanceID);
+                    //Debug.Log($"    ThreadDestroyAllVoice - {voiceAudioSources.Length} AudioSource found");
+
+                    if (voiceAudioSources != null)
+                        foreach (VoiceAudioSource voice in voiceAudioSources)
                         {
-                            try
-                            {
-                                fluid_voice voice = ActiveVoices[i];
-                                if (voice != null && voice.VoiceAudio != null)
+                            //Debug.Log($"    Destroy id:{voice.name} {(voice.Audiosource.clip != null ? voice.Audiosource.clip.name : "no clip")}");
+                            if (voice.name != "VoiceAudioSourceTemplate") // Test in case template gas been enabled by error!
+                                try
                                 {
-                                    //Debug.Log("Destroy " + voice.IdVoice + " " + (voice.VoiceAudio.Audiosource.clip != null ? voice.VoiceAudio.Audiosource.clip.name : "no clip"));
-                                    //Don't delete audio source template
-                                    if (voice.VoiceAudio.name.StartsWith("VoiceAudioId_"))
-                                        Destroy(voice.VoiceAudio.gameObject);
+                                    // Delete voice audio source and its audio source 
+                                    Destroy(voice.gameObject);
                                 }
-                            }
-                            catch (System.Exception ex)
-                            {
-                                MidiPlayerGlobal.ErrorDetail(ex);
-                            }
+                                catch (System.Exception ex)
+                                {
+                                    MidiPlayerGlobal.ErrorDetail(ex);
+                                }
                         }
-                        ActiveVoices.Clear();
-                    }
+                    if (ActiveVoices != null) ActiveVoices.Clear();
+                    if (FreeVoices != null) FreeVoices.Clear();
                 }
             }
             catch (System.Exception ex)
@@ -1815,6 +2064,34 @@ namespace MidiPlayerTK
                 MidiPlayerGlobal.ErrorDetail(ex);
             }
             yield return 0;
+            //Debug.Log("<<< ThreadDestroyAllVoice");
+
+        }
+
+        private void killVoices(List<fluid_voice> voices)
+        {
+            if (voices != null)
+                for (int i = 0; i < voices.Count; i++)
+                {
+                    try
+                    {
+                        fluid_voice voice = voices[i];
+                        if (voice != null && voice.VoiceAudio != null)
+                        {
+                            //Debug.Log($"Destroy id:{voice.id} {voice.VoiceAudio.name} {(voice.VoiceAudio.Audiosource.clip != null ? voice.VoiceAudio.Audiosource.clip.name : "no clip")}");
+                            // Delete all audio source but not template
+                            if (voice.VoiceAudio.name.StartsWith("VoiceAudioId_"))
+                                Destroy(voice.VoiceAudio.gameObject);
+                        }
+                        //else Debug.Log($"Destroy not done id:{voice?.id} name:{voice.VoiceAudio?.name}");
+
+                    }
+                    catch (System.Exception ex)
+                    {
+                        MidiPlayerGlobal.ErrorDetail(ex);
+                    }
+                }
+            voices.Clear();
         }
 
         void OnApplicationQuit()
@@ -1849,16 +2126,33 @@ namespace MidiPlayerTK
 
         // @endcond
 
+        /// <summary>@brief
+        /// Log information about active voices
+        /// </summary>
         public void MPTK_DebugActiveVoice()
         {
             if (ActiveVoices != null && ActiveVoices.Count > 0)
             {
+                Debug.Log("Active voice found");
                 Debug.Log(fluid_voice.HeaderVoiceInfo());
                 for (int i = 0; i < ActiveVoices.Count; i++)
                     Debug.Log(ActiveVoices[i].ToString());
             }
             else
                 Debug.Log("No active voice found");
+        }
+
+        public void MPTK_DebugFreeVoice()
+        {
+            if (FreeVoices != null && FreeVoices.Count > 0)
+            {
+                Debug.Log("Free voice found");
+                Debug.Log(fluid_voice.HeaderVoiceInfo());
+                for (int i = 0; i < FreeVoices.Count; i++)
+                    Debug.Log(FreeVoices[i].ToString());
+            }
+            else
+                Debug.Log("No free voice found");
         }
 
         /// <summary>@brief 
@@ -2222,20 +2516,23 @@ namespace MidiPlayerTK
             /*   fluid_mutex_unlock(synth.busy); */
 
             // check if there's an available free voice with same sample and same session
-            for (int indexVoice = 0; indexVoice < FreeVoices.Count;)
-            {
-                fluid_voice freeVoice = FreeVoices[indexVoice];
-                if (freeVoice.sample.Name == hiSample.Name /* v2.10.1 useless? freevoice is cleared when a new MIDI is played && _idSession == freeVoice.IdSession*/)
+            if (true)
+                for (int indexVoice = 0; indexVoice < FreeVoices.Count;)
                 {
-                    voice = freeVoice;
-                    voice.Reused = true;
-                    FreeVoices.RemoveAt(indexVoice);
-                    MPTK_StatVoiceCountReused++;
-                    if (VerboseVoice) Debug.Log($"Voice {voice.id} - Reuse - Sample:'{hiSample.Name}'");
-                    break;
+                    fluid_voice freeVoice = FreeVoices[indexVoice];
+                    if (freeVoice.sample.Name == hiSample.Name /* v2.10.1 useless? freevoice is cleared when a new MIDI is played && _idSession == freeVoice.IdSession*/)
+                    {
+                        voice = freeVoice;
+                        voice.Reused = true;
+                        FreeVoices.RemoveAt(indexVoice);
+                        MPTK_StatVoiceCountReused++;
+                        if (VerboseVoice) Debug.Log($"Voice {voice.id} - Reuse - Sample:'{hiSample.Name}'");
+                        break;
+                    }
+                    indexVoice++;
                 }
-                indexVoice++;
-            }
+            //else
+            //    Debug.Log($"Cache disabled");
 
 #if LOG_PERF_NOTEON
             DebugPerf("After find existing voice:");
@@ -2254,11 +2551,17 @@ namespace MidiPlayerTK
                     // Play voice with OnAudioFilterRead
                     // --------------------------------------
 
-                    if (MidiPlayerGlobal.ImSFCurrent.LiveSF)
+                    if (MidiPlayerGlobal.ImSFCurrent != null && MidiPlayerGlobal.ImSFCurrent.LiveSF)
                     {
-                        //if (hiSample.Data == null)
                         // each voice have a pointer to the full samples available in the SF
                         hiSample.Data = MidiPlayerGlobal.ImSFCurrent.SamplesData;
+                        // TBD hiSample.Data = sfLocal == null ? MidiPlayerGlobal.ImSFCurrent.SamplesData : sfLocal.SamplesData;
+                        voice.sample = hiSample;
+                    }
+                    else if (/*MPTK_SoundFont.SoundFont != null && */MPTK_SoundFont.SoundFont.LiveSF)
+                    {
+                        hiSample.Data = MPTK_SoundFont.SoundFont.SamplesData;
+                        // TBD hiSample.Data = sfLocal == null ? MidiPlayerGlobal.ImSFCurrent.SamplesData : sfLocal.SamplesData;
                         voice.sample = hiSample;
                     }
                     else
@@ -2267,7 +2570,13 @@ namespace MidiPlayerTK
                         voice.VoiceAudio = null;
                         //if (MidiPlayerGlobal.MPTK_LoadWaveAtStartup)
                         {
+#if MPTK_PRO
+                            voice.sample = MPTK_SoundFont.DicAudioWaveLocal == null ?
+                                DicAudioWave.GetWave(hiSample.Name) :
+                                MPTK_SoundFont.DicAudioWaveLocal.GetWave(hiSample.Name);
+#else
                             voice.sample = DicAudioWave.GetWave(hiSample.Name);
+#endif
                             if (voice.sample == null)
                             {
                                 Debug.Log($"<color=red>Sample {hiSample.Name} not loaded. Have you extracted samples from 'SoundFont Setup' menu?</color>");
@@ -2304,40 +2613,70 @@ namespace MidiPlayerTK
                 {
                     // Play each voice with a dedicated AudioSource (legacy mode)
                     // ----------------------------------------------------------
-                    AudioClip clip = DicAudioClip.Get(hiSample.Name);
+                    AudioClip clip = null;
+                    if (MidiPlayerGlobal.ImSFCurrent != null && MidiPlayerGlobal.ImSFCurrent.LiveSF)
+                    {
+                        // each voice have a pointer to the full samples available in the SF
+                        hiSample.Data = MidiPlayerGlobal.ImSFCurrent.SamplesData;
+                        // TBD when sample comes from the SamplesData, we need to extract the sample related to the voice and create an AudioClip ....
+                        voice.sample = hiSample;
+                    }
+                    else if (/*MPTK_SoundFont.SoundFont != null && */MPTK_SoundFont.SoundFont.LiveSF)
+                    {
+                        hiSample.Data = MPTK_SoundFont.SoundFont.SamplesData;
+                        // TBD when sample comes from the SamplesData, we need to extract the sample related to the voice and create an AudioClip ....
+                        voice.sample = hiSample;
+                    }
+                    else
+                    {
+                        clip = DicAudioClip.Get(hiSample.Name);
+                        if (clip == null)
+                        {
+                            string path = MidiPlayerGlobal.WavePath + "/" + System.IO.Path.GetFileNameWithoutExtension(hiSample.Name);
+                            AudioClip ac = Resources.Load<AudioClip>(path);
+                            if (ac != null)
+                            {
+                                //Debug.Log("Wave load " + path);
+                                DicAudioClip.Add(hiSample.Name, ac);
+                            }
+                            clip = DicAudioClip.Get(hiSample.Name);
+                            if (clip == null /*|| clip.loadState != AudioDataLoadState.Loaded*/)
+                            {
+                                if (VerboseVoice) Debug.LogWarningFormat("fluid_synth_alloc_voice - Clip {0} not found", hiSample.Name);
+                                return null;
+                            }
+                            // v2.16.0 seems clip is not loaded until associated to the audio source
+                            //else if (clip.loadState != AudioDataLoadState.Loaded)
+                            //{
+                            //    if (VerboseVoice) Debug.LogWarningFormat("fluid_synth_alloc_voice - Clip {0} not ready to play {1}", hiSample.Name, clip.loadState);
+                            //    return null;
+                            //}
+                        }
+                        if (VerboseVoice) Debug.Log($"Voice idSession:{mptkEvent.IdSession} idVoice:{fluid_voice.LastId} - Clip created - name:'{clip.name}' loadState:{clip.loadState}");
+                        voice.sample = hiSample;
+                    }
+
                     if (clip == null)
                     {
-                        string path = MidiPlayerGlobal.WavePath + "/" + System.IO.Path.GetFileNameWithoutExtension(hiSample.Name);
-                        AudioClip ac = Resources.Load<AudioClip>(path);
-                        if (ac != null)
-                        {
-                            //Debug.Log("Wave load " + path);
-                            DicAudioClip.Add(hiSample.Name, ac);
-                        }
-                        clip = DicAudioClip.Get(hiSample.Name);
-                        if (clip == null || clip.loadState != AudioDataLoadState.Loaded)
-                        {
-                            Debug.LogWarningFormat("fluid_synth_alloc_voice - Clip {0} not found", hiSample.Name);
-                            return null;
-                        }
-                        else if (clip.loadState != AudioDataLoadState.Loaded)
-                        {
-                            Debug.LogWarningFormat("fluid_synth_alloc_voice - Clip {0} not ready to play {1}", hiSample.Name, clip.loadState);
-                            return null;
-                        }
+                        Debug.LogWarningFormat("fluid_synth_alloc_voice - Clip {0} data not loaded - not compliant with WebGL", hiSample.Name);
                     }
-                    voice.sample = hiSample;
-                    voice.VoiceAudio = Instantiate<VoiceAudioSource>(AudiosourceTemplate);
-                    voice.VoiceAudio.gameObject.SetActive(true);
-                    voice.VoiceAudio.fluidvoice = voice;
-                    voice.VoiceAudio.synth = this;
-                    voice.VoiceAudio.transform.position = AudiosourceTemplate.transform.position;
-                    voice.VoiceAudio.transform.SetParent(AudiosourceTemplate.transform.parent);
-                    voice.VoiceAudio.name = "VoiceAudioId_" + voice.id;
-                    voice.VoiceAudio.Audiosource.clip = clip;
-                    //voice.VoiceAudio.Audiosource.loop
-                    // seems to have no effect, issue open with Unity
-                    voice.VoiceAudio.hideFlags = VerboseVoice ? HideFlags.None : HideFlags.HideInHierarchy;
+                    else
+                    {
+
+                        voice.VoiceAudio = Instantiate<VoiceAudioSource>(AudiosourceTemplate);
+                        voice.VoiceAudio.gameObject.SetActive(true);
+                        voice.VoiceAudio.fluidvoice = voice;
+                        voice.VoiceAudio.synth = this;
+                        voice.VoiceAudio.transform.position = AudiosourceTemplate.transform.position;
+                        voice.VoiceAudio.transform.SetParent(AudiosourceTemplate.transform.parent);
+                        voice.VoiceAudio.name = "VoiceAudioId_" + voice.id;
+                        voice.VoiceAudio.Audiosource.clip = clip;
+                        //voice.VoiceAudio.Audiosource.loop
+                        // seems to have no effect, issue open with Unity
+                        voice.VoiceAudio.hideFlags = VerboseVoice ? HideFlags.None : HideFlags.HideInHierarchy;
+
+                        if (VerboseVoice) Debug.Log($"Voice idSession:{mptkEvent.IdSession} idVoice:{fluid_voice.LastId} - AudioSource Instanciated - name:'{clip.name}' loadState:{clip.loadState}");
+                    }
                 }
 
                 //AddDefaultMod(voice);
@@ -2359,12 +2698,14 @@ namespace MidiPlayerTK
             }
             else
             {
-                // Legacy mode, will be removed
+                // Legacy mode
                 if (voice.VoiceAudio != null)
                     voice.VoiceAudio.Audiosource.spatialBlend = MPTK_Spatialize ? 1f : 0f;
-                MoveVoiceToFree();
-                if (MPTK_AutoBuffer)
-                    AutoCleanVoice(DateTime.UtcNow.Ticks);
+
+                // Now done in a coroutine for legacy mode
+                //MoveVoiceToFree();
+                //if (MPTK_AutoBuffer)
+                //    AutoCleanVoice(DateTime.UtcNow.Ticks);
             }
 
             int chan = mptkEvent.Channel;
@@ -2472,10 +2813,10 @@ namespace MidiPlayerTK
                     continue;
                 }
 
-                /* Existing voice is a voice process belonging to this noteon event (for example: stereo sample)?  Leave it alone. */
+                /* Existing voice is a voice process belonging to this note-on event (for example: stereo sample)?  Leave it alone. */
                 if (voice.id == new_voice.id)
                 {
-                    if (VerboseKillByExclusive) voice.DebugKillByExclusive("voice.IdVoice == new_voice.IdVoice");
+                    if (VerboseSpecialNoteOff) voice.DebugKillByExclusive("voice.IdVoice == new_voice.IdVoice");
                     continue;
                 }
 
@@ -2503,9 +2844,7 @@ namespace MidiPlayerTK
                     //voice.fluid_voice_off();
                     //else
                     voice.fluid_rvoice_noteoff(true);
-
-                    if (VerboseVoice) Debug.Log($"Voice {voice.id} - Same note, send note off");
-                    // can't break, beacause need to search in case of multi sample
+                    if (VerboseSpecialNoteOff) Debug.Log($"Voice {voice.id} - Same note, send note-off {chan} key:{key} {voice.volenv_section} DurationTick:{voice.DurationTick} Name:{voice.sample.Name}");
                 }
             }
         }
@@ -2565,7 +2904,7 @@ namespace MidiPlayerTK
         }
 
         /*
-         * fluid_synth_damp_voices
+         * fluid_synth_damp_voices - clear voices sustained (controller < 64)
          */
         public void fluid_synth_damp_voices(int pchan)
         {
@@ -2694,7 +3033,7 @@ namespace MidiPlayerTK
         /// <param name="playNoteOff"></param>
         protected void PlayEvents(List<MPTKEvent> midievents, bool playNoteOff = true)
         {
-            if (MidiPlayerGlobal.MPTK_SoundFontLoaded == false)
+            if (!MPTK_SoundFont.IsReady)
                 return;
 
             if (midievents != null)
@@ -2730,110 +3069,6 @@ namespace MidiPlayerTK
                 MidiPlayerGlobal.ErrorDetail(ex);
             }
         }
-
-        /// <summary>@brief 
-        /// Stop a note-on event v2.9.0\n
-        /// Like MPTK_PlayEvent but with a synchrone processing: method return after all voices of the notes has been processed by the MIDI synth.
-        /// </summary>
-        /// <param name="midievent"></param>
-
-        public void MPTK_StopDirectEvent(MPTKEvent midievent)
-        {
-            StopEvent(midievent);
-        }
-
-        /// <summary>@brief 
-        /// V2.86 Play immediately one MIDI event.\n
-        /// Like MPTK_PlayEvent but with a synchrone processing: method return after the MIDI has been treated by the MIDI synth.
-        /// @snippet MusicView.cs ExampleMPTK_PlayEvent
-        /// </summary>
-        /// <param name="midiEvent"></param>
-        public void MPTK_PlayDirectEvent(MPTKEvent midiEvent, bool playNoteOff = true)
-        {
-            //Debug.Log($">>> PlayEvent IdSynth:'{this.IdSynth}'");
-
-            try
-            {
-                if (MidiPlayerGlobal.ImSFCurrent == null)
-                {
-                    Debug.Log("No SoundFont selected for MPTK_PlayNote ");
-                    return;
-                }
-
-#if LOG_PERF_NOTEON
-                DebugPerf("-----> Init perf:", 0);
-#endif
-                if (MPTK_LogEvents && midiEvent != null)
-                    Debug.Log(/*state.ToString() + " " + */midiEvent.ToString());
-
-                switch (midiEvent.Command)
-                {
-                    case MPTKCommand.NoteOn:
-                        if (midiEvent.Velocity != 0)
-                        {
-#if DEBUGNOTE
-                            numberNote++;
-                            if (numberNote < startNote || numberNote > startNote + countNote - 1) return;
-#endif
-                            //if (note.Channel==4)
-                            fluid_defpreset_noteon(midiEvent);
-                        }
-                        else
-                        {
-                            //Debug.Log("PlayEvent: NoteOn velocity=0 " + midiEvent.Value);
-                            fluid_synth_noteoff(midiEvent.Channel, midiEvent.Value);
-                        }
-                        break;
-
-                    case MPTKCommand.NoteOff:
-                        if (playNoteOff)
-                            fluid_synth_noteoff(midiEvent.Channel, midiEvent.Value);
-                        break;
-
-                    case MPTKCommand.KeyAfterTouch:
-                        // Not processed by nAudio
-                        //Channels[midiEvent.Channel].key_pressure[key] = midiEvent.Value;
-                        break;
-
-                    case MPTKCommand.ControlChange:
-                        //if (midiEvent.Controller == MPTKController.Modulation) Debug.Log("midiEvent.Controller Modulation " + midiEvent.Value);
-                        if (MPTK_ApplyRealTimeModulator)
-                            //Channels[midiEvent.Channel].fluid_channel_cc(midiEvent.Controller, midiEvent.Value); // replace of fluid_synth_cc(note.Channel, note.Controller, (int)note.Value);
-                            Channels[midiEvent.Channel].Controller(midiEvent.Controller, midiEvent.Value); // replace of fluid_synth_cc(note.Channel, note.Controller, (int)note.Value);
-                        break;
-
-                    case MPTKCommand.PatchChange:
-                        if (midiEvent.Channel != 9 || MPTK_EnablePresetDrum == true)
-                        {
-                            Channels[midiEvent.Channel].LastPreset = midiEvent.Value;
-                            // before v2.11 fluid_synth_program_change(midiEvent.Channel, midiEvent.Value);
-                            Channels[midiEvent.Channel].fluid_synth_program_change(midiEvent.Value);
-                        }
-                        break;
-
-                    case MPTKCommand.PitchWheelChange:
-                        fluid_synth_pitch_bend(midiEvent.Channel, midiEvent.Value);
-                        break;
-                    case MPTKCommand.MetaEvent:
-#if MPTK_PRO
-                        if (midiEvent.Meta == MPTKMeta.TextEvent)
-                        {
-                            AnalyseActionMeta(midiEvent);
-                        }
-#endif
-                        break;
-                }
-#if LOG_PERF_NOTEON
-                DebugPerf("<---- ClosePerf perf:", 2);
-#endif
-            }
-            catch (System.Exception ex)
-            {
-                MidiPlayerGlobal.ErrorDetail(ex);
-            }
-            //Debug.Log($"<<< PlayEvent IdSynth:'{this.IdSynth}'");
-        }
-
 
 #if MPTK_PRO && UNITY_ANDROID && UNITY_OBOE
         public unsafe void OnAudioData(AudioStream audioStream, void* dataArray, int numFrames)
@@ -2909,11 +3144,7 @@ namespace MidiPlayerTK
                         watchPerfAudio.Reset();
                         watchPerfAudio.Start();
 #endif
-                        MoveVoiceToFree();
-                        if (MPTK_AutoBuffer)
-                            AutoCleanVoice(ticks);
-                        MPTK_StatVoiceCountActive = ActiveVoices.Count;
-                        MPTK_StatVoiceCountFree = FreeVoices.Count;
+                        ManageCacheVoice(ticks);
 
 #if DEBUG_PERF_AUDIO
                         //GcCollectionCoutSynth = 0;
@@ -2934,37 +3165,34 @@ namespace MidiPlayerTK
                         // Not implemented
                         //GC.TryStartNoGCRegion(240 * 1024 * 1024);
                         int block = 0;
-                        if (ActiveVoices.Count > 0)
+                        float[] reverb_buf = null;
+                        float[] chorus_buf = null;
+
+                        //if (ActiveVoices.Count > 0) removed 2.14.1 - cause abrupt reverb/chorus off when all voices are off
+                        //{
+                        while (block < DspBufferSize)
                         {
-                            while (block < DspBufferSize)
-                            {
-                                Array.Clear(left_buf, 0, FLUID_BUFSIZE);
-                                Array.Clear(right_buf, 0, FLUID_BUFSIZE);
-
-                                float[] reverb_buf = null;
-                                float[] chorus_buf = null;
+                            Array.Clear(left_buf, 0, FLUID_BUFSIZE);
+                            Array.Clear(right_buf, 0, FLUID_BUFSIZE);
 #if MPTK_PRO
-                                MPTK_EffectSoundFont.PrepareBufferEffect(out reverb_buf, out chorus_buf);
+                            MPTK_EffectSoundFont.PrepareBufferEffect(out reverb_buf, out chorus_buf);
 #endif
-                                WriteAllSamples(ticks, reverb_buf, chorus_buf);
-
-                                //Debug.Log("   block:" + block + " j start:" + ((block + 0) * 2) + " j end:" + ((block + FLUID_BUFSIZE-1) * 2) + " data.Length:" + data.Length );
-
+                            WriteAllSamples(ticks, reverb_buf, chorus_buf);
+                            //Debug.Log("   block:" + block + " j start:" + ((block + 0) * 2) + " j end:" + ((block + FLUID_BUFSIZE-1) * 2) + " data.Length:" + data.Length );
 #if MPTK_PRO
-                                MPTK_EffectSoundFont.ProcessEffect(reverb_buf, chorus_buf, left_buf, right_buf);
+                            MPTK_EffectSoundFont.ProcessEffect(reverb_buf, chorus_buf, left_buf, right_buf);
 #endif
-
-                                float vol = MPTK_Volume * volumeStartStop;
+                            float vol = MPTK_Volume * volumeStartStop;
 #if DEBUG_TRY_CATCH_AUDIODATA
                                 try
                                 {
 #endif
-                                    for (int i = 0; i < FLUID_BUFSIZE; i++)
-                                    {
-                                        int j = (block + i) << 1;
-                                        data[j] = left_buf[i] * vol;
-                                        data[j + 1] = right_buf[i] * vol;
-                                    }
+                            for (int i = 0; i < FLUID_BUFSIZE; i++)
+                            {
+                                int j = (block + i) << 1;
+                                data[j] = left_buf[i] * vol;
+                                data[j + 1] = right_buf[i] * vol;
+                            }
 #if DEBUG_TRY_CATCH_AUDIODATA
                                 }
                                 catch (Exception ex)
@@ -2977,13 +3205,12 @@ namespace MidiPlayerTK
 #if DEBUG_AUDIO_DATA_LOOP
                                 Debug.Log($"DspSize:{DspBufferSize} data:{data.Length} channels:{channels} FLUIDBUF:{FLUID_BUFSIZE} left_buf:{left_buf.Length} {block} ElapsedMilli:{SynthElapsedMilli:F2} Delta:{DeltaTimeAudioCall:F2}");
 #endif
-                                block += FLUID_BUFSIZE;
-                            }
-
+                            block += FLUID_BUFSIZE;
                         }
+                        //}
+
                         // Not implemented
                         //GC.EndNoGCRegion();
-
 #endif
 
                         // Calculate time for processing all samples (watchSynth is reset at start of OnAudioFilterRead)
@@ -3056,8 +3283,7 @@ namespace MidiPlayerTK
                     }
                     catch (Exception ex)
                     {
-                        if (VerboseSynth)
-                            Debug.LogWarning(ex.Message);
+                        if (VerboseSynth) Debug.LogWarning(ex.Message); // WriteAllSamples
                     }
                 }
             }
@@ -3086,6 +3312,7 @@ namespace MidiPlayerTK
                                 break;
                             case SynthCommand.enCmd.ClearAllVoices:
                                 ActiveVoices.Clear();
+                                FreeVoices.Clear();
                                 break;
                             case SynthCommand.enCmd.NoteOffAll:
                                 //Debug.Log($"NoteOffAll");
@@ -3108,34 +3335,38 @@ namespace MidiPlayerTK
             }
             catch (Exception ex)
             {
-                if (VerboseSynth)
-                    Debug.LogWarning(ex.Message);
+                if (VerboseSynth) Debug.LogWarning(ex.Message); // ProcessQueueCommand
             }
         }
 
-        public void MoveVoiceToFree(fluid_voice v)
-        {
-            ActiveVoices.RemoveAt(v.IndexActive);
-            FreeVoices.Add(v);
-        }
 
-        public void DebugVoice()
+        private IEnumerator<float> RoutineManageCacheVoice()
         {
-            foreach (fluid_voice v in ActiveVoices)
+            if (VerboseSynth) Debug.Log($"Start RoutineManageCacheVoice {IdSynth} {ActiveVoices?.Count} {FreeVoices?.Count}");
+            while (state == fluid_synth_status.FLUID_SYNTH_PLAYING)
             {
-                Debug.LogFormat("", v.LastTimeWrite);
+                long ticks = System.DateTime.UtcNow.Ticks;
+                ManageCacheVoice(ticks);
+                yield return Routine.WaitForSeconds(0.2f);
             }
+            if (VerboseSynth) Debug.Log($"End RoutineManageCacheVoice {IdSynth} {ActiveVoices?.Count} {FreeVoices?.Count}");
         }
+
+        private void ManageCacheVoice(long ticks)
+        {
+            MoveVoiceToFree();
+            if (!MPTK_CorePlayer && MPTK_AutoBuffer)
+                AutoCleanVoice(ticks);
+            MPTK_StatVoiceCountActive = ActiveVoices.Count;
+            MPTK_StatVoiceCountFree = FreeVoices.Count;
+        }
+
 
         private void MoveVoiceToFree()
         {
 #if DEBUG_STATUS_STAT
-            // 0: fluid_voice_status.FLUID_VOICE_CLEAN,
-            // 1: fluid_voice_status.FLUID_VOICE_ON,
-            // 2: fluid_voice_status.FLUID_VOICE_SUSTAINED,
-            // 3: fluid_voice_status.FLUID_VOICE_OFF
-            // 4: fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE
-            StatusStat = new int[(int)fluid_voice_status.FLUID_VOICE_OFF + 2];
+            Array.Clear(StatusStat, 0, StatusStat.Length);
+            Array.Clear(EnveloppeStat, 0, EnveloppeStat.Length);
 #endif
 
 #if MPTK_PRO && UNITY_ANDROID && UNITY_OBOE
@@ -3150,10 +3381,20 @@ namespace MidiPlayerTK
                 {
                     fluid_voice voice = ActiveVoices[indexVoice];
 #if DEBUG_STATUS_STAT
-                    if (voice.volenv_section == fluid_voice_envelope_index.FLUID_VOICE_ENVRELEASE)
-                        StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF + 1]++;
-                    else
-                        StatusStat[(int)voice.status]++;
+                    /*  FLUID_VOICE_CLEAN = 0
+                        FLUID_VOICE_ON = 1
+                        FLUID_VOICE_SUSTAINED = 2
+                        FLUID_VOICE_OFF = 3 */
+                    StatusStat[(int)voice.status]++;
+
+                    /*  FLUID_VOICE_ENVDELAY = 0
+                        FLUID_VOICE_ENVATTACK = 1
+                        FLUID_VOICE_ENVHOLD = 2
+                        FLUID_VOICE_ENVDECAY = 3
+                        FLUID_VOICE_ENVSUSTAIN = 4
+                        FLUID_VOICE_ENVRELEASE = 5
+                        FLUID_VOICE_ENVFINISHED = 6 */
+                    EnveloppeStat[(int)voice.volenv_section]++;
 #endif
 
 #if MPTK_PRO && UNITY_ANDROID && UNITY_OBOE
@@ -3161,8 +3402,7 @@ namespace MidiPlayerTK
 #else
                     if (StatDspLoadPCT > MaxDspLoad)
                     {
-                        if (VerboseOverload)
-                            voice.DebugOverload($"OverLoad: DeltaTimeAudioCall:{DeltaTimeAudioCall:F2} StatAudioFilterReadMS:{StatAudioFilterReadMS:F2} ActiveVoice:{MPTK_StatVoiceCountActive}");
+                        if (VerboseOverload) voice.DebugOverload($"OverLoad: DeltaTimeAudioCall:{DeltaTimeAudioCall:F2} StatAudioFilterReadMS:{StatAudioFilterReadMS:F2} ActiveVoice:{MPTK_StatVoiceCountActive}");
 
                         // Check if there is voice which are sustained: MIDI message ControlChange with Sustain (64)
                         if (voice.status == fluid_voice_status.FLUID_VOICE_SUSTAINED)
@@ -3209,8 +3449,7 @@ namespace MidiPlayerTK
                 }
                 catch (Exception ex)
                 {
-                    if (VerboseSynth)
-                        Debug.LogWarning(ex.Message);
+                    if (VerboseSynth) Debug.LogWarning(ex.Message); // MoveVoiceToFree
                 }
             }
 
@@ -3227,10 +3466,16 @@ namespace MidiPlayerTK
                     " Clean:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_CLEAN] +
                     " On:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_ON] +
                     " Sust:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_SUSTAINED] +
-                    " Off:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF] +
-                    " Released:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF + 1]);
+                    " Off:" + StatusStat[(int)fluid_voice_status.FLUID_VOICE_OFF]);
             }
 #endif
+        }
+        public void DebugVoice()
+        {
+            foreach (fluid_voice v in ActiveVoices)
+            {
+                Debug.LogFormat("", v.LastTimeWrite);
+            }
         }
 
         private void AutoCleanVoice(long ticks)
@@ -3258,8 +3503,7 @@ namespace MidiPlayerTK
                 }
                 catch (Exception ex)
                 {
-                    if (VerboseSynth)
-                        Debug.LogWarning(ex.Message);
+                    if (VerboseSynth) Debug.LogWarning(ex.Message); // AutoCleanVoice
                 }
             }
             needClearingFreeVoices = false;
@@ -3273,6 +3517,8 @@ namespace MidiPlayerTK
             {
                 while (state == fluid_synth_status.FLUID_SYNTH_PLAYING)
                 {
+                    //Debug.Log($"midiThread.IsAlive:{midiThread.IsAlive} ThreadState:{midiThread.ThreadState}");
+
                     if (MPTK_ThreadMidiWait > 0)
                         System.Threading.Thread.Sleep(MPTK_ThreadMidiWait);
 
@@ -3281,8 +3527,15 @@ namespace MidiPlayerTK
             }
             if (VerboseSynth) Debug.Log($"STOP ThreadMidiPlayer IdSynth:{IdSynth} state:{state} ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}");
 
-            midiThread.Abort();
-            midiThread = null;
+            try
+            {
+                midiThread.Abort();
+            }
+            catch (Exception ex)
+            {
+                if (VerboseSynth) Debug.LogWarning($"STOP ThreadMidiPlayer IdSynth:{IdSynth} state:{state} ManagedThreadId:{Thread.CurrentThread.ManagedThreadId} {ex}");
+            }
+            finally { midiThread = null; }
         }
 
         private void PlayMidi()
@@ -3298,6 +3551,9 @@ namespace MidiPlayerTK
                 //Debug.Log($"{Thread.CurrentThread.ManagedThreadId} {Thread.CurrentThread.Name,15} {Thread.CurrentThread.IsThreadPoolThread} {Thread.CurrentThread.GetApartmentState()} {Thread.CurrentThread.Priority}");
                 nowMs = AudioSettings.dspTime * 1000d;
             }
+
+            //Debug.Log($"PlayMidi -  watchMidi:{Math.Round(nowMs, 2):F2} lastTimeMidi:{Math.Round(lastTimeMidi, 2):F2} timeMidiFromStartPlay:{Math.Round(timeMidiFromStartPlay, 2):F2}  StatDeltaThreadMidiMS:{Math.Round(StatDeltaThreadMidiMS, 2):F2}");
+
             if (lastTimeMidi <= 0d)
             {
                 lastTimeMidi = nowMs;

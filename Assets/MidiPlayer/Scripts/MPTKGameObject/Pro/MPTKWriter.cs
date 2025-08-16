@@ -1073,12 +1073,7 @@ namespace MidiPlayerTK
 
         /// <summary>@brief
         /// Sort in place events in MPTK_MidiEvents by ascending tickFromTime position.
-        /// First priority is applied for 'preset change' and 'meta' event for a group of events with the same position (but 'end track' are set at end of the group. 
-        /// @note
-        /// @li No reallocation of the list is done, the events in the list are sorted in place.
-        /// @li good performance for low disorder 
-        /// @li not efficient for high disorder list. Typically when reading a MIDI file, list is sorted by tracks.
-        /// @li in case of high disorder the use of MPTK_SortEvents is recommended at the price of a realocation of the list.
+        /// Priority is applied for 'bank change' 'preset change' for a group of events with the same position (but 'end track' are set at end of the group. 
         /// </summary>
         /// <param name="logPerf"></param>
         public void StableSortEvents(bool logPerf = false)
@@ -1092,16 +1087,10 @@ namespace MidiPlayerTK
                     watch.Start();
                 }
 
-                //// Quick sort - NO will realloc the list. 
-                //MPTK_MidiEvents = MPTK_MidiEvents.OrderBy(o => o.Tick).ToList();
-                //if (logPerf)
-                //{
-                //    Debug.Log($"Quick Sort time {watch.ElapsedMilliseconds} {watch.ElapsedTicks}");
-                //    watch.Restart();
-                //}
+                // Sort with priority of bank change, preset change, meta end
+                MPTK_MidiEvents.Sort((x, y) => x.Compare(y));
 
-                // Then sort with priority on meta and preset change event (too long for a not pre-sorted list)
-                MidiLoad.Sort(MPTK_MidiEvents, 0, MPTK_MidiEvents.Count - 1, new MidiLoad.MidiEventComparer());
+                //before 2.14.1 MidiLoad.Sort(MPTK_MidiEvents, 0, MPTK_MidiEvents.Count - 1, new MidiLoad.MidiEventComparer());
                 if (logPerf)
                 {
                     Debug.Log($"Stable sort time {watch.ElapsedMilliseconds} {watch.ElapsedTicks}");
@@ -1354,7 +1343,7 @@ namespace MidiPlayerTK
                                                 break;
                                             case MPTKMeta.EndTrack:
                                                 // v2.9.0 - don't add endtrack, they are automatically processed by Maestro
-                                                Debug.LogWarning($"Do not add endtrack, they are automatically processed by Maestro, track:{track}");
+                                                Debug.LogWarning($"It's useless to add an endtrack. Maestro will automatically process it. Track:{track}");
                                                 // naudioMidi.Events.AddEvent(new MetaEvent(MetaEventType.EndTrack, 0, mptkEvent.Tick), track);
                                                 // End track, no more event will be added after this event for this track
                                                 endTrack = true;

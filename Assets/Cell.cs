@@ -1,4 +1,5 @@
 
+using UE.Script.Gemstruments;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -25,7 +26,7 @@ public class Cell : MonoBehaviour
     private CellState _state = CellState.Disabled;
 
     public CellState State => _state;
-    private ICellConfiguration _cellConfig;
+    private Gemstrument _cellConfig;
 
     private SpriteRenderer _backgroundSpriteRenderer;
     private SpriteRenderer _iconSpriteRenderer;
@@ -50,11 +51,16 @@ public class Cell : MonoBehaviour
         _iconSpriteRenderer.sprite = _state == CellState.Disabled ? null : _cellConfig.GetSprite();
     }
 
-    public void ToggleState(ICellConfiguration gemstrument)
+    public void ToggleState(Gemstrument gemstrument)
     {
         _cellConfig = gemstrument;
         
         if (_state == CellState.Disabled) { _state = CellState.Enabled;}
         else if (_state == CellState.Enabled) _state = CellState.Disabled;
+    }
+    
+    public Gemstrument GetGemstrument()
+    {
+        return _cellConfig;
     }
 }

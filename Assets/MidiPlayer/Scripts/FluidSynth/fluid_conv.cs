@@ -36,7 +36,7 @@ namespace MidiPlayerTK
          - for case (1), FLUID_NOISE_FLOOR should be the noise floor for 24 bits (i.e -138 dB).
          - for case (2) or (3), FLUID_NOISE_FLOOR should be the noise floor for 16 bits (i.e -90 dB).
          */
-        public const float FLUID_PEAK_ATTENUATION = 960.0f;
+        static public float FLUID_PEAK_ATTENUATION = 960.0f;
 
         public const int FLUID_CENTS_HZ_SIZE = 1200;
         public const int FLUID_VEL_CB_SIZE = 128;

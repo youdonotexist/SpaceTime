@@ -28,8 +28,6 @@ namespace DemoMPTK
 
         private void Start()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
             // Warning: when defined by script, this event is not triggered at first load of MPTK 
             // because MidiPlayerGlobal is loaded before any other gamecomponent
             // To be done in Start event (not Awake)
@@ -104,8 +102,6 @@ namespace DemoMPTK
         void OnGUI()
         {
             int spaceV = 10;
-            if (!HelperDemo.CheckSFExists()) return;
-
             Vector3 scale = HelperDemo.GUIScale();
 
             // Set custom Style. Good for background color 3E619800

@@ -80,7 +80,6 @@ namespace DemoMPTK
         public float widthLeftPanel;
         public float widthScaledLeftPanel;
         public float widthGUI;
-        public bool quickSort;
         public bool calculateTiming;
         public bool randomNote;
         public bool clearNote;
@@ -135,7 +134,7 @@ namespace DemoMPTK
             {
                 Title = "Select A MIDI File",
                 OnSelect = MastroMidiSelected,
-                Tag = "NEWMIDI",
+                Tag = "LoadMIDI",
                 ColCount = 3,
                 ColWidth = 250,
             };
@@ -177,9 +176,9 @@ namespace DemoMPTK
 
                 //! [Example_OnBeatEvent]
 
-                // OnBeatEvent (pro) is triggered by the MPTK MIDI sequencer at each beat independantly of MIDI events 
+                // OnBeatEvent (pro) is triggered by the MPTK MIDI sequencer at each beat independently of MIDI events 
                 //    - OnBeatEvent is executed at each beat even if there is there no MIDI event on the beat.
-                //    - Accuracy is garanteed (internal thread).
+                //    - Accuracy is guaranteed (internal thread).
                 //    - Direct call to Unity API is not possible (but you have access to all your script variables and most part of the MPTK API).
                 // Parameters received: 
                 //    - time        Time in milliseconds since the start of the playing MIDI.
@@ -335,7 +334,7 @@ namespace DemoMPTK
                                 {
                                     // Warning: this call back is run out of the main Unity thread, Unity API (like UnityEngine.Random) can't be used.
                                     System.Random rnd = new System.Random();
-                                    // Change the tempo with a random value here, because it's too late for the MIDI Sequencer (alredy taken into account).
+                                    // Change the tempo with a random value here, because it's too late for the MIDI Sequencer (already taken into account).
                                     midiFilePlayer.MPTK_Tempo = rnd.Next(30, 240);
                                     Debug.Log($"Detected MIDI event Set Tempo {midiEvent.Value}, forced to a random value {midiFilePlayer.MPTK_Tempo}");
                                 }
@@ -1331,8 +1330,6 @@ namespace DemoMPTK
             GUILayout.Space(10);
             randomDuration = GUILayout.Toggle(randomDuration, "Random Duration");
             GUILayout.Space(10);
-            quickSort = GUILayout.Toggle(quickSort, "Quick Sort");
-            GUILayout.Space(10);
             calculateTiming = GUILayout.Toggle(calculateTiming, "Timing Recalculation");
             HelperDemo.GUI_Horizontal(HelperDemo.Zone.END);
 
@@ -1404,14 +1401,7 @@ namespace DemoMPTK
 
                     // New events has been inserted, MIDI events list must be sorted by tick value.
                     // ---------------------------------------------------------------------------
-                    if (quickSort)
-                        // This is a quick sort based on the tick value, regardless of the type of MIDI event.
-                        midiFilePlayer.MPTK_SortEvents();
-                    else
-                        // This sort is also based on tick value, but for the same tick value,
-                        // 'preset change' and 'meta' events are placed before other events such as 'noteon'.
-                        // Avoid if possible: take more time and realloc the entire MIDI list.
-                        midiFilePlayer.midiLoaded.MPTK_MidiEvents = MidiLoad.MPTK_SortEvents(midiFilePlayer.MPTK_MidiEvents, logPerf: true);
+                    midiFilePlayer.MPTK_SortEvents();
 
                     if (calculateTiming)
                     {

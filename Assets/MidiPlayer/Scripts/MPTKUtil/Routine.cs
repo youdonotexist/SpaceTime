@@ -9,7 +9,7 @@ using UnityEngine.Profiling;
 #endif
 
 
-namespace MEC
+namespace MidiPlayerTK
 {
     public class Routine : MonoBehaviour
     {
@@ -7341,369 +7341,371 @@ namespace MEC
             return Routine.WaitUntilDone(newCoroutine, segment, layer, tag);
         }
     }
-}
 
-public static class MECExtensionMethods2
-{
-    /// <summary>
-    /// Adds a delay to the beginning of this coroutine.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="timeToDelay">The number of seconds to delay this coroutine.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Delay(this IEnumerator<float> coroutine, float timeToDelay)
+
+
+    public static class MECExtensionMethods2
     {
-        yield return MEC.Routine.WaitForSeconds(timeToDelay);
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Adds a delay to the beginning of this coroutine until a function returns true.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="condition">The coroutine will be paused until this function returns true.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Delay(this IEnumerator<float> coroutine, System.Func<bool> condition)
-    {
-        while (!condition())
-            yield return 0f;
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Adds a delay to the beginning of this coroutine until a function returns true.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="data">A variable that will be passed into the condition function each time it is tested.</param>
-    /// <param name="condition">The coroutine will be paused until this function returns true.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Delay<T>(this IEnumerator<float> coroutine, T data, System.Func<T, bool> condition)
-    {
-        while (!condition(data))
-            yield return 0f;
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Adds a delay to the beginning of this coroutine in frames.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="framesToDelay">The number of frames to delay this coroutine.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> DelayFrames(this IEnumerator<float> coroutine, int framesToDelay)
-    {
-        while (framesToDelay-- > 0)
-            yield return 0f;
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Cancels this coroutine when the supplied game object is destroyed or made inactive.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject">The GameObject to test.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, GameObject gameObject)
-    {
-        while (MEC.Routine.MainThread != System.Threading.Thread.CurrentThread ||
-                (gameObject && gameObject.activeInHierarchy && coroutine.MoveNext()))
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Cancels this coroutine when either of the supplied game objects are destroyed or made inactive.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject1">The first GameObject to test.</param>
-    /// <param name="gameObject2">The second GameObject to test</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, GameObject gameObject1, GameObject gameObject2)
-    {
-        while (MEC.Routine.MainThread != System.Threading.Thread.CurrentThread || (gameObject1 && gameObject1.activeInHierarchy &&
-                gameObject2 && gameObject2.activeInHierarchy && coroutine.MoveNext()))
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Cancels this coroutine when the supplied monobehavior is removed from its game object, or the game object is made inactive or destroyed.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject">The GameObject to test.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> CancelWith<T>(this IEnumerator<float> coroutine, T script) where T : MonoBehaviour
-    {
-        GameObject myGO = script.gameObject;
-
-        while (MEC.Routine.MainThread != System.Threading.Thread.CurrentThread ||
-                (myGO && myGO.activeInHierarchy && script != null && coroutine.MoveNext()))
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Cancels this coroutine when the supplied function returns false.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="condition">The test function. True for continue, false to stop.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, System.Func<bool> condition)
-    {
-        if (condition == null) yield break;
-
-        while (MEC.Routine.MainThread != System.Threading.Thread.CurrentThread || (condition() && coroutine.MoveNext()))
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Cancels this coroutine when the supplied game object is destroyed, but only pauses it while it's inactive.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject">The GameObject to test.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, GameObject gameObject)
-    {
-        while (MEC.Routine.MainThread == System.Threading.Thread.CurrentThread && gameObject)
+        /// <summary>
+        /// Adds a delay to the beginning of this coroutine.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="timeToDelay">The number of seconds to delay this coroutine.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Delay(this IEnumerator<float> coroutine, float timeToDelay)
         {
-            if (gameObject.activeInHierarchy)
+            yield return Routine.WaitForSeconds(timeToDelay);
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Adds a delay to the beginning of this coroutine until a function returns true.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="condition">The coroutine will be paused until this function returns true.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Delay(this IEnumerator<float> coroutine, System.Func<bool> condition)
+        {
+            while (!condition())
+                yield return 0f;
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Adds a delay to the beginning of this coroutine until a function returns true.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="data">A variable that will be passed into the condition function each time it is tested.</param>
+        /// <param name="condition">The coroutine will be paused until this function returns true.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Delay<T>(this IEnumerator<float> coroutine, T data, System.Func<T, bool> condition)
+        {
+            while (!condition(data))
+                yield return 0f;
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Adds a delay to the beginning of this coroutine in frames.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="framesToDelay">The number of frames to delay this coroutine.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> DelayFrames(this IEnumerator<float> coroutine, int framesToDelay)
+        {
+            while (framesToDelay-- > 0)
+                yield return 0f;
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Cancels this coroutine when the supplied game object is destroyed or made inactive.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject">The GameObject to test.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, GameObject gameObject)
+        {
+            while (Routine.MainThread != System.Threading.Thread.CurrentThread ||
+                    (gameObject && gameObject.activeInHierarchy && coroutine.MoveNext()))
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Cancels this coroutine when either of the supplied game objects are destroyed or made inactive.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject1">The first GameObject to test.</param>
+        /// <param name="gameObject2">The second GameObject to test</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, GameObject gameObject1, GameObject gameObject2)
+        {
+            while (Routine.MainThread != System.Threading.Thread.CurrentThread || (gameObject1 && gameObject1.activeInHierarchy &&
+                    gameObject2 && gameObject2.activeInHierarchy && coroutine.MoveNext()))
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Cancels this coroutine when the supplied monobehavior is removed from its game object, or the game object is made inactive or destroyed.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject">The GameObject to test.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> CancelWith<T>(this IEnumerator<float> coroutine, T script) where T : MonoBehaviour
+        {
+            GameObject myGO = script.gameObject;
+
+            while (Routine.MainThread != System.Threading.Thread.CurrentThread ||
+                    (myGO && myGO.activeInHierarchy && script != null && coroutine.MoveNext()))
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Cancels this coroutine when the supplied function returns false.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="condition">The test function. True for continue, false to stop.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> CancelWith(this IEnumerator<float> coroutine, System.Func<bool> condition)
+        {
+            if (condition == null) yield break;
+
+            while (Routine.MainThread != System.Threading.Thread.CurrentThread || (condition() && coroutine.MoveNext()))
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Cancels this coroutine when the supplied game object is destroyed, but only pauses it while it's inactive.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject">The GameObject to test.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, GameObject gameObject)
+        {
+            while (Routine.MainThread == System.Threading.Thread.CurrentThread && gameObject)
             {
-                if (coroutine.MoveNext())
-                    yield return coroutine.Current;
+                if (gameObject.activeInHierarchy)
+                {
+                    if (coroutine.MoveNext())
+                        yield return coroutine.Current;
+                    else
+                        yield break;
+                }
                 else
-                    yield break;
-            }
-            else
-            {
-                yield return MEC.Routine.WaitForOneFrame;
+                {
+                    yield return Routine.WaitForOneFrame;
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Cancels this coroutine when either of the supplied game objects are destroyed, but only pauses them while they're inactive.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject1">The first GameObject to test.</param>
-    /// <param name="gameObject2">The second GameObject to test</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, GameObject gameObject1, GameObject gameObject2)
-    {
-        while (MEC.Routine.MainThread == System.Threading.Thread.CurrentThread && gameObject1 && gameObject2)
+        /// <summary>
+        /// Cancels this coroutine when either of the supplied game objects are destroyed, but only pauses them while they're inactive.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject1">The first GameObject to test.</param>
+        /// <param name="gameObject2">The second GameObject to test</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, GameObject gameObject1, GameObject gameObject2)
         {
-            if (gameObject1.activeInHierarchy && gameObject2.activeInHierarchy)
+            while (Routine.MainThread == System.Threading.Thread.CurrentThread && gameObject1 && gameObject2)
             {
-                if (coroutine.MoveNext())
-                    yield return coroutine.Current;
+                if (gameObject1.activeInHierarchy && gameObject2.activeInHierarchy)
+                {
+                    if (coroutine.MoveNext())
+                        yield return coroutine.Current;
+                    else
+                        yield break;
+                }
                 else
-                    yield break;
-            }
-            else
-            {
-                yield return MEC.Routine.WaitForOneFrame;
+                {
+                    yield return Routine.WaitForOneFrame;
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Cancels this coroutine when the supplied monobehavior is removed from its game object, or the game object is destroyed. Pauses the coroutine 
-    /// if the game object or script is disabled.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="gameObject">The GameObject to test.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> PauseWith<T>(this IEnumerator<float> coroutine, T script) where T : MonoBehaviour
-    {
-        GameObject myGO = script.gameObject;
-
-        while (MEC.Routine.MainThread == System.Threading.Thread.CurrentThread && myGO && myGO.GetComponent<T>() != null)
+        /// <summary>
+        /// Cancels this coroutine when the supplied monobehavior is removed from its game object, or the game object is destroyed. Pauses the coroutine 
+        /// if the game object or script is disabled.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="gameObject">The GameObject to test.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> PauseWith<T>(this IEnumerator<float> coroutine, T script) where T : MonoBehaviour
         {
-            if (myGO.activeInHierarchy && script.enabled)
+            GameObject myGO = script.gameObject;
+
+            while (Routine.MainThread == System.Threading.Thread.CurrentThread && myGO && myGO.GetComponent<T>() != null)
             {
-                if (coroutine.MoveNext())
-                    yield return coroutine.Current;
+                if (myGO.activeInHierarchy && script.enabled)
+                {
+                    if (coroutine.MoveNext())
+                        yield return coroutine.Current;
+                    else
+                        yield break;
+                }
                 else
-                    yield break;
-            }
-            else
-            {
-                yield return MEC.Routine.WaitForOneFrame;
+                {
+                    yield return Routine.WaitForOneFrame;
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Pauses this coroutine whenever the supplied function returns false.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="condition">The test function. True for continue, false to stop.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, System.Func<bool> condition)
-    {
-        if (condition == null) yield break;
-
-        while (MEC.Routine.MainThread != System.Threading.Thread.CurrentThread || (condition() && coroutine.MoveNext()))
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Watches the supplied handle and ends this coroutine when the other coroutine ends.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="otherCoroutine">A handle to the coroutine that should be watched.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> KillWith(this IEnumerator<float> coroutine, MEC.CoroutineHandle otherCoroutine)
-    {
-        while (otherCoroutine.IsRunning && coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Runs the supplied coroutine immediately after this one.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="nextCoroutine">The coroutine to run next.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Append(this IEnumerator<float> coroutine, IEnumerator<float> nextCoroutine)
-    {
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-
-        if (nextCoroutine == null) yield break;
-
-        while (nextCoroutine.MoveNext())
-            yield return nextCoroutine.Current;
-    }
-
-    /// <summary>
-    /// Runs the supplied function immediately after this coroutine finishes.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="onDone">The action to run after this coroutine finishes.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Append(this IEnumerator<float> coroutine, System.Action onDone)
-    {
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-
-        if (onDone != null)
-            onDone();
-    }
-
-    /// <summary>
-    /// Runs the supplied coroutine immediately before this one.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="lastCoroutine">The coroutine to run first.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Prepend(this IEnumerator<float> coroutine, IEnumerator<float> lastCoroutine)
-    {
-        if (lastCoroutine != null)
-            while (lastCoroutine.MoveNext())
-                yield return lastCoroutine.Current;
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Runs the supplied function immediately before this coroutine starts.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="onStart">The action to run before this coroutine starts.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Prepend(this IEnumerator<float> coroutine, System.Action onStart)
-    {
-        if (onStart != null)
-            onStart();
-
-        while (coroutine.MoveNext())
-            yield return coroutine.Current;
-    }
-
-    /// <summary>
-    /// Combines the this coroutine with another and runs them in a combined handle.
-    /// </summary>
-    /// <param name="coroutineA">The coroutine handle to act upon.</param>
-    /// <param name="coroutineB">The coroutine handle to combine.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Superimpose(this IEnumerator<float> coroutineA, IEnumerator<float> coroutineB)
-    {
-        return Superimpose(coroutineA, coroutineB, MEC.Routine.Instance);
-    }
-
-    /// <summary>
-    /// Combines the this coroutine with another and runs them in a combined handle.
-    /// </summary>
-    /// <param name="coroutineA">The coroutine handle to act upon.</param>
-    /// <param name="coroutineB">The coroutine handle to combine.</param>
-    /// <param name="instance">The timing instance that this will be run in, if not the default instance.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Superimpose(this IEnumerator<float> coroutineA, IEnumerator<float> coroutineB, MEC.Routine instance)
-    {
-        while (coroutineA != null || coroutineB != null)
+        /// <summary>
+        /// Pauses this coroutine whenever the supplied function returns false.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="condition">The test function. True for continue, false to stop.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> PauseWith(this IEnumerator<float> coroutine, System.Func<bool> condition)
         {
-            if (coroutineA != null && !(instance.localTime < coroutineA.Current) && !coroutineA.MoveNext())
-                coroutineA = null;
+            if (condition == null) yield break;
 
-            if (coroutineB != null && !(instance.localTime < coroutineB.Current) && !coroutineB.MoveNext())
-                coroutineB = null;
-
-            if ((coroutineA != null && float.IsNaN(coroutineA.Current)) || (coroutineB != null && float.IsNaN(coroutineB.Current)))
-                yield return float.NaN;
-            else if (coroutineA != null && coroutineB != null)
-                yield return coroutineA.Current < coroutineB.Current ? coroutineA.Current : coroutineB.Current;
-            else if (coroutineA == null && coroutineB != null)
-                yield return coroutineB.Current;
-            else if (coroutineA != null)
-                yield return coroutineA.Current;
+            while (Routine.MainThread != System.Threading.Thread.CurrentThread || (condition() && coroutine.MoveNext()))
+                yield return coroutine.Current;
         }
-    }
 
-    /// <summary>
-    /// Uses the passed in function to change the return values of this coroutine.
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="newReturn">A function that takes the current return value and returns the new return.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> Hijack(this IEnumerator<float> coroutine, System.Func<float, float> newReturn)
-    {
-        if (newReturn == null) yield break;
-
-        while (coroutine.MoveNext())
-            yield return newReturn(coroutine.Current);
-    }
-
-    /// <summary>
-    /// This will send any exceptions thrown in this coroutine to the exception handler you define. If you pass in null then your exceptions 
-    /// will go unreported. NOTE: Any exceptions thrown will still terminate that coroutine function. The only way to avoid termination is
-    /// to catch the exception inside your function (avoiding any yield return statements).
-    /// </summary>
-    /// <param name="coroutine">The coroutine handle to act upon.</param>
-    /// <param name="exceptionHandler">The function to be called when an exception occurs.</param>
-    /// <returns>The modified coroutine handle.</returns>
-    public static IEnumerator<float> RerouteExceptions(this IEnumerator<float> coroutine, System.Action<System.Exception> exceptionHandler)
-    {
-        while (true)
+        /// <summary>
+        /// Watches the supplied handle and ends this coroutine when the other coroutine ends.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="otherCoroutine">A handle to the coroutine that should be watched.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> KillWith(this IEnumerator<float> coroutine, CoroutineHandle otherCoroutine)
         {
-            try
-            {
-                if (!coroutine.MoveNext())
-                    yield break;
-            }
-            catch (System.Exception ex)
-            {
-                if (exceptionHandler != null)
-                    exceptionHandler(ex);
-                yield break;
-            }
+            while (otherCoroutine.IsRunning && coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
 
-            yield return coroutine.Current;
+        /// <summary>
+        /// Runs the supplied coroutine immediately after this one.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="nextCoroutine">The coroutine to run next.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Append(this IEnumerator<float> coroutine, IEnumerator<float> nextCoroutine)
+        {
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+
+            if (nextCoroutine == null) yield break;
+
+            while (nextCoroutine.MoveNext())
+                yield return nextCoroutine.Current;
+        }
+
+        /// <summary>
+        /// Runs the supplied function immediately after this coroutine finishes.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="onDone">The action to run after this coroutine finishes.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Append(this IEnumerator<float> coroutine, System.Action onDone)
+        {
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+
+            if (onDone != null)
+                onDone();
+        }
+
+        /// <summary>
+        /// Runs the supplied coroutine immediately before this one.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="lastCoroutine">The coroutine to run first.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Prepend(this IEnumerator<float> coroutine, IEnumerator<float> lastCoroutine)
+        {
+            if (lastCoroutine != null)
+                while (lastCoroutine.MoveNext())
+                    yield return lastCoroutine.Current;
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Runs the supplied function immediately before this coroutine starts.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="onStart">The action to run before this coroutine starts.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Prepend(this IEnumerator<float> coroutine, System.Action onStart)
+        {
+            if (onStart != null)
+                onStart();
+
+            while (coroutine.MoveNext())
+                yield return coroutine.Current;
+        }
+
+        /// <summary>
+        /// Combines the this coroutine with another and runs them in a combined handle.
+        /// </summary>
+        /// <param name="coroutineA">The coroutine handle to act upon.</param>
+        /// <param name="coroutineB">The coroutine handle to combine.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Superimpose(this IEnumerator<float> coroutineA, IEnumerator<float> coroutineB)
+        {
+            return Superimpose(coroutineA, coroutineB, Routine.Instance);
+        }
+
+        /// <summary>
+        /// Combines the this coroutine with another and runs them in a combined handle.
+        /// </summary>
+        /// <param name="coroutineA">The coroutine handle to act upon.</param>
+        /// <param name="coroutineB">The coroutine handle to combine.</param>
+        /// <param name="instance">The timing instance that this will be run in, if not the default instance.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Superimpose(this IEnumerator<float> coroutineA, IEnumerator<float> coroutineB, Routine instance)
+        {
+            while (coroutineA != null || coroutineB != null)
+            {
+                if (coroutineA != null && !(instance.localTime < coroutineA.Current) && !coroutineA.MoveNext())
+                    coroutineA = null;
+
+                if (coroutineB != null && !(instance.localTime < coroutineB.Current) && !coroutineB.MoveNext())
+                    coroutineB = null;
+
+                if ((coroutineA != null && float.IsNaN(coroutineA.Current)) || (coroutineB != null && float.IsNaN(coroutineB.Current)))
+                    yield return float.NaN;
+                else if (coroutineA != null && coroutineB != null)
+                    yield return coroutineA.Current < coroutineB.Current ? coroutineA.Current : coroutineB.Current;
+                else if (coroutineA == null && coroutineB != null)
+                    yield return coroutineB.Current;
+                else if (coroutineA != null)
+                    yield return coroutineA.Current;
+            }
+        }
+
+        /// <summary>
+        /// Uses the passed in function to change the return values of this coroutine.
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="newReturn">A function that takes the current return value and returns the new return.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> Hijack(this IEnumerator<float> coroutine, System.Func<float, float> newReturn)
+        {
+            if (newReturn == null) yield break;
+
+            while (coroutine.MoveNext())
+                yield return newReturn(coroutine.Current);
+        }
+
+        /// <summary>
+        /// This will send any exceptions thrown in this coroutine to the exception handler you define. If you pass in null then your exceptions 
+        /// will go unreported. NOTE: Any exceptions thrown will still terminate that coroutine function. The only way to avoid termination is
+        /// to catch the exception inside your function (avoiding any yield return statements).
+        /// </summary>
+        /// <param name="coroutine">The coroutine handle to act upon.</param>
+        /// <param name="exceptionHandler">The function to be called when an exception occurs.</param>
+        /// <returns>The modified coroutine handle.</returns>
+        public static IEnumerator<float> RerouteExceptions(this IEnumerator<float> coroutine, System.Action<System.Exception> exceptionHandler)
+        {
+            while (true)
+            {
+                try
+                {
+                    if (!coroutine.MoveNext())
+                        yield break;
+                }
+                catch (System.Exception ex)
+                {
+                    if (exceptionHandler != null)
+                        exceptionHandler(ex);
+                    yield break;
+                }
+
+                yield return coroutine.Current;
+            }
         }
     }
 }

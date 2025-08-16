@@ -1,118 +1,134 @@
 ﻿using UnityEngine;
-using System;
 using MidiPlayerTK;
 using System.Threading;
-using System.Diagnostics;
-using MPTK.NAudio.Midi;
 using System.Collections.Concurrent;
 
 namespace DemoMPTK
 {
-    /// <summary>@brief
-    /// Example of MVP implementation for reading MIDI event from a MIDI keyboard and play with MPTK
-    /// No Unity thread needed to read MIDI event and play them, so the latency is reduced to this factors:
-    ///    - MIDI input card (in particular with MIDI USB card)
-    ///    - FMOD Player (try with lower buffer size)
-    /// See here for detailed API doc.
-    /// For the MIDI reader:
-    ///     https://mptkapi.paxstellar.com/da/d70/class_midi_player_t_k_1_1_midi_keyboard.html
-    /// For the MIDI player:
-    ///     https://mptkapi.paxstellar.com/d9/d1e/class_midi_player_t_k_1_1_midi_stream_player.html
-    ///       
-    /// For testing:
-    ///     - If not yet done, download and install MidiKeyboard https://paxstellar.fr/class-midikeyboard/
-    ///     - Add a gameObject (empty or not) to your scene.
-    ///     - Add this script to the gameObject.
-    ///     - Connect your MIDI keyboard and run!
-    ///     - Every MIDI event read from the keyboard is sent to the MPTK MIDI Synth.
+    /// <summary>
+    /// Demonstrates an example of a minimal viable product (MVP) implementation for reading MIDI events 
+    /// from a MIDI keyboard and playing them using the MPTK framework.
+    /// 
+    /// This implementation reduces latency by avoiding the Unity main thread for MIDI event reading and playback. 
+    /// The remaining latency factors include:
+    /// - The MIDI input device (especially with USB MIDI interfaces).
+    /// - FMOD audio settings (consider using a smaller buffer size for lower latency).
+    /// 
+    /// Documentation References:
+    /// - MIDI Keyboard API: https://mptkapi.paxstellar.com/da/d70/class_midi_player_t_k_1_1_midi_keyboard.html
+    /// - MIDI Stream Player API: https://mptkapi.paxstellar.com/d9/d1e/class_midi_player_t_k_1_1_midi_stream_player.html
+    /// 
+    /// To test this script use the provided scene (MidiKeyboardThread) or:
+    /// 1. Download and install the MIDI Keyboard tool from https://paxstellar.fr/class-midikeyboard/ (if not already installed).
+    /// 2. Add a GameObject (can be empty) to your Unity scene and attach this script to the GameObject.
+    /// 3. Add a MidiStreamPlayer prefab to your scene (right click on the Hierarchy Tab, menu Maestro)
+    /// 4. Connect a MIDI keyboard to your computer and run the Unity scene.
+    /// 5. All MIDI events received from the keyboard will be played through the MPTK MIDI Synth.
+    /// 6. Add your custom logic in Update() method for visualization, game interaction, or other Unity behaviors (optional).
     /// </summary>
     public class MidiKeyboardThread : MonoBehaviour
     {
+        // Indicates whether the MIDI keyboard is ready to use
         private bool midiKeyboardReady = false;
+
+        // Thread for reading and processing MIDI events without blocking the Unity main thread
         private Thread midiThread;
 
-        // This class is able to play MIDI event: play note, play chord, patch change, apply effect, ... see doc!
+        // Handles MIDI event playback, such as notes, chords, patch changes, and effects
         private MidiStreamPlayer midiStreamPlayer;
 
-        // For your future integration. add your specific code for visualization, game interaction, .... what you want in the Unity Update().
-        // The music played on the MIDI keyboard will be played in background.
+        // Queue for storing MIDI events, allowing integration with custom Unity behaviors in the Update() method
         private ConcurrentQueue<MPTKEvent> midiQueue = new ConcurrentQueue<MPTKEvent>();
 
         private void Awake()
         {
-            // Search for an existing MIDI stream prefab in the scene
+            // Look for an existing MidiStreamPlayer prefab in the scene
             midiStreamPlayer = FindFirstObjectByType<MidiStreamPlayer>();
             if (midiStreamPlayer == null)
-                UnityEngine.Debug.Log("No MidiStreamPlayer Prefab found in the current Scene Hierarchy.");
+            {
+                Debug.LogWarning("No MidiStreamPlayer Prefab found in the current Scene Hierarchy. Add one via the 'Maestro / Add Prefab' menu.");
+            }
         }
 
         private void Start()
         {
-            // Midi Keyboard need to be initialized at start
+            // Initialize the MIDI keyboard at the start
             if (midiStreamPlayer != null && MidiKeyboard.MPTK_Init())
             {
                 midiKeyboardReady = true;
-                UnityEngine.Debug.Log(MidiKeyboard.MPTK_Version());
-                // Open or refresh all input MIDI devices able to send MIDI message
+
+                // Log the MIDI Keyboard version
+                Debug.Log(MidiKeyboard.MPTK_Version());
+
+                // Open or refresh all MIDI input devices that can send MIDI messages
                 MidiKeyboard.MPTK_OpenAllInp();
 
-                // Launch the thread able to read MIDI events and play
+                // Start a dedicated thread for reading MIDI events and playing them
                 midiThread = new Thread(ThreadMidiPlayer);
                 midiThread.Start();
             }
         }
 
+        /// <summary>
+        /// Thread for continuously reading MIDI events from the keyboard and sending them to the MPTK MIDI Synth.
+        /// This thread avoids Unity's main thread for reduced latency.
+        /// </summary>
         private void ThreadMidiPlayer()
         {
             while (midiKeyboardReady)
             {
                 try
                 {
+                    // Check for errors in the MIDI plugin
                     MidiKeyboard.PluginError status = MidiKeyboard.MPTK_LastStatus;
                     if (status != MidiKeyboard.PluginError.OK)
-                        UnityEngine.Debug.LogWarning($"MIDI Keyboard error, status: {status}");
+                    {
+                        Debug.LogWarning($"MIDI Keyboard error, status: {status}");
+                    }
 
                     // Read a MIDI event if available
                     MPTKEvent midiEvent = MidiKeyboard.MPTK_Read();
 
                     if (midiEvent != null)
                     {
-                        // Queuing for your specific code, useless for music playing.
+                        // Add the event to the queue for custom processing in Unity's Update() method
                         midiQueue.Enqueue(midiEvent);
 
-                        // Play!
+                        // Immediately play the MIDI event
                         midiStreamPlayer.MPTK_PlayEvent(midiEvent);
                     }
 
+                    // Add a short delay to prevent overloading the CPU
                     Thread.Sleep(1);
                 }
                 catch (System.Exception ex)
                 {
-                    UnityEngine.Debug.LogError($"ThreadMidiPlayer - {ex}");
+                    Debug.LogError($"ThreadMidiPlayer - {ex}");
                     break;
                 }
             }
         }
 
-        void Update()
+        private void Update()
         {
-            MPTKEvent midiEvent;
-
             if (midiKeyboardReady && !midiQueue.IsEmpty)
             {
-                if (midiQueue.TryDequeue(out midiEvent))
+                if (midiQueue.TryDequeue(out MPTKEvent midiEvent))
                 {
-                    // Add here your specific code for visualization, game interaction, .... what you want with full access to Unity!
-                    // The music played on the MIDI keyboard will be played in background.
-                    UnityEngine.Debug.Log(midiEvent.ToString());
+                    // Add your custom logic here for visualization, game interaction, or other Unity behaviors
+                    // The music played on the MIDI keyboard will continue in the background
+                    Debug.Log(midiEvent.ToString());
                 }
             }
         }
+
         private void OnApplicationQuit()
         {
             if (midiKeyboardReady)
-                // Mandatory to avoid Unity crash!
+            {
+                // Close all MIDI input devices to prevent Unity crashes
                 MidiKeyboard.MPTK_CloseAllInp();
+            }
             midiKeyboardReady = false;
         }
     }

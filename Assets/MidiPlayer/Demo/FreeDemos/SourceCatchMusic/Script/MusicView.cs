@@ -76,8 +76,6 @@ namespace MPTKDemoCatchMusic
 
         void Start()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
             // Default size of a Unity Plan
             float planSize = 10f;
 
@@ -184,8 +182,6 @@ namespace MPTKDemoCatchMusic
             int startx = 5;
             int starty = 90;
             int maxwidth = Screen.width;
-
-            if (!HelperDemo.CheckSFExists()) return;
 
             if (midiFilePlayer != null)
             {

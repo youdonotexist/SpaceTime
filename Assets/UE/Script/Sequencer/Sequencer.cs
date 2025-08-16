@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using MidiPlayerTK;
+using NUnit.Framework.Internal;
+using UE.Script.Gemstruments;
 using UE.Script.Models;
 using UE.Script.Utility.ServiceLocatorSample.ServiceLocator;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace UE.Script.Sequencer
 {
@@ -24,11 +28,16 @@ namespace UE.Script.Sequencer
         private SpaceTimeInput _input;
         
         [SerializeField]
-        List<SeqChannel> channels;
+        private List<SeqChannel> channels;
         
         [SerializeField] ChannelModel[] channelConfigs;
 
         [SerializeField] private GemstrumentManager gemstrumentManager;
+
+        [SerializeField] private SpriteRenderer lightSprite;
+
+        public int beatsPerLoop;
+        public int beatsPerMinute;
 
         public void SetSeqCells(List<Cell> cells, int index)
         {
@@ -43,14 +52,51 @@ namespace UE.Script.Sequencer
             _input = new SpaceTimeInput();
         }
 
+        public int GetGridWidth()
+        {
+            return channels[0].buttons.Length;
+        }
+
+
+        public int GetGridHeight()
+        {
+            return channels.Count;
+        }
+
+        public void SetCellState(int row, int col, Cell.CellState state, Gemstrument gemstrument)
+        {
+            channels[row].buttons[col].ToggleState(gemstrument);
+        }
+        
         private int _lastPlayed = -1;
         private void Start()
         {
             ConductorManager manager = ServiceLocator.Current.Get<ConductorManager>();
 
-            manager.Initialize(40   , 5);
+            manager.Initialize(beatsPerMinute   , beatsPerLoop);
             manager.EventReceiver.Add(this);
             EndLoadingSynth("");
+
+            Randomize();
+        }
+
+        private void Randomize()
+        {
+            List<Gemstrument> gemstruments = gemstrumentManager.AllGemstruments;
+
+            for (int i = 0; i < channels.Count; i++)
+            {
+                Cell[] cells = channels[i].buttons;
+                for (int j = 0; j < cells.Length; j++)
+                {
+                    if (Random.Range(0, 4) < 1)
+                    {
+                        continue;
+                    }
+                    Gemstrument gemstrument = gemstruments[Random.Range(0, gemstruments.Count)];
+                    cells[j].ToggleState(gemstrument);
+                }
+            }
         }
 
         private void OnEnable()
@@ -106,12 +152,18 @@ namespace UE.Script.Sequencer
         public void OnTick(float loopPositionInBeats, float songPositionInBeats, IMidiPlayer midiPlayer)
         {
 
-            int index = Mathf.FloorToInt(loopPositionInBeats * 4); //for 4/4 
+           int index = Mathf.FloorToInt(loopPositionInBeats * 4); //for 4/4 
 
            for (int i = 0; i < channels.Count; i++)
            {
                Cell[] buttons = channels[i].buttons;
                if (index <= _lastPlayed || index >= buttons.Length) return;
+               
+               Cell cell = buttons[index];
+                   
+               Vector2 pos = cell.transform.position;
+               pos.y = cell.transform.position.y;
+               lightSprite.transform.position = pos;
                
                if (buttons[index].State == Cell.CellState.Enabled)
                {
@@ -119,9 +171,9 @@ namespace UE.Script.Sequencer
                    midiPlayer.PlayEvent(new MPTKEvent()
                    {
                        Command = MPTKCommand.NoteOn,
-                       Value = channels[i].value,
-                       Duration = 50,
-                       Channel = Mathf.Clamp(channels[i].channel, 0, 24)
+                       Value = Random.Range(0, 127), // from 0 to 127, 48 for C4, 60 for C5, ...
+                       Duration = 100,
+                       Channel = cell.GetGemstrument().Instrument.BoundChannel
                    });
                }
            }
@@ -185,6 +237,8 @@ namespace UE.Script.Sequencer
             public int PresetNum;
             [SerializeField]
             public string Name;
+            [SerializeField]
+            public int BoundChannel;
 
             public override string ToString()
             {

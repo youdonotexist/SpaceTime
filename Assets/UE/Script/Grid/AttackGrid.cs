@@ -12,8 +12,6 @@ namespace UE.Script.Grid
         [SerializeField] private Vector2 gridGap;
         [SerializeField] private Sequencer.Sequencer sequencer;
     
-        private UkuleleEnvelopeInput input;
-    
         public Vector2Int cellCount = new Vector2Int();
 
         public Cell CellPrefab;

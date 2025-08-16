@@ -1,5 +1,4 @@
-﻿using MEC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -96,7 +95,7 @@ namespace MidiPlayerTK
                     Debug.LogWarning($"MPTK_Load: file path not defined");
                     return null;
                 }
-                else if (!File.Exists(uri))
+                else if (!File.Exists(uri)) // file:///C:/Devel/Maestro/MidiFile/beethoven-sonata-14-3.mid
                 {
                     MPTK_StatusLastMidiLoaded = LoadingStatusMidiEnum.NotFound;
                     Debug.LogWarning($"MPTK_Load: {uri} not found");
@@ -158,7 +157,7 @@ namespace MidiPlayerTK
             if (MPTK_MidiEvents != null)
                 MPTK_MidiEvents.Sort((e1, e2) =>
                 {
-                    return e1.Tick.CompareTo(e2.Tick);
+                    return e1.Compare(e2);
                 });
             else
                 Debug.LogWarning("MPTK_SortEvents: No MIDI loaded");
@@ -265,7 +264,7 @@ namespace MidiPlayerTK
             {
                 MPTK_StatusLastMidiLoaded = LoadingStatusMidiEnum.NotYetDefined;
 
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     playPause = false;
 
@@ -309,7 +308,7 @@ namespace MidiPlayerTK
                     if (MPTK_CorePlayer)
                         Routine.RunCoroutine(ThreadCorePlay(data).CancelWith(gameObject), Segment.RealtimeUpdate);
                     else
-                        Routine.RunCoroutine(ThreadLegacyPlay(data).CancelWith(gameObject), Segment.RealtimeUpdate);
+                        Routine.RunCoroutine(ThreadLegacyPlay(data, "").CancelWith(gameObject), Segment.RealtimeUpdate);
                 }
                 else
                 {
@@ -356,7 +355,7 @@ namespace MidiPlayerTK
                 else
                     needDelayToStart = false;
 
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     playPause = false;
 
@@ -391,7 +390,7 @@ namespace MidiPlayerTK
                     MPTK_InitSynth(mfw2.ChannelCount); // 2.12.2
                     MPTK_StartSequencerMidi();
                     midiNameToPlay = string.IsNullOrEmpty(mfw2.MidiName) ? "(no name)" : mfw2.MidiName;
-                    // Start playing
+
                     if (Application.isPlaying)
                         Routine.RunCoroutine(ThreadMFWPlay(mfw2, fromPosition, toPosition, fromTick, toTick, timePosition).CancelWith(gameObject).CancelWith(gameObject), Segment.RealtimeUpdate);
                     else
@@ -499,16 +498,22 @@ namespace MidiPlayerTK
                     midiLoaded.MPTK_TickStart = fromTick;
                     midiLoaded.MPTK_TickEnd = toTick;
                 }
-                if (Application.isPlaying)
-                    Routine.RunCoroutine(ThreadInternalMidiPlaying(currentMidiName, fromPosition, toPosition).CancelWith(gameObject), Segment.RealtimeUpdate);
+                if (MPTK_CorePlayer)
+                {
+                    if (Application.isPlaying)
+                        Routine.RunCoroutine(ThreadInternalMidiPlaying(currentMidiName, fromPosition, toPosition).CancelWith(gameObject), Segment.RealtimeUpdate);
+                    else
+                        Routine.RunCoroutine(ThreadInternalMidiPlaying(currentMidiName, fromPosition, toPosition), Segment.EditorUpdate);
+                }
                 else
-                    Routine.RunCoroutine(ThreadInternalMidiPlaying(currentMidiName, fromPosition, toPosition), Segment.EditorUpdate);
+                {
+                    Debug.Log($"ThreadMFWPlay ThreadLegacyPlay");
+                    Routine.RunCoroutine(ThreadLegacyPlay(midiBytesToPlay: null, currentMidiName, fromPosition, toPosition, alreadyLoaded:true).CancelWith(gameObject), Segment.RealtimeUpdate);
+                }
             }
             yield return 0;
         }
         //! @endcond
-
-
     }
 }
 

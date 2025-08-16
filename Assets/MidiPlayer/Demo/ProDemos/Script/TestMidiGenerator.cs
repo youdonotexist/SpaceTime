@@ -23,8 +23,6 @@ namespace DemoMPTK
 
         void OnGUI()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
             Vector3 scale = HelperDemo.GUIScale();
 
             // Set custom Style. Good for background color 3E619800
@@ -56,12 +54,13 @@ namespace DemoMPTK
             GUIExample(CreateMidiStream_200_drum_hit_at_each_quarter, "TU - Create 200 drum hits. 'Side stick' at each quarter, 'Low floor Tom' at each bar. Useful for accuracy test", "Generated - Tick - Drum hits for accuracy test");
             GUIExample(CreateMidiStream_time_signature_4_1, "TU - Time Signature 4 1 --> 4/2", "Generated - Tick - Time signature 4 1");
             GUIExample(CreateMidiStream_time_signature_4_3, "TU - Time Signature 4 3 --> 4/8", "Generated - Tick - Time signature 4 3");
+            GUIExample(CreateMidiStream_pitch_wheel, "TU - Pitch Wheel", "Generated - Pitch Wheel");
+            GUIExample(CreateMidiStream_vibrato, "TU - Vibrato", "Generated - Vibrato");
             GUIExample(LoadMidi_add_four_notes_at_beginning, "Load a MIDI from MIDI DB and add MIDI events", "Generated - Load And Modify MIDI");
             GUIExample(CreateMidi_with_text_information, "Add text information as lyrics", "Generated - Add Text");
             GUIExample(CreateMidiStream_128_channel_fast, "Create MIDI with 128 channels and 128 instruments almost simultaneously, not recommended!", "Generated - Channel Extension Fast");
             GUIExample(CreateMidiStream_128_channel_slow, "Create MIDI with 128 channels and 128 instruments at each quarter", "Generated - Channel Extension Slow");
-            GUIExample(CreateMidiStream_drum, "Drum 4 measure with 3 kick each", "Generated - Drum");
-            
+            GUIExample(CreateMidiStream_drum, "Drum 4 measures with 3 kicks each", "Generated - Drum");
 
             GUILayout.EndVertical();
             GUILayout.EndScrollView();
@@ -80,12 +79,14 @@ namespace DemoMPTK
 
             if (GUILayout.Button("Stop Playing", GUILayout.Height(height)))
                 StopAllPlaying();
+#if !UNITY_WEBGL
 
             if (GUILayout.Button("Open Folder MIDI External", GUILayout.Height(height)))
                 Application.OpenURL("file://" + Application.persistentDataPath);
 
             if (GUILayout.Button("Open Folder Maestro MIDI DB", GUILayout.Height(height)))
                 Application.OpenURL("file://" + Path.Combine(Application.dataPath, MidiPlayerGlobal.PathToMidiFile));
+#endif
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
@@ -102,6 +103,7 @@ namespace DemoMPTK
             GUILayout.FlexibleSpace();
             mfwGenerator = _mfwGenerator;
             mfwFilename = _filename;
+#if !UNITY_WEBGL
             if (GUILayout.Button(new GUIContent("Write File\nand Play", "Write To a MIDI file and play with MidiExternalPlay Prefab"), GUILayout.Width(width), GUILayout.Height(height)))
             {
                 StopAllPlaying();
@@ -113,7 +115,7 @@ namespace DemoMPTK
                 StopAllPlaying();
                 WriteMidiToMidiDB(mfwFilename, mfwGenerator());
             }
-
+#endif
             if (GUILayout.Button(new GUIContent("Play with\nMidiFilePlayer", ""), GUILayout.Width(width), GUILayout.Height(height)))
             {
                 StopAllPlaying();
@@ -615,11 +617,13 @@ namespace DemoMPTK
             mfw.AddBPMChange(track: 0, absoluteTime, 240);
             mfw.AddChangePreset(track: 1, absoluteTime, channel: 0, preset: 0);
 
-            for (int velocity = 0; velocity <= 127; velocity += 5)
+            for (int velocity = 0; ; velocity += 3)
             {
-                // Duration = 1 second for a quarter at BPM 60
+                if (velocity > 127) velocity = 127;
                 mfw.AddNote(track: 1, absoluteTime, channel: 0, note: 60, velocity: velocity, length: ticksPerQuarterNote);
                 absoluteTime += ticksPerQuarterNote; // Next note will be played one quarter after the previous (time signature is 4/4)
+                if (velocity == 127)
+                    break;
             }
 
             return mfw;
@@ -802,12 +806,22 @@ namespace DemoMPTK
         private MPTKWriter CreateMidiStream_stable_sort()
         {
             MPTKWriter mfw = new MPTKWriter(deltaTicksPerQuarterNote: 500);
-            mfw.AddText(0, tick: 0, MPTKMeta.Lyric, "some text");
-            mfw.AddNote(1, tick: 500, 0, 61, 100, 500);
-            mfw.AddNote(1, tick: 0, 0, 60, 100, 500);
-            mfw.AddChangePreset(1, tick: 0, 0, preset: 100);
-            mfw.AddChangePreset(1, tick: 10, 0, preset: 100);
-            mfw.AddText(0, tick: 0, MPTKMeta.Lyric, "other text");
+            mfw.AddText(track: 0, tick: 0, MPTKMeta.Lyric, "Create unordered event - 1");
+            mfw.AddNote(track: 1, tick: 500, channel: 0, note: 61, 100, 500);
+            mfw.AddNote(track: 1, tick: 0, channel: 0, note: 60, 100, 500);
+            mfw.AddChangePreset(track: 1, tick: 0, channel: 0, preset: 100);
+            mfw.AddRawEvent(new MPTKEvent() { Track = 0, Tick = 1000, Command = MPTKCommand.MetaEvent, Meta = MPTKMeta.EndTrack });
+            mfw.AddText(track: 0, tick: 1000, MPTKMeta.Lyric, "Ordered event:P100 N60 N61");
+
+            mfw.AddText(track: 0, tick: 1500, MPTKMeta.Lyric, "Create unordered event with bank change - 2");
+            mfw.AddChangePreset(track: 1, tick: 1500, channel: 0, preset: 0);
+            mfw.AddControlChange(track: 1, tick: 1500, channel: 0, controller: MPTKController.BankSelectMsb, controllerValue: 120);
+            mfw.AddControlChange(track: 1, tick: 1500, channel: 0, controller: MPTKController.BankSelectLsb, controllerValue: 1);
+            mfw.AddNote(track: 1, tick: 2000, channel: 0, note: 64, 100, 500);
+            mfw.AddNote(track: 1, tick: 1500, channel: 0, note: 63, 100, 500);
+            mfw.AddRawEvent(new MPTKEvent() { Track = 1, Tick = 2000, Command = MPTKCommand.MetaEvent, Meta = MPTKMeta.EndTrack });
+            mfw.AddText(track: 0, tick: 2000, MPTKMeta.Lyric, "Ordered event:B120 P0 N63 N64");
+
             mfw.StableSortEvents(logPerf: true);
             return mfw;
         }
@@ -1233,6 +1247,144 @@ namespace DemoMPTK
             return mfw;
         }
 
+        private MPTKWriter CreateMidiStream_pitch_wheel()
+        {
+            // In this demo, we are using variable to contains tracks and channel values only for better understanding. 
+
+            // Using multiple tracks is not mandatory,  you can arrange your song as you want.
+            // But first track (index=0) is often use for general MIDI information track, lyrics, tempo change. By convention contains no noteon.
+            int track0 = 0;
+
+            // Second track (index=1) will contains the notes, preset change, .... all events associated to a channel.
+            int track1 = 1;
+
+            int channel0 = 0; // we are using only one channel in this demo
+
+            // a classical value for a Midi. define the time precision
+            int ticksPerQuarterNote = 500;
+
+            // Create a Midi file of type 1 (recommended)
+            MPTKWriter mfw = new MPTKWriter(ticksPerQuarterNote, 1);
+
+
+            // Time to play a note expressed in ticks.
+            // All durations are expressed in ticks, so this value can be used to convert
+            // duration notes as quarter to ticks. https://paxstellar.fr/2020/09/11/midi-timing/
+            // If ticksPerQuarterNote = 120 and absoluteTime = 120 then the note will be played a quarter delay from the start.
+            // If ticksPerQuarterNote = 120 and absoluteTime = 1200 then the note will be played a 10 quarter delay from the start.
+            long absoluteTime = 0;
+
+            // Some textual information added to the track 0 at time=0
+            mfw.AddText(track0, absoluteTime, MPTKMeta.SequenceTrackName, "MIDI Generated with MPTK with tempo, preset, pitch wheel change");
+
+            //
+            // Build third bar : one note with a pitch change along the bar
+            // -------------------------------------------------------------
+
+            mfw.AddChangePreset(track1, absoluteTime, channel0, preset: 50); // synth string
+
+            // Some lyrics added to the track 0
+            mfw.AddText(track0, absoluteTime, MPTKMeta.Lyric, "Pitch wheel effect");
+
+            // Play an infinite note A4 (duration = -1) don't forget the noteoff!
+            mfw.AddNote(track1, absoluteTime, channel0, note: 57, velocity: 100, length: -1);
+
+            // Apply pitch wheel on the channel 0
+            for (float pitch = 0f; pitch <= 2f; pitch += 0.05f) // 40 steps of 0.05
+            {
+                mfw.AddPitchWheelChange(track1, absoluteTime, channel0, pitch);
+                // Advance position 40 steps and for a total duration of 4 quarters
+                absoluteTime += (long)((float)ticksPerQuarterNote * 4f / 40f);
+            }
+
+            // The noteoff for A4
+            mfw.AddOff(track1, absoluteTime, channel0, 57);
+
+            // Reset pitch change to normal value
+            mfw.AddPitchWheelChange(track1, absoluteTime, channel0, 0.5f);
+
+            //
+            // optional : build tempo and signature map, measure and beat
+            // ----------------------------------------------------------
+
+            // Sort the events by ascending absolute time
+            mfw.StableSortEvents();
+
+            // Calculate time, measure and beat for each events
+            mfw.CalculateTiming(logDebug: true, logPerf: true);
+
+            return mfw;
+        }
+
+        private MPTKWriter CreateMidiStream_vibrato()
+        {
+            // In this demo, we are using variable to contains tracks and channel values only for better understanding. 
+
+            // Using multiple tracks is not mandatory,  you can arrange your song as you want.
+            // But first track (index=0) is often use for general MIDI information track, lyrics, tempo change. By convention contains no noteon.
+            int track0 = 0;
+
+            // Second track (index=1) will contains the notes, preset change, .... all events associated to a channel.
+            int track1 = 1;
+
+            int channel0 = 0; // we are using only one channel in this demo
+
+            // a classical value for a Midi. define the time precision
+            int ticksPerQuarterNote = 500;
+
+            // Create a Midi file of type 1 (recommended)
+            MPTKWriter mfw = new MPTKWriter(ticksPerQuarterNote, 1);
+
+
+            // Time to play a note expressed in ticks.
+            // All durations are expressed in ticks, so this value can be used to convert
+            // duration notes as quarter to ticks. https://paxstellar.fr/2020/09/11/midi-timing/
+            // If ticksPerQuarterNote = 120 and absoluteTime = 120 then the note will be played a quarter delay from the start.
+            // If ticksPerQuarterNote = 120 and absoluteTime = 1200 then the note will be played a 10 quarter delay from the start.
+            long absoluteTime = 0;
+
+            // Some textual information added to the track 0 at time=0
+            mfw.AddText(track0, absoluteTime, MPTKMeta.SequenceTrackName, "MIDI Generated with modulation (vibrato)");
+
+            //
+            // Build third bar : one note with a pitch change along the bar
+            // -------------------------------------------------------------
+
+            mfw.AddChangePreset(track1, absoluteTime, channel0, preset: 14); // tubular bells
+
+            // Play an infinite note A4 (duration = -1) don't forget the noteoff!
+            mfw.AddNote(track1, absoluteTime, channel0, note: 57, velocity: 100, length: -1);
+
+
+            absoluteTime += ticksPerQuarterNote * 1;
+
+
+            // Apply modulation change, (vibrato) after one quarter
+            mfw.AddControlChange(track1, absoluteTime, channel0, MPTKController.Modulation, 127);
+
+            absoluteTime += ticksPerQuarterNote * 4;
+
+            // Reset modulation change to normal value
+            mfw.AddControlChange(track1, absoluteTime, channel0, MPTKController.Modulation, 0);
+
+            absoluteTime += ticksPerQuarterNote * 1;
+
+            // The noteoff for A4 after one quarter
+            mfw.AddOff(track1, absoluteTime, channel0, 57);
+
+            //
+            // optional : build tempo and signature map, measure and beat
+            // ----------------------------------------------------------
+
+            // Sort the events by ascending absolute time
+            mfw.StableSortEvents();
+
+            // Calculate time, measure and beat for each events
+            mfw.CalculateTiming(logDebug: true, logPerf: true);
+
+            return mfw;
+        }
+
         /// <summary>@brief
         /// Midi Generated with MPTK for unitary test
         /// </summary>
@@ -1443,7 +1595,7 @@ namespace DemoMPTK
         private void WriteMidiToMidiDB(string name, MPTKWriter mfw)
         {
             // build the path + filename to the midi
-            string filename = Path.Combine(Application.persistentDataPath, name + ".mid");
+            string filename = Path.Combine(Application.persistentDataPath, "_" + name + ".mid");
             Debug.Log("Write MIDI file:" + filename);
 
             // Sort the events by ascending absolute time (optional)

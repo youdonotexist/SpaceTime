@@ -1,9 +1,9 @@
-﻿using MEC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SocialPlatforms;
 
 namespace MidiPlayerTK
 {
@@ -30,7 +30,7 @@ namespace MidiPlayerTK
         public const string FilenameMidiSet = "MidiSet";
         public const string PathSF2 = "SoundFont";
         public const string PathToWave = "wave";
-        public const string ErrorNoSoundFont = "No SoundFont ready found. Load and choose a SoundFont from the Unity Editor menu 'Maestro/SoundFont Setup'";
+        public const string ErrorNoSoundFont = "No global SoundFont ready found. Load and choose a SoundFont from the Unity Editor menu 'Maestro/SoundFont Setup'";
         public const string ErrorNoPreset = "No Preset found in the SoundFont selected.\nHave you extracted them?\nCheck from the Unity Editor menu 'Maestro/SoundFont Setup'";
         public const string ErrorNoMidiFile = "No MIDI found in MIDI DB. Add MIDI file from Unity Editor menu 'Maestro/MIDI File Setup' or copy .mid files in MidiPlayer/Resources/MidiDB folder and load all with 'Maestro/MIDI File Setup'.";
         public const string HelpDefSoundFont = "Add or Select SoundFont from the Unity Editor menu 'Maestro' (Alt-f)";
@@ -71,6 +71,13 @@ namespace MidiPlayerTK
         /// @version 2.11.2 Pro
         /// </summary>
         static public string MPTK_PathSoundFontCache => Path.Combine(Application.persistentDataPath, "DownloadedSF");
+
+        /// <summary>
+        /// Current Soundfont name
+        /// @version 2.15.0
+        /// </summary>
+        static public string MPTK_SoundFontName;
+
 
         // Initialized with InitPath()
         static public string PathToSoundfonts;
@@ -160,15 +167,13 @@ namespace MidiPlayerTK
                 if (instance != null)
                     instance.LoadSoundFontAtStartup = value;
                 else
-                    Debug.LogWarning("MPTK_LoadWaveAtStartup: no MidiPlayerGlobal instance found");
+                    Debug.LogWarning("MPTK_LoadSoundFontAtStartup: no MidiPlayerGlobal instance found");
             }
         }
 
-        /// <summary>@brief
-        /// If true load all waves when application is started else load when need when playing (default)
-        /// Useless?
-        /// </summary>
-        public static bool MPTK_LoadWaveAtStartup
+        // If true load all waves when application is started else load when need when playing (default)
+        // Useless? deprecated with v2.16
+        private bool MPTK_LoadWaveAtStartup
         {
             get { return instance != null ? instance.LoadWaveAtStartup : false; }
             set
@@ -178,6 +183,16 @@ namespace MidiPlayerTK
                 else
                     Debug.LogWarning("MPTK_LoadWaveAtStartup: no MidiPlayerGlobal instance found");
             }
+        }
+
+        /// <summary>@brief
+        /// If true load all waves when application is started else load when need when playing (default)
+        /// Useless?
+        /// </summary>
+        public static bool VerboseGlobal
+        {
+            get { return instance != null ? instance.verboseGlobal : false; }
+            set { if (instance != null) instance.verboseGlobal = value; }
         }
 
         /// <summary>@brief
@@ -250,6 +265,7 @@ namespace MidiPlayerTK
 
         public bool LoadSoundFontAtStartup = true;
         public bool LoadWaveAtStartup;
+        public bool verboseGlobal;
         public static TimeSpan timeToDownloadSoundFont = TimeSpan.Zero;
         public static TimeSpan timeToLoadSoundFont = TimeSpan.Zero;
         public static TimeSpan timeToLoadWave = TimeSpan.Zero;
@@ -273,47 +289,22 @@ namespace MidiPlayerTK
 
         private static AudioListener AudioListener;
         private static bool Initialized = false;
-        private static bool logDebug = false;
         private static DateTime startInstance;
 
 
         // create path. Useful only in editor mode in conjonction of Application.dataPath. (for OS point of view)
         public static void InitPath()
         {
-            //if (Instance != null)
-            //{
-            //    if (string.IsNullOrEmpty(MPTK_PathToResources))
-            //        Debug.Log("MPTK_PathToResources not defined");
-            //    else
-            //    {
-            //Debug.Log("InitPath Instance.PathToResources " + Instance.PathToResources);
-
             PathToSoundfonts = MPTK_PathToResources + SoundfontsDB;
             PathToMidiFile = MPTK_PathToResources + MidiFilesDB;
             PathToMidiSet = MPTK_PathToResources + FilenameMidiSet + ExtensionSoundFileDot;
-            //PathToSoundfonts = Instance.PathToResources + "/Resources/" + SoundfontsDB;
-            //PathToMidiFile = Instance.PathToResources + "/Resources/" + MidiFilesDB;
-            //PathToMidiSet = Instance.PathToResources + "/Resources/" + FilenameMidiSet + ExtensionSoundFileDot;
-            //    }
-            //}
         }
-        //public static void InitPath()
-        //{
-        //    if (string.IsNullOrEmpty(MPTK_PathToResources))
-        //        Debug.Log("MPTK_PathToResources not defined");
-        //    else
-        //    {
-        //        PathToSoundfonts = MPTK_PathToResources + SoundfontsDB;
-        //        PathToMidiFile = MPTK_PathToResources + MidiFilesDB;
-        //        PathToMidiSet = MPTK_PathToResources + FilenameMidiSet + ExtensionSoundFileDot;
-        //    }
-        //}
 
         void Awake()
         {
             HelperNoteLabel.Init();
 
-            //Debug.Log("Awake MidiPlayerGlobal " + (instance == null ? "instance null" : "instance exist"));
+            if (verboseGlobal) Debug.Log("Awake MidiPlayerGlobal " + (instance == null ? "instance null" : "instance exist"));
             InitPath();
             if (instance != null && instance != this)
             {
@@ -328,11 +319,9 @@ namespace MidiPlayerTK
 
         }
 
-        public void InitInstance(bool _logDebug = false)
+        public void InitInstance()
         {
-            logDebug = _logDebug;
-
-            if (logDebug)
+            if (verboseGlobal)
             {
                 startInstance = DateTime.Now;
                 //Debug.Log("Awake MidiPlayerGlobal - InitThread");
@@ -397,6 +386,15 @@ namespace MidiPlayerTK
         /// </summary>
         public static List<MPTKListItem> MPTK_ListBank;
 
+        public static List<string> MPTK_BanksName;
+
+        public static List<int> MPTK_BanksNumber;
+
+        public static List<string> MPTK_PresetsName;
+        public static List<int> MPTK_PresetsNumber;
+        public static List<string> MPTK_PresetsNameDrum;
+        public static List<int> MPTK_PresetsNumberDrum;
+
         /// <summary>@brief
         /// List of drum set for the default or selected bank.\n
         /// The default bank can be changed with #MPTK_SelectBankDrum or with the menu "MPTK / SoundFont" or Alt-F in the Unity editor.
@@ -449,13 +447,13 @@ namespace MidiPlayerTK
                 try
                 {
                     LoadMidiSetFromRsc();
-                    if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - LoadMidiSetFromRsc");
+                    if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - LoadMidiSetFromRsc");
 
                     DicAudioWave.Init();
-                    if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - DicAudioWave.Init");
+                    if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - DicAudioWave.Init");
 
                     DicAudioClip.Init();
-                    if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - DicAudioClip.Init");
+                    if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - DicAudioClip.Init");
                 }
                 catch (System.Exception ex)
                 {
@@ -472,19 +470,19 @@ namespace MidiPlayerTK
                     Debug.LogWarning(MidiPlayerGlobal.ErrorNoSoundFont);
                     yield return Routine.WaitForOneFrame;
                 }
-                if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - WaitForOneFrame");
+                if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - WaitForOneFrame");
 
                 BuildMidiList();
-                if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - BuildMidiList ");
+                if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - BuildMidiList ");
 
                 if (MPTK_LoadSoundFontAtStartup)
                     LoadCurrentSF();
-                if (logDebug) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - LoadCurrentSF ");
+                if (verboseGlobal) Debug.Log($"{(DateTime.Now - startInstance).TotalSeconds:F3} MidiPlayerGlobal - LoadCurrentSF ");
             }
         }
 
         /// <summary>@brief
-        /// Stop all MIDI Synthesizers.
+        /// Search for each MidiFilePlayer and stop playing and stop the MIDI synth.
         /// </summary>
         public static void MPTK_Stop()
         {
@@ -515,29 +513,28 @@ namespace MidiPlayerTK
             Application.Quit();
         }
 
-        private static float startupdate = float.MinValue;
+        //private static float startupdate = float.MinValue;
 
         /// <summary>@brief
-        /// Check if SoudFont is loaded. Add a default wait time because Unity AudioSource need a delay to be ready to play. 
+        /// @warning MPTK_IsReady has been deprecated, please investigate MPTK_Pulse in place <midiSynth>.MPTK_SoundFont.IsReady
+        /// @code
+        ///    // Check that SoundFont is loaded for the midistream synth.
+        ///    if (!midiStreamPlayer.MPTK_SoundFont.IsReady)
+        ///       return;
+        /// @endcode
         /// </summary>
-        /// <param name="delay">Additional waiting time (second), default is 0.5 second. Could be equal to 0.</param>
+        /// <param name="delay"></param>
         /// <returns></returns>
         public static bool MPTK_IsReady(float delay = 0.5f)
         {
-            if (startupdate < 0f)
-                startupdate = Time.realtimeSinceStartup;
-            if (!MPTK_SoundFontLoaded)
-                return false;
-            //Debug.Log(Time.realtimeSinceStartup);
-            if (Time.realtimeSinceStartup - startupdate < 0.5f)
-                return false;
+            Debug.LogWarning("MPTK_IsReady has been deprecated, please investigate <midiSynth>.MPTK_SoundFont.IsReady in place.");
             return true;
         }
 
 
         /// <summary>@brief
         /// The default instrument and drum banks are defined with the popup "SoundFont Setup Alt-F" in the Unity editor.\n
-        /// This method change the default instrument drum bank and build presets available for it. See #MPTK_ListPreset.\n
+        /// This method change the default instrument drum bank and build the presets list associated. See #MPTK_ListPreset.\n
         /// Note 1: this call doesn't change the current MIDI bank used to play an instrument, only the content of #MPTK_ListPreset.\n
         /// Note 2: to apply the bank to all channels, the synth must be restarted: call MidiFilePlayer.MPTK_InitSynth.\n
         /// Note 3: to change the current bank, rather use MidiFilePlayer.MPTK_ChannelPresetChange\n
@@ -546,24 +543,25 @@ namespace MidiPlayerTK
         /// <returns>true if bank has been found else false.</returns>
         public static bool MPTK_SelectBankInstrument(int nbank)
         {
-            if (nbank >= 0 && nbank < ImSFCurrent.Banks.Length)
-                if (ImSFCurrent.Banks[nbank] != null)
-                {
-                    ImSFCurrent.DefaultBankNumber = nbank;
-                    BuildPresetList(true);
-                    return true;
-                }
+            if (ImSFCurrent != null && ImSFCurrent.Banks != null)
+                if (nbank >= 0 && nbank < ImSFCurrent.Banks.Length)
+                    if (ImSFCurrent.Banks[nbank] != null)
+                    {
+                        ImSFCurrent.DefaultBankNumber = nbank;
+                        BuildPresetList(true);
+                        return true;
+                    }
+                    else
+                        Debug.LogWarningFormat("MPTK_SelectBankInstrument: bank {0} is not defined", nbank);
                 else
-                    Debug.LogWarningFormat("MPTK_SelectBankInstrument: bank {0} is not defined", nbank);
-            else
-                Debug.LogWarningFormat("MPTK_SelectBankInstrument: bank {0} outside of range", nbank);
+                    Debug.LogWarningFormat("MPTK_SelectBankInstrument: bank {0} outside of range", nbank);
             return false;
         }
 
         /// <summary>@brief
         /// The default instrument and drum banks are defined with the popup "SoundFont Setup Alt-F" in the Unity editor.\n
-        /// This method change the default instrument drum bank and build presets available for it. See #MPTK_ListPreset.\n
-        /// Note 1: this call doesn't change the current MIDI bank used to play an instrument, only the content of #MPTK_ListPreset.\n
+        /// This method change the default instrument drum bank and the presets list associated. See #MPTK_ListPresetDrum.\n
+        /// Note 1: this call doesn't change the current MIDI bank used to play a drum, only the content of #MPTK_ListPresetDrum.\n
         /// Note 2: to apply the bank to all channels, the synth must be restarted: call MidiFilePlayer.MPTK_InitSynth.\n
         /// Note 3: to change the current bank, rather use MidiFilePlayer.MPTK_ChannelPresetChange\n
         /// </summary>
@@ -571,23 +569,24 @@ namespace MidiPlayerTK
         /// <returns>true if bank has been found else false.</returns>
         public static bool MPTK_SelectBankDrum(int nbank)
         {
-            if (nbank >= 0 && nbank < ImSFCurrent.Banks.Length)
-                if (ImSFCurrent.Banks[nbank] != null)
-                {
-                    ImSFCurrent.DrumKitBankNumber = nbank;
-                    BuildPresetList(false);
-                    return true;
-                    //BuildDrumList();
-                }
+            if (ImSFCurrent != null && ImSFCurrent.Banks != null)
+                if (nbank >= 0 && nbank < ImSFCurrent.Banks.Length)
+                    if (ImSFCurrent.Banks[nbank] != null)
+                    {
+                        ImSFCurrent.DrumKitBankNumber = nbank;
+                        BuildPresetList(false);
+                        return true;
+                        //BuildDrumList();
+                    }
+                    else
+                        Debug.LogWarningFormat("MPTK_SelectBankDrum: bank {0} is not defined", nbank);
                 else
-                    Debug.LogWarningFormat("MPTK_SelectBankDrum: bank {0} is not defined", nbank);
-            else
-                Debug.LogWarningFormat("MPTK_SelectBankDrum: bank {0} outside of range", nbank);
+                    Debug.LogWarningFormat("MPTK_SelectBankDrum: bank {0} outside of range", nbank);
             return false;
         }
 
         /// <summary>@brief
-        /// Return the nape of the preset (patch) from a bank and patch number.
+        /// Return the name of the preset (patch) from a bank and patch number.
         /// </summary>
         /// <param name="bank"></param>
         /// <param name="patch"></param>
@@ -596,16 +595,17 @@ namespace MidiPlayerTK
         {
             string name = "";
             if (ImSFCurrent != null && ImSFCurrent.Banks != null)
-            {
-                if (bank >= 0 && bank < ImSFCurrent.Banks.Length && ImSFCurrent.Banks[bank] != null)
+                if (ImSFCurrent != null && ImSFCurrent.Banks != null)
                 {
-                    if (ImSFCurrent.Banks[bank].defpresets != null)
+                    if (bank >= 0 && bank < ImSFCurrent.Banks.Length && ImSFCurrent.Banks[bank] != null)
                     {
-                        if (patch >= 0 && patch < ImSFCurrent.Banks[bank].defpresets.Length && ImSFCurrent.Banks[bank].defpresets[patch] != null)
-                            name = ImSFCurrent.Banks[bank].defpresets[patch].Name;
+                        if (ImSFCurrent.Banks[bank].defpresets != null)
+                        {
+                            if (patch >= 0 && patch < ImSFCurrent.Banks[bank].defpresets.Length && ImSFCurrent.Banks[bank].defpresets[patch] != null)
+                                name = ImSFCurrent.Banks[bank].defpresets[patch].Name;
+                        }
                     }
                 }
-            }
             return name;
         }
 
@@ -654,21 +654,17 @@ namespace MidiPlayerTK
                 }
                 LoadCurrentSF();
 
-                //Debug.Log("   Time To Load SoundFont: " + Math.Round(MidiPlayerGlobal.MPTK_TimeToLoadSoundFont.TotalSeconds, 3).ToString() + " second");
-                //Debug.Log("   Time To Load Waves: " + Math.Round(MidiPlayerGlobal.MPTK_TimeToLoadWave.TotalSeconds, 3).ToString() + " second");
+                if (Application.isPlaying)
+                    if (synths != null)
+                        foreach (MidiSynth synth in synths)
+                            if (synths != null)
+                                synth.MPTK_InitSynth();
+                if (Application.isPlaying)
+                    if (playerToRestart != null)
+                        foreach (MidiFilePlayer synth in playerToRestart)
+                            if (synths != null)
+                                synth.MPTK_RePlay();
 
-                if (synths != null)
-                {
-                    foreach (MidiSynth synth in synths)
-                    {
-                        synth.MPTK_InitSynth();
-                        if (synth is MidiFilePlayer)
-                            synth.MPTK_StartSequencerMidi();
-                    }
-                    if (restartPlayer)
-                        foreach (MidiFilePlayer player in playerToRestart)
-                            player.MPTK_RePlay();
-                }
             }
         }
 
@@ -696,7 +692,7 @@ namespace MidiPlayerTK
         {
             MPTK_SoundFontLoaded = false;
             DateTime start = DateTime.Now;
-            // Load simplfied soundfont
+            // Load simplified soundfont
             try
             {
                 if (CurrentMidiSet == null)
@@ -710,7 +706,7 @@ namespace MidiPlayerTK
                         Debug.LogWarning(MidiPlayerGlobal.ErrorNoSoundFont);
                     else
                     {
-                        if (logDebug)
+                        if (VerboseGlobal)
                             Debug.Log("Start loading " + sfi.Name);
 
                         // Path to the soundfonts directory for this SF, start from resource folder
@@ -719,7 +715,7 @@ namespace MidiPlayerTK
                         WavePath = Path.Combine(pathToImSF + "/", PathToWave);
                         // Load all presets defined in the sf
                         ImSFCurrent = ImSoundFont.LoadMPTKSoundFont(pathToImSF, sfi.Name);
-                        if (logDebug) Debug.Log($"{(DateTime.Now - start).TotalSeconds:F3} ImSoundFont.LoadMPTKSoundFont");
+                        if (VerboseGlobal) Debug.Log($"{(DateTime.Now - start).TotalSeconds:F3} ImSoundFont.LoadMPTKSoundFont");
 
                         // Add
                         if (ImSFCurrent == null)
@@ -728,10 +724,10 @@ namespace MidiPlayerTK
                         }
                         else
                         {
+                            //Debug.Log("BuildBankList");
                             BuildBankList();
                             BuildPresetList(true);
                             BuildPresetList(false);
-                            //BuildDrumList();
 
                             timeToLoadSoundFont = DateTime.Now - start;
 
@@ -753,7 +749,7 @@ namespace MidiPlayerTK
                 return;
             }
 
-            if (logDebug) Debug.Log($"{(DateTime.Now - start).TotalSeconds:F3} SoundFont loaded");
+            if (VerboseGlobal) Debug.Log($"{(DateTime.Now - start).TotalSeconds:F3} SoundFont loaded");
 
             // Load samples only in run mode
             //if (Application.isPlaying) // check removes in v2.89.5
@@ -766,36 +762,41 @@ namespace MidiPlayerTK
 
                     // Load audio clip is used only in the legacy mode (non core mode)
                     // Loading at startup is useful only with the legacy mode for better performance (avoid loading AudioClip at each note-on
-                    if (MPTK_LoadWaveAtStartup)
-                    {
-                        LoadAudioClip();
-#if DEBUG_LOAD_WAVE
-                        Debug.Log($"LoadAudioClip {(DateTime.Now - start).TotalSeconds:F3} second");
-#endif
+                    // Add to DicAudioClip.
+                    //if (MPTK_LoadWaveAtStartup)
+                    //{
+                    //    LoadAudioClip();
+                    //    if (VerboseGlobal) Debug.Log($"Load DicAudioClip {(DateTime.Now - start).TotalSeconds:F3} second");
+                    //}
 
-                    }
-
-                    // Load sample for core mode
+#if !UNITY_WEBGL // WebGL doesn't support core mode, so no need to load AudioClip
+                    // Load sample for core mode which are using DicAudioWave. Not used when live SF or external SF are used.
                     // Attention, on ne peut pas utiliser AudioClip et Resources en dehors du main thread unity.
                     // Il faut donc charger tous les echantillons avant.
-                    LoadWave();
-#if DEBUG_LOAD_WAVE
-                    Debug.Log($"LoadWave {(DateTime.Now - start).TotalSeconds:F3} second");
+                    // Add to DicAudioWave.
+                    if (MPTK_LoadSoundFontAtStartup)
+                    {
+                        LoadWave();
+                        if (VerboseGlobal) Debug.Log($"Load DicAudioWave {(DateTime.Now - start).TotalSeconds:F3} second");
+                        if (Application.isPlaying && !DicAudioWave.Check())
+                            Debug.LogError($"<color=red>No sample found in the SoundFont {CurrentMidiSet.ActiveSounFontInfo.Name}. Have you extracted samples from the Maestro 'SoundFont Setup' menu in Unity Editor?</color>");
+                    }
+#else
+                    if (VerboseGlobal) Debug.Log($"Load DicAudioWave disabled with WebGL");
 #endif
-
-                    if (Application.isPlaying && !DicAudioWave.Check())
-                        Debug.Log($"<color=red>No sample found in the SoundFont {CurrentMidiSet.ActiveSounFontInfo.Name}. Have you extracted samples from the Maestro 'SoundFont Setup' menu in Unity Editor?</color>");
-
                     timeToLoadWave = watchLoadWave.Elapsed;
-                    //Debug.Log("End loading Waves " + timeToLoadWave.TotalSeconds + " seconds" + " count:" + MPTK_CountWaveLoaded);
                 }
                 catch (System.Exception ex)
                 {
                     MidiPlayerGlobal.ErrorDetail(ex);
                 }
             }
+
             if (ImSFCurrent != null)
+            {
+                MPTK_SoundFontName = ImSFCurrent.SoundFontName;
                 MPTK_SoundFontLoaded = true;
+            }
 
             try
             {
@@ -883,7 +884,7 @@ namespace MidiPlayerTK
             string path = WavePath + "/" + Path.GetFileNameWithoutExtension(smpl.Name);// + ".wav";
             AudioClip ac = Resources.Load<AudioClip>(path);
             //Debug.Log("<<-------------------- " + smpl.Name);
-            if (ac != null)
+            if (ac != null && ac.loadType == AudioClipLoadType.CompressedInMemory)
             {
                 float[] data = new float[ac.samples * ac.channels];
                 if (ac.GetData(data, 0))
@@ -905,6 +906,8 @@ namespace MidiPlayerTK
         static public void BuildBankList()
         {
             MPTK_ListBank = new List<MPTKListItem>();
+            MPTK_BanksName = new List<string>();
+            MPTK_BanksNumber = new List<int>();
             try
             {
                 //Debug.Log(">>> Load Preset - b:" + ibank + " p:" + ipatch);
@@ -913,7 +916,11 @@ namespace MidiPlayerTK
                     foreach (ImBank bank in ImSFCurrent.Banks)
                     {
                         if (bank != null)
+                        {
                             MPTK_ListBank.Add(new MPTKListItem() { Index = bank.BankNumber, Label = "Bank " + bank.BankNumber });
+                            MPTK_BanksName.Add(bank.BankNumber + " - Bank");
+                            MPTK_BanksNumber.Add(bank.BankNumber);
+                        }
                         else
                             MPTK_ListBank.Add(null);
                     }
@@ -934,7 +941,53 @@ namespace MidiPlayerTK
         /// </summary>
         static public void BuildPresetList(bool forInstrument)
         {
-            List<MPTKListItem> presets = new List<MPTKListItem>();
+            List<MPTKListItem> presets;
+            List<string> presetsName;
+            List<int> presetsNumber;
+
+
+            if (forInstrument)
+            {
+                if (MPTK_ListPreset == null)
+                    MPTK_ListPreset = new List<MPTKListItem>();
+                else
+                    MPTK_ListPreset.Clear();
+
+                if (MPTK_PresetsName == null)
+                    MPTK_PresetsName = new List<string>();
+                else
+                    MPTK_PresetsName.Clear();
+
+                if (MPTK_PresetsNumber == null)
+                    MPTK_PresetsNumber = new List<int>();
+                else
+                    MPTK_PresetsNumber.Clear();
+                presets = MPTK_ListPreset;
+                presetsName = MPTK_PresetsName;
+                presetsNumber = MPTK_PresetsNumber;
+            }
+            else
+            {
+                if (MPTK_ListPresetDrum == null)
+                    MPTK_ListPresetDrum = new List<MPTKListItem>();
+                else
+                    MPTK_ListPresetDrum.Clear();
+
+                if (MPTK_PresetsNameDrum == null)
+                    MPTK_PresetsNameDrum = new List<string>();
+                else
+                    MPTK_PresetsNameDrum.Clear();
+
+                if (MPTK_PresetsNumberDrum == null)
+                    MPTK_PresetsNumberDrum = new List<int>();
+                else
+                    MPTK_PresetsNumberDrum.Clear();
+
+                presets = MPTK_ListPresetDrum;
+                presetsName = MPTK_PresetsNameDrum;
+                presetsNumber = MPTK_PresetsNumberDrum;
+            }
+
             try
             {
                 //Debug.Log(">>> Load Preset - b:" + ibank + " p:" + ipatch);
@@ -952,7 +1005,10 @@ namespace MidiPlayerTK
                                 HiPreset p = ImSFCurrent.Banks[ibank].defpresets[ipreset];
                                 if (p != null)
                                 {
-                                    presets.Add(new MPTKListItem() { Index = p.Num, Label = p.Num + " - " + p.Name, Position = presets.Count });
+                                    string label = $"{p.Num} - {p.Name}";
+                                    presets.Add(new MPTKListItem() { Index = p.Num, Label = label, Position = presets.Count });
+                                    presetsName.Add(label);
+                                    presetsNumber.Add(p.Num);
                                     ImSFCurrent.Banks[ibank].PatchCount++;
                                 }
                                 //else
@@ -997,10 +1053,15 @@ namespace MidiPlayerTK
             {
                 MidiPlayerGlobal.ErrorDetail(ex);
             }
-            if (forInstrument)
-                MPTK_ListPreset = presets;
-            else
-                MPTK_ListPresetDrum = presets;
+
+            //if (forInstrument)
+            //{
+            //    MPTK_ListPreset = presets;
+            //}
+            //else
+            //{
+            //    MPTK_ListPresetDrum = presets;
+            //}
         }
 
         public static void BuildMidiList()

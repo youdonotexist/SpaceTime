@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 #endif
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -286,7 +287,7 @@ namespace MidiPlayerTK
             {
                 // Channel mode, list of synths are indexed by channel, also send only event to the dedicated synth by channel
                 MidiFilePlayer spatialChannel = SpatialSynths[midievent.Channel];
-                //Debug.Log($"{MPTK_SpatialSynthIndex} {distanceToListener}");
+                if (VerboseSpatialSynth) Debug.Log($"{MPTK_SpatialSynthIndex} {distanceToListener}");
                 spatialChannel.MPTK_PlayDirectEvent((MPTKEvent)midievent/*.Clone()*/, false);
             }
             else
@@ -333,7 +334,7 @@ namespace MidiPlayerTK
                     }
                 }
                 else
-                    Debug.LogWarning($"Not enough Spatial Synths available Track:{midievent.Track} Max:{MPTK_MaxSpatialSynth}");
+                    Debug.LogWarning($"Not enough Spatial Synths available Track:{midievent.Track} Max:{MPTK_MaxSpatialSynth}. Increase MPTK_MaxSpatialSynth in the inspector.");
             }
         }
 
@@ -360,19 +361,23 @@ namespace MidiPlayerTK
                 foreach (MPTKEvent midievent in midievents)
                 {
                     int indexSynth = (int)(MPTK_ModeSpatializer == ModeSpatializer.Channel ? midievent.Channel : midievent.Track);
-                    if (SpatialSynths[indexSynth].OnEventNotesMidi != null)
+                    // A warning is already log when not enough SpatialSynths are available
+                    if (indexSynth < SpatialSynths.Count)
                     {
-                        synthEvents.Clear();
-                        synthEvents.Add(midievent);
+                        if (SpatialSynths[indexSynth].OnEventNotesMidi != null)
+                        {
+                            synthEvents.Clear();
+                            synthEvents.Add(midievent);
 
-                        try
-                        {
-                            SpatialSynths[indexSynth].OnEventNotesMidi.Invoke(synthEvents);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError("OnEventNotesMidi: exception detected. Check the callback code");
-                            Debug.LogException(ex);
+                            try
+                            {
+                                SpatialSynths[indexSynth].OnEventNotesMidi.Invoke(synthEvents);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError("OnEventNotesMidi: exception detected. Check the callback code");
+                                Debug.LogException(ex);
+                            }
                         }
                     }
                 }
@@ -388,11 +393,11 @@ namespace MidiPlayerTK
                 SpatialSynths = new List<MidiFilePlayer>();//  new MidiFilePlayer[16];
                 for (int idSynth = 0; idSynth < MPTK_MaxSpatialSynth; idSynth++)
                 {
-                    // Bad parameters could exec infinite loop, bodyguard below
+                    if (VerboseSpatialSynth) Debug.Log($"BuildSpatialSynth: instantiate synth IdSynth:{idSynth} from '{this.name}'");
+                    // Bad parameters could run in an infinite loop, bodyguard below
                     if (lastIdSynth > 100) break;
-                    //Debug.Log($"Before Instantiate synth  IdSynth:{IdSynth} channel:{channel}");
                     MidiFilePlayer mfp = Instantiate<MidiFilePlayer>((MidiFilePlayer)this);
-                    //Debug.Log($"After Instantiate synth mfp.IdSynth:{mfp.IdSynth}");
+                    //Debug.Log($"BuildSpatialSynth: after Instantiate, internal synth ID:{mfp.IdSynth}");
                     mfp.spatialSynthIndex = idSynth;
                     mfp.name = $"Synth Id{idSynth + 1}";
                     mfp.MPTK_PlayOnStart = false;
@@ -405,7 +410,18 @@ namespace MidiPlayerTK
                     SpatialSynths.Add(mfp);
                 }
                 // Avoid set parent in the previous loop because infinite loop are created. Why? I don't known!!!
-                foreach (MidiFilePlayer mfp in SpatialSynths) mfp.transform.SetParent(this.transform);
+                foreach (MidiFilePlayer mfp in SpatialSynths)
+                {
+                    try
+                    {
+                        if (VerboseSpatialSynth) Debug.Log($"BuildSpatialSynth: set parent to '{this.name}' for id {mfp.IdSynth}");
+                        mfp.transform.SetParent(this.transform);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"BuildSpatialSynth: can't set parent:{mfp.IdSynth} {ex}");
+                    }
+                }
             }
         }
 
@@ -424,7 +440,7 @@ namespace MidiPlayerTK
                 if (goMidiGlobal != null)
                     foreach (MidiSpatializer go in goMidiGlobal)
                     {
-                        Debug.Log($"Find {go.IdSynth} {go.name}");
+                        if (VerboseSpatialSynth) Debug.Log($"RemoveSpatialSynth: find {go.IdSynth} {go.name}");
                         UnityEngine.Object.Destroy(go);
                     }
             }
@@ -524,6 +540,7 @@ namespace MidiPlayerTK
             }
         }
 
+     
 #if UNITY_ANDROID && UNITY_OBOE
         public AudioStream oboeAudioStream;
         public void InitOboe()

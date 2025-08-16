@@ -9,14 +9,14 @@ namespace Commonwealth.Script.Life
 
         [SerializeField] private float _speed = 4.0f;
 
-        private Rigidbody2D _rigidbody2D;
+        private Rigidbody _rigidbody;
         private SpriteRenderer _spriteRenderer;
         private Door _currentDoor;
         
         // Use this for initialization
         void Start()
         {
-            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _rigidbody = GetComponent<Rigidbody>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
@@ -24,7 +24,7 @@ namespace Commonwealth.Script.Life
         void FixedUpdate()
         {
             // Get current position
-            Vector2 position = _rigidbody2D.position;
+            Vector3 position = _rigidbody.position;
             
             // Calculate movement for this frame
             if (Input.GetKey(KeyCode.A))
@@ -38,8 +38,17 @@ namespace Commonwealth.Script.Life
                 _spriteRenderer.flipX = false;
             }
             
+            if (Input.GetKey(KeyCode.S))
+            {
+                position.z -= _speed * Time.fixedDeltaTime;
+            }
+            else if (Input.GetKey(KeyCode.W))
+            {
+                position.z += _speed * Time.fixedDeltaTime;
+            }
+            
             // Move the rigidbody using MovePosition
-            _rigidbody2D.MovePosition(position);
+            _rigidbody.MovePosition(position);
         }
 
         private void Update()
@@ -54,7 +63,7 @@ namespace Commonwealth.Script.Life
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D that)
+        private void OnTriggerEnter(Collider that)
         {   
             Door door = that.GetComponent<Door>();
 
@@ -65,7 +74,7 @@ namespace Commonwealth.Script.Life
             }
         }
 
-        private void OnTriggerExit2D(Collider2D that)
+        private void OnTriggerExit(Collider that)
         {
             Door door = that.GetComponent<Door>();
             

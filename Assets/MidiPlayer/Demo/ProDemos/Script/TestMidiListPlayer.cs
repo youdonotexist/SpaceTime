@@ -18,9 +18,7 @@ namespace DemoMPTK
 
         private void Start()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
-            // Checcj if the MidiListPlayer is defined in the inspector
+            // Check if the MidiListPlayer is defined in the inspector
             if (midiListPlayer == null)
             {
                 // No, by the way, try to find it 

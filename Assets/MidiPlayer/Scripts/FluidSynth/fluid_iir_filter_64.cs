@@ -278,7 +278,7 @@ namespace MidiPlayerTK
             q_dB /= 10f;
 
             /* Range: SF2.01 section 8.1.3 # 8 (convert from cB to dB => /10) */
-            q_dB = System.Math.Clamp(q_dB + offset, 0d, 96d);
+            q_dB = System.Math.Clamp(q_dB + offset, 0d, 96d); // replaced by the following line to be compliant with Unity 2019.4
 
             /* Short version: Modify the Q definition in a way, that a Q of 0
              * dB leads to no resonance hump in the freq. response.

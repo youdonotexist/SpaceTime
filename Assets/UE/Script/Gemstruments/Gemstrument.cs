@@ -1,23 +1,25 @@
-using UE.Script.Sequencer;
 using UnityEngine;
 
-public class Gemstrument : MonoBehaviour, Cell.ICellConfiguration
+namespace UE.Script.Gemstruments
 {
-    [SerializeField] private Sequencer.Instrument instrument;
-
-    [SerializeField] private Sprite gemSprite;
-    public Sequencer.Instrument Instrument => instrument;
-
-    public Sprite GemSprite => gemSprite;
-
-
-    public Sprite GetSprite()
+    public class Gemstrument : MonoBehaviour, Cell.ICellConfiguration
     {
-        return gemSprite;
-    }
+        [SerializeField] private Sequencer.Sequencer.Instrument instrument;
 
-    public Color GetColor()
-    {
-        return Color.white;
+        [SerializeField] private Sprite gemSprite;
+        public Sequencer.Sequencer.Instrument Instrument => instrument;
+
+        public Sprite GemSprite => gemSprite;
+
+
+        public Sprite GetSprite()
+        {
+            return gemSprite;
+        }
+
+        public Color GetColor()
+        {
+            return Color.white;
+        }
     }
 }

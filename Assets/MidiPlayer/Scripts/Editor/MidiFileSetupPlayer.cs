@@ -36,8 +36,8 @@ namespace MidiPlayerTK
 
         private void InitPlayer()
         {
-            MidiPlayerEditor.MidiPlayer.MPTK_Volume = 0.5f;
-            MidiPlayerEditor.MidiPlayer.MPTK_Speed = 1f;
+            midiPlayerLib.MidiPlayer.MPTK_Volume = 0.5f;
+            midiPlayerLib.MidiPlayer.MPTK_Speed = 1f;
         }
 
         private void InitGUI()
@@ -57,7 +57,7 @@ namespace MidiPlayerTK
             {
                 // Track column has a dynamic popup to select tracks
                 PopupFiltersTrack = new List<MPTKGui.StyleItem>();
-                for (int track = 0; track < MidiPlayerEditor.MidiPlayer.MPTK_TrackCount; track++)
+                for (int track = 0; track < midiPlayerLib.MidiPlayer.MPTK_TrackCount; track++)
                     PopupFiltersTrack.Add(new MPTKGui.StyleItem($"Tracks {track}", true, true));
                 //ColumnEvents[4].ItemPopupContent = PopupFiltersTrack;
                 //// Force refresh of the popup
@@ -96,7 +96,7 @@ namespace MidiPlayerTK
                     new MPTKGui.StyleItem() { Width = 70, Caption = "Time (s)", Hidden = true, Tooltip = "Real time in seconds of this event from the start of the midi depending the tempo change." },
                     new MPTKGui.StyleItem() { Width = 120, Caption = "Time", Hidden = true, Tooltip = "Real time in seconds of this event from the start of the midi depending the tempo change." },
                     new MPTKGui.StyleItem() { Width = 70, Caption = "Track{*}", Offset = 25, ItemPopupContent = PopupFiltersTrack, ItemPopupWidth = 100, Tooltip = "Track index of the event in the midi. It's just a cool way to regroup MIDI events in a ... track. There is any impact on music played. Track 0 is the first track read from the midi file." },
-                    new MPTKGui.StyleItem() { Width = 70, Caption = "Channel{*}", Offset = 25, ItemPopupContent = PopupFiltersChannel, ItemPopupWidth = 100, Tooltip = "MIDI channel fom 0 to 15 (9 for drum). Only one instrument can be selected at a time for a chanel." },
+                    new MPTKGui.StyleItem() { Width = 70, Caption = "Channel{*}", Offset = 25, ItemPopupContent = PopupFiltersChannel, ItemPopupWidth = 100, Tooltip = "MIDI channel fom 0 to 15 (9 for drum). Only one instrument can be selected at a time for a channel." },
                     new MPTKGui.StyleItem() { Width = 200, Caption = "Command {Count}", Offset = 10, ItemPopupContent = PopupFiltersCommand, Tooltip = "MIDI Command. Defined the MIDI action to be done by the synthesizer." },
                     new MPTKGui.StyleItem() { Width = 180, Caption = "Value", Tooltip = "Contains a value in relation with the Command: Note pitch, instrument selected, control change value, text for Meta command. " },
                     new MPTKGui.StyleItem() { Width = 70, Caption = "Velocity", Tooltip = "Velocity between 0 and 127." },
@@ -119,28 +119,28 @@ namespace MidiPlayerTK
         {
             try
             {
-                MidiPlayerEditor.MidiPlayer.MPTK_Stop();
+                midiPlayerLib.MidiPlayer.MPTK_Stop();
                 MidiEventsLoaded = null;
                 if (indexEditItem >= 0 && indexEditItem < MidiPlayerGlobal.CurrentMidiSet.MidiFiles.Count)
                 {
-                    MidiPlayerEditor.MidiPlayer.MPTK_StartPlayAtFirstNote = false; // was true
-                    MidiPlayerEditor.MidiPlayer.MPTK_EnableChangeTempo = true;
+                    midiPlayerLib.MidiPlayer.MPTK_StartPlayAtFirstNote = false; // was true
+                    midiPlayerLib.MidiPlayer.MPTK_EnableChangeTempo = true;
 
-                    MidiPlayerEditor.MidiPlayer.MPTK_ApplyRealTimeModulator = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_ApplyModLfo = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_ApplyVibLfo = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_ReleaseSameNote = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_KillByExclusiveClass = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_EnablePanChange = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_KeepPlayingNonLooped = true;
-                    MidiPlayerEditor.MidiPlayer.MPTK_KeepEndTrack = false; // was true before 2.12.1
+                    midiPlayerLib.MidiPlayer.MPTK_ApplyRealTimeModulator = true;
+                    midiPlayerLib.MidiPlayer.MPTK_ApplyModLfo = true;
+                    midiPlayerLib.MidiPlayer.MPTK_ApplyVibLfo = true;
+                    midiPlayerLib.MidiPlayer.MPTK_ReleaseSameNote = true;
+                    midiPlayerLib.MidiPlayer.MPTK_KillByExclusiveClass = true;
+                    midiPlayerLib.MidiPlayer.MPTK_EnablePanChange = true;
+                    midiPlayerLib.MidiPlayer.MPTK_KeepPlayingNonLooped = true;
+                    midiPlayerLib.MidiPlayer.MPTK_KeepEndTrack = false; // was true before 2.12.1
 
-                    MidiPlayerEditor.MidiPlayer.MPTK_MidiIndex = indexEditItem;
-                    MidiPlayerEditor.MidiPlayer.MPTK_KeepNoteOff = false; // was true
+                    midiPlayerLib.MidiPlayer.MPTK_MidiIndex = indexEditItem;
+                    midiPlayerLib.MidiPlayer.MPTK_KeepNoteOff = false; // was true
                     //MidiPlayerEditor.MidiPlayer.OnEventStartPlayMidi.AddListener(StartPlay);
-                    if (MidiPlayerEditor.MidiPlayer.OnEventNotesMidi == null)
-                        MidiPlayerEditor.MidiPlayer.OnEventNotesMidi = new EventNotesMidiClass();
-                    MidiPlayerEditor.MidiPlayer.OnEventNotesMidi.AddListener(MidiReadEvents);
+                    if (midiPlayerLib.MidiPlayer.OnEventNotesMidi == null)
+                        midiPlayerLib.MidiPlayer.OnEventNotesMidi = new EventNotesMidiClass();
+                    midiPlayerLib.MidiPlayer.OnEventNotesMidi.AddListener(MidiReadEvents);
                     if (forceChannelEnabled)
                     {
                         // Useless, channel are unmuted at start
@@ -150,8 +150,8 @@ namespace MidiPlayerTK
                     }
 
                     //Debug.Log("Start Midi " + midiname + " Duration: " + MidiPlayerEditor.MidiPlayer.MPTK_Duration.TotalSeconds + " seconds");
-                    MidiPlayerEditor.MidiPlayer.MPTK_Load(); ;
-                    AllMidiEvents = MidiPlayerEditor.MidiPlayer.MPTK_ReadMidiEvents();
+                    midiPlayerLib.MidiPlayer.MPTK_Load(); ;
+                    AllMidiEvents = midiPlayerLib.MidiPlayer.MPTK_ReadMidiEvents();
                     MidiEventsLoaded = new List<List<MPTKEvent>>();
                     List<MPTKEvent> pageMidi = null;
                     SelectedEvent = 0;
@@ -180,8 +180,8 @@ namespace MidiPlayerTK
         }
         private void PlayMidiFileSelected()
         {
-            MidiPlayerEditor.PlayAudioSource();
-            MidiPlayerEditor.MidiPlayer.MPTK_Play();
+            midiPlayerLib.PlayAudioSource();
+            midiPlayerLib.MidiPlayer.MPTK_Play();
         }
 
         /// <summary>@brief
@@ -231,31 +231,31 @@ namespace MidiPlayerTK
 
                 AutoMidiPlay = GUILayout.Toggle(AutoMidiPlay, "Auto Playing", MPTKGui.styleToggle, GUILayout.Width(97));
 
-                MidiPlayerEditor.MidiPlayer.MPTK_MidiAutoRestart = GUILayout.Toggle(MidiPlayerEditor.MidiPlayer.MPTK_MidiAutoRestart, "Restart MIDI", MPTKGui.styleToggle, GUILayout.Width(100)); // Vertical alignment with MIDI name
+                midiPlayerLib.MidiPlayer.MPTK_MidiAutoRestart = GUILayout.Toggle(midiPlayerLib.MidiPlayer.MPTK_MidiAutoRestart, "Restart MIDI", MPTKGui.styleToggle, GUILayout.Width(100)); // Vertical alignment with MIDI name
 
-                GUIStyle styleButtonPlayAndPause = MidiPlayerEditor.MidiPlayer.MPTK_IsPlaying && !MidiPlayerEditor.MidiPlayer.MPTK_IsPaused ? MPTKGui.ButtonHighLight : MPTKGui.Button;
+                GUIStyle styleButtonPlayAndPause = midiPlayerLib.MidiPlayer.MPTK_IsPlaying && !midiPlayerLib.MidiPlayer.MPTK_IsPaused ? MPTKGui.ButtonHighLight : MPTKGui.Button;
                 if (GUILayout.Button("Play", styleButtonPlayAndPause, GUILayout.Width(WIDTH_BUTTON_PLAYER)))
                 {
                     LoadMidiFileSelected(IndexEditItem, true);
                     PlayMidiFileSelected();
                 }
 
-                styleButtonPlayAndPause = MidiPlayerEditor.MidiPlayer.MPTK_IsPaused ? MPTKGui.ButtonHighLight : MPTKGui.Button;
+                styleButtonPlayAndPause = midiPlayerLib.MidiPlayer.MPTK_IsPaused ? MPTKGui.ButtonHighLight : MPTKGui.Button;
                 if (GUILayout.Button("Pause", styleButtonPlayAndPause, GUILayout.Width(WIDTH_BUTTON_PLAYER)))
-                    if (MidiPlayerEditor.MidiPlayer.MPTK_IsPaused)
-                        MidiPlayerEditor.MidiPlayer.MPTK_UnPause();
+                    if (midiPlayerLib.MidiPlayer.MPTK_IsPaused)
+                        midiPlayerLib.MidiPlayer.MPTK_UnPause();
                     else
-                        MidiPlayerEditor.MidiPlayer.MPTK_Pause();
+                        midiPlayerLib.MidiPlayer.MPTK_Pause();
 
                 // Disabled, seems not possible in editor mode
                 if (GUILayout.Button("RePlay", MPTKGui.Button, GUILayout.Width(WIDTH_BUTTON_PLAYER)))
                 {
                     EnableAllChannelFilter();
-                    MidiPlayerEditor.MidiPlayer.MPTK_RePlay();
+                    midiPlayerLib.MidiPlayer.MPTK_RePlay();
                 }
 
                 if (GUILayout.Button("Stop", MPTKGui.Button, GUILayout.Width(WIDTH_BUTTON_PLAYER)))
-                    MidiPlayerEditor.MidiPlayer.MPTK_Stop();
+                    midiPlayerLib.MidiPlayer.MPTK_Stop();
 
                 GUILayout.FlexibleSpace();
             }
@@ -277,22 +277,22 @@ namespace MidiPlayerTK
                 {
 
 
-                    long tickCurrent = MidiPlayerEditor.MidiPlayer.MPTK_IsPlaying ? MidiPlayerEditor.MidiPlayer.MPTK_TickCurrent : 0;
-                    GUILayout.Label($"Tick: {tickCurrent:000000} / {MidiPlayerEditor.MidiPlayer.MPTK_TickLast:000000}", MPTKGui.Label, GUILayout.Width(160));
-                    long tick = (long)GUILayout.HorizontalSlider((float)tickCurrent, 0f, (float)MidiPlayerEditor.MidiPlayer.MPTK_TickLast, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.MinWidth(160));
+                    long tickCurrent = midiPlayerLib.MidiPlayer.MPTK_IsPlaying ? midiPlayerLib.MidiPlayer.MPTK_TickCurrent : 0;
+                    GUILayout.Label($"Tick: {tickCurrent:000000} / {midiPlayerLib.MidiPlayer.MPTK_TickLast:000000}", MPTKGui.Label, GUILayout.Width(160));
+                    long tick = (long)GUILayout.HorizontalSlider((float)tickCurrent, 0f, (float)midiPlayerLib.MidiPlayer.MPTK_TickLast, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.MinWidth(160));
                     if (tick != tickCurrent)
                     {
                         if (Event.current.type == EventType.Used)
                         {
                             //Debug.Log("New tick " + midiFilePlayer.MPTK_TickCurrent + " --> " + tick + " " + Event.current.type);
-                            MidiPlayerEditor.MidiPlayer.MPTK_TickCurrent = tick;
+                            midiPlayerLib.MidiPlayer.MPTK_TickCurrent = tick;
                         }
                     }
                 }
                 else
                 {
-                    double currentPosition = MidiPlayerEditor.MidiPlayer.MPTK_IsPlaying ? Math.Round(MidiPlayerEditor.MidiPlayer.MPTK_Position / 1000d, 3) : 0;
-                    double lastPosition = MidiPlayerEditor.MidiPlayer.MPTK_PositionLastNote / 1000d;
+                    double currentPosition = midiPlayerLib.MidiPlayer.MPTK_IsPlaying ? Math.Round(midiPlayerLib.MidiPlayer.MPTK_Position / 1000d, 3) : 0;
+                    double lastPosition = midiPlayerLib.MidiPlayer.MPTK_PositionLastNote / 1000d;
                     if (DisplayTime == 1)
                     {
                         GUILayout.Label($"Time: {currentPosition:F2} / {lastPosition:F2} sec.", MPTKGui.Label, GUILayout.Width(180));
@@ -306,7 +306,7 @@ namespace MidiPlayerTK
                         GUILayout.Label($"Time: {playTime} / {lastTime}", MPTKGui.Label, GUILayout.Width(220));
                     }
 
-                    double newPosition = Math.Round(GUILayout.HorizontalSlider((float)currentPosition, 0f, (float)MidiPlayerEditor.MidiPlayer.MPTK_Duration.TotalSeconds/*, GUILayout.Width(150)*/,
+                    double newPosition = Math.Round(GUILayout.HorizontalSlider((float)currentPosition, 0f, (float)midiPlayerLib.MidiPlayer.MPTK_Duration.TotalSeconds/*, GUILayout.Width(150)*/,
                             MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb), 2);
 
                     if (newPosition != currentPosition)
@@ -314,20 +314,20 @@ namespace MidiPlayerTK
                         if (Event.current.type == EventType.Used)
                         {
                             //Debug.Log("New position " + currentPosition + " --> " + newPosition + " " + Event.current.type);
-                            MidiPlayerEditor.MidiPlayer.MPTK_Position = newPosition * 1000d;
+                            midiPlayerLib.MidiPlayer.MPTK_Position = newPosition * 1000d;
                         }
                     }
                 }
 
-                float volume = MidiPlayerEditor.MidiPlayer.MPTK_Volume;
+                float volume = midiPlayerLib.MidiPlayer.MPTK_Volume;
                 // Button to restore Volume to 0.5 with label style
                 if (GUILayout.Button("Volume: " + volume.ToString("F2"), MPTKGui.Label, GUILayout.Width(80))) volume = 0.5f;
-                MidiPlayerEditor.MidiPlayer.MPTK_Volume = GUILayout.HorizontalSlider(volume, 0f, Constant.MAX_VOLUME, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.Width(100));
+                midiPlayerLib.MidiPlayer.MPTK_Volume = GUILayout.HorizontalSlider(volume, 0f, Constant.MAX_VOLUME, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.Width(100));
 
-                float speed = MidiPlayerEditor.MidiPlayer.MPTK_Speed;
+                float speed = midiPlayerLib.MidiPlayer.MPTK_Speed;
                 // Button to restore speed to 1 with label style
                 if (GUILayout.Button("Speed: " + speed.ToString("F2"), MPTKGui.Label, GUILayout.Width(80))) speed = 1f;
-                MidiPlayerEditor.MidiPlayer.MPTK_Speed = GUILayout.HorizontalSlider(speed, Constant.MIN_SPEED, Constant.MAX_SPEED, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.Width(100));
+                midiPlayerLib.MidiPlayer.MPTK_Speed = GUILayout.HorizontalSlider(speed, Constant.MIN_SPEED, Constant.MAX_SPEED, MPTKGui.HorizontalSlider, MPTKGui.HorizontalThumb, GUILayout.Width(100));
 
             }
             catch (Exception ex)
@@ -416,11 +416,11 @@ namespace MidiPlayerTK
                                     {
                                         for (int channel = 0; channel < 16; channel++)
                                             if (index == -2)
-                                                MidiPlayerEditor.MidiPlayer.MPTK_Channels[channel].Enable = false;
+                                                midiPlayerLib.MidiPlayer.MPTK_Channels[channel].Enable = false;
                                             else if (index == -1)
-                                                MidiPlayerEditor.MidiPlayer.MPTK_Channels[channel].Enable = true;
+                                                midiPlayerLib.MidiPlayer.MPTK_Channels[channel].Enable = true;
                                             else
-                                                MidiPlayerEditor.MidiPlayer.MPTK_Channels[channel].Enable = column.ItemPopupContent[channel].Selected;
+                                                midiPlayerLib.MidiPlayer.MPTK_Channels[channel].Enable = column.ItemPopupContent[channel].Selected;
                                     }
                                     if (column.Caption.Contains("Track"))
                                     {
@@ -532,7 +532,18 @@ namespace MidiPlayerTK
                                     text = mptkEvent.Value.ToString("000") + " - " + HelperNoteLabel.LabelFromMidi(mptkEvent.Value);
                                     break;
                                 case MPTKCommand.PatchChange:
-                                    text = mptkEvent.Value.ToString("000") + " - " + MidiPlayerGlobal.MPTK_GetPatchName(0, mptkEvent.Value);
+                                    string name = "unk";
+                                    int bank = 0;
+                                    try
+                                    {
+                                        // name at runtime will be midiPlayerLib.MidiPlayer.MPTK_Channels[mptkEvent.Channel].PresetName; 
+                                        // or midiPlayerLib.MidiPlayer.MPTK_SoundFont.PresetName(mptkEvent.Value);
+                                        bank = mptkEvent.Channel == 9 ? MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber : MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber;
+                                        name = MidiPlayerGlobal.MPTK_GetPatchName(bank, mptkEvent.Value);
+                                    }
+                                    catch { }
+                                    if (mptkEvent.Channel == 9) name += " (drum)";
+                                    text = mptkEvent.Value.ToString("000") + " - " + name;
                                     break;
                                 case MPTKCommand.MetaEvent:
                                     switch (mptkEvent.Meta)
@@ -559,7 +570,7 @@ namespace MidiPlayerTK
                             // make events played visible in the schroll
                             lineIndex++;
 
-                            if (Event.current.type == EventType.Repaint && !MidiPlayerEditor.MidiPlayer.MPTK_IsPaused && MidiPlayerEditor.MidiPlayer.MPTK_IsPlaying)
+                            if (Event.current.type == EventType.Repaint && !midiPlayerLib.MidiPlayer.MPTK_IsPaused && midiPlayerLib.MidiPlayer.MPTK_IsPlaying)
                             {
                                 Rect lastEventDraw = GUILayoutUtility.GetLastRect();
                                 if (isPlayed && FollowEvent)
@@ -622,7 +633,8 @@ namespace MidiPlayerTK
             {
                 GUIStyle style = styleRow == null ? item.Style : styleRow;
                 // Align content of the column 
-                if (item.Offset != 0) { style.contentOffset = item.OffsetV;/* Debug.Log($"{ item.Caption} {item.Offset}");*/ };
+                if (item.Offset != 0) { style.contentOffset = item.OffsetV;/* Debug.Log($"{ item.Caption} {item.Offset}");*/ }
+                ;
                 GUILayout.Label(text, style, GUILayout.Width(item.Width));
                 if (item.Offset != 0) style.contentOffset = Vector2.zero;
 
@@ -632,7 +644,7 @@ namespace MidiPlayerTK
                     {
                         //Debug.Log($"{mptkEvent} XXX {window.position.x + GUILayoutUtility.GetLastRect().x}");
                         SelectedEvent = midiEvent.Index;
-                        MidiPlayerEditor.MidiPlayer.MPTK_TickCurrent = midiEvent.Tick;
+                        midiPlayerLib.MidiPlayer.MPTK_TickCurrent = midiEvent.Tick;
                         window.Repaint();
                     }
             }

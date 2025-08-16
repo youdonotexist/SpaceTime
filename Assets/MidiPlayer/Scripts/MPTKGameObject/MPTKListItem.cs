@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using UnityEngine.Scripting;
 
 namespace MidiPlayerTK
@@ -37,5 +39,58 @@ namespace MidiPlayerTK
         
         [Preserve]
         public MPTKListItem() { }
+    }
+
+    // Not used, perhaps for the V3?
+    public class MPTKItems : IEnumerable<MPTKListItem>
+    {
+        private List<MPTKListItem> Items { get; set; }
+
+        [Preserve]
+        public MPTKItems()
+        {
+        }
+        public IEnumerator<MPTKListItem> GetEnumerator()
+        {
+            return Items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Items.GetEnumerator();
+        }
+        /// <summary>@brief 
+        /// Channel count. Classically 16 when MIDI is read from a MIDI file.\n
+        /// Can be extended but not compliant with MIDI file, only for internal use (experimental)
+        /// </summary>
+        public int Length { get { return Items.Count; } }
+        public MPTKListItem this[int index]
+        {
+            get
+            {
+                try
+                {
+                    return Items[index];
+                }
+                catch (Exception)
+                {
+                    Debug.LogError($"Error when trying access to Items, index {index}");
+                }
+                return null;
+            }
+            set
+            {
+                try
+                {
+                    Items[index] = value;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error when trying access to Items, index {index}");
+                    if (Items == null)
+                        Debug.LogException(ex);
+                }
+            }
+        }
     }
 }

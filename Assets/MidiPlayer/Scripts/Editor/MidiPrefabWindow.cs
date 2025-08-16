@@ -140,10 +140,6 @@ namespace MidiPlayerTK
                 GUILayout.Label("Midi", MPTKGui.styleBold, GUILayout.Width(150));
                 if (GUILayout.Button("Play", GUILayout.Width(100)))
                 {
-                    // No imsf with live loading soundfont
-                    //Debug.Log($"{MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber} {MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber}") ;
-                    Debug.Log($"MPTK_SoundFontLoaded: {MidiPlayerGlobal.MPTK_SoundFontLoaded} ");
-
                     //MidiPlayerGlobal.MPTK_SoundFontLoaded = true;
                     // Select a MIDI from the MIDI DB (with exact name)
                     //midiFilePlayer.MPTK_MidiName = "Bach - Fugue"; 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MidiPlayerTK
 {
@@ -159,46 +160,55 @@ namespace MidiPlayerTK
 
         private static void Init(bool log = false)
         {
-            if (scales == null)
+            try
             {
-                scales = new List<MPTKScaleLib>();
-                TextAsset mytxtData = Resources.Load<TextAsset>("GeneratorTemplate/GammeDefinition");
-                string text = System.Text.Encoding.UTF8.GetString(mytxtData.bytes);
-                string[] list1 = text.Split('\r');
-                if (list1.Length >= 1)
+                if (scales == null)
                 {
-                    for (int i = 1; i < list1.Length; i++)
+                    scales = new List<MPTKScaleLib>();
+                    TextAsset mytxtData = Resources.Load<TextAsset>("GeneratorTemplate/GammeDefinition");
+                    string text = System.Text.Encoding.UTF8.GetString(mytxtData.bytes);
+                    string[] list1 = text.Split('\r');
+                    if (list1.Length >= 1)
                     {
-                        string[] c = list1[i].Split(';');
-                        if (c.Length >= 15)
+                        for (int i = 1; i < list1.Length; i++)
                         {
-                            MPTKScaleLib scale = new MPTKScaleLib();
-                            try
+                            string[] c = list1[i].Split(';');
+                            if (c.Length >= 15)
                             {
-                                scale.Index = scales.Count;
-                                scale.Name = c[0];
-                                if (scale.Name[0] == '\n') scale.Name = scale.Name.Remove(0, 1);
-                                scale.Short = c[1];
-                                scale.Flag = c[2];
-                                scale.Main = (c[3].ToUpper() == "X") ? true : false;
-                                scale.Count = Convert.ToInt32(c[4]);
-                                scale.position = new string[12];
-                                for (int j = 5; j <= 16; j++)
+                                MPTKScaleLib scale = new MPTKScaleLib();
+                                try
                                 {
-                                    scale.position[j - 5] = c[j];
+                                    scale.Index = scales.Count;
+                                    scale.Name = c[0];
+                                    if (scale.Name[0] == '\n') scale.Name = scale.Name.Remove(0, 1);
+                                    scale.Short = c[1];
+                                    scale.Flag = c[2];
+                                    scale.Main = (c[3].ToUpper() == "X") ? true : false;
+                                    scale.Count = Convert.ToInt32(c[4]);
+                                    scale.position = new string[12];
+                                    for (int j = 5; j <= 16; j++)
+                                    {
+                                        scale.position[j - 5] = c[j];
+                                    }
                                 }
+                                catch (System.Exception ex)
+                                {
+                                    MidiPlayerGlobal.ErrorDetail(ex);
+                                }
+                                scales.Add(scale);
                             }
-                            catch (System.Exception ex)
-                            {
-                                MidiPlayerGlobal.ErrorDetail(ex);
-                            }
-                            scales.Add(scale);
                         }
-                    }
 
+                    }
+                    if (log)
+                        Debug.Log("Ranges loaded: " + MPTKScaleLib.scales.Count);
                 }
-                if (log)
-                    Debug.Log("Ranges loaded: " + MPTKScaleLib.scales.Count);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("MPTKScaleLib error");
+                Debug.LogException(ex);
+                scales = null; ;
             }
         }
 

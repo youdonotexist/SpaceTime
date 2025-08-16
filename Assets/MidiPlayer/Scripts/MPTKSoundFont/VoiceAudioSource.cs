@@ -1,6 +1,5 @@
 ﻿//#define DEBUGPERF
 //#define DEBUGTIME
-using MEC;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +27,7 @@ namespace MidiPlayerTK
             //Debug.Log("Start fluid_voice");
         }
 
+        // From fluid_voice_start() fluid_voice.cs  when legacy mode is used
         public void RunUnityThread()
         {
 #if DEBUGPERF
@@ -59,14 +59,14 @@ namespace MidiPlayerTK
 
             if (Audiosource != null && Audiosource.gameObject.activeInHierarchy)
             {
+                float last_pitch = -9999999, last_pan = -9999999;
                 Audiosource.volume = fluidvoice.StartVolume;
                 //Audiosource.loop = fluidvoice.IsLoop;
                 Audiosource.loop = fluidvoice.samplemode == fluid_loop.FLUID_LOOP_UNTIL_RELEASE || fluidvoice.samplemode == fluid_loop.FLUID_LOOP_DURING_RELEASE;
-                Audiosource.panStereo = !synth.MPTK_EnablePanChange ? 0f : Mathf.Lerp(-1f, 1f, (fluidvoice.pan + 500f) / 1000f);
-                Audiosource.pitch = Mathf.Pow(fluid_voice._ratioHalfTone, (fluidvoice.pitch - fluidvoice.root_pitch) / 100f);
+                last_pan = -1;// Audiosource.panStereo = !synth.MPTK_EnablePanChange ? 0f : Mathf.Lerp(-1f, 1f, (fluidvoice.pan + 500f) / 1000f);
+                last_pitch = -1; // Audiosource.pitch = Mathf.Pow(fluid_voice._ratioHalfTone, (fluidvoice.pitch - fluidvoice.root_pitch) / 100f);
 
-                if (synth.VerboseVoice)
-                    Debug.LogFormat("   fluid_voice_start Audiosource volume:{0:0.000} loop:{1} pan:{2:0.000} pitch:{3:0.000} {4}",
+                if (synth.VerboseVoice) Debug.LogFormat("   fluid_voice_start Audiosource volume:{0:0.000} loop:{1} pan:{2:0.000} pitch:{3:0.000} {4}",
                         Audiosource.volume, Audiosource.loop, Audiosource.panStereo, Audiosource.pitch, synth.MPTK_WeakDevice ? "[WEAK]" : "[FULL]");
 
                 // Play take 0.3 ms
@@ -96,7 +96,24 @@ namespace MidiPlayerTK
                         break;
                     if (!fluidvoice.weakDevice)
                     {
-                        Audiosource.panStereo = !synth.MPTK_EnablePanChange ? 0f : Mathf.Lerp(-1f, 1f, (fluidvoice.pan + 500f) / 1000f);
+                        // fluidvoice.pan is dynamically changed by fluid_voice_update_param (fluid_voice.cs)
+                        if (last_pan != fluidvoice.pan)
+                        {
+                            last_pan = fluidvoice.pan;
+                            //Audiosource.panStereo = !synth.MPTK_EnablePanChange ? 0f : Mathf.Lerp(-1f, 1f, (fluidvoice.pan + 500f) / 1000f);
+                            if (synth.MPTK_EnablePanChange)
+                                Audiosource.panStereo = fluidvoice.pan / 500f; ;
+                            if (synth.VerboseCalcGen)
+                                Debug.LogFormat($"CalcGen - EnablePanChange={synth.MPTK_EnablePanChange} last_pan={last_pan:0.00} new pan={fluidvoice.pan:0.00} --> panStereo={Audiosource.panStereo:0.00}");
+                        }
+
+                        // fluidvoice.pitch is dynamically changed by fluid_voice_update_param (fluid_voice.cs)
+                        if (last_pitch != fluidvoice.pitch)
+                        {
+                            //Debug.Log("Pitch change");
+                            last_pitch = fluidvoice.pitch;
+                            Audiosource.pitch = Mathf.Pow(fluid_voice._ratioHalfTone, (fluidvoice.pitch - fluidvoice.root_pitch) / 100f);
+                        }
                         fluid_voice_audiosource_write(DateTime.UtcNow.Ticks);
                     }
                     else
@@ -110,6 +127,7 @@ namespace MidiPlayerTK
                     yield return Routine.WaitForSeconds(0.010f); //0;
                 }
             }
+
             try
             {
                 //Debug.Log("Stop AudioSource " + Audiosource.clip.name + " vol:" + Audiosource.volume);
@@ -295,7 +313,8 @@ namespace MidiPlayerTK
 
             //******************* vibrato lfo **********************
             //------------------------------------------------------
-            ////// No vibrato available with the audiosource solution
+            ////// No vibrato available with the audiosource solution (modulation)
+            ////// as we can apply change directly on the sample play by the AudioSource
             //////if (synth.MPTK_ApplyVibLfo)
             //////{
             //////    if (fluidvoice.TimeFromStart >= fluidvoice.viblfo_delay)
@@ -365,7 +384,7 @@ namespace MidiPlayerTK
                 //////    amp = (float)(fluid_conv.fluid_atten2amp(fluidvoice.attenuation) * fluid_conv.fluid_cb2amp(960.0f * (1f - fluidvoice.volenv_val) + fluidvoice.modlfo_val * -fluidvoice.modlfo_to_vol)) * synth.MPTK_Volume;
                 //////else
                 amp = (float)fluid_conv.fluid_cb2amp(fluidvoice.attenuation) *
-                      (float)fluid_conv.fluid_cb2amp(960f * (1f - fluidvoice.volenv_val)) *
+                      (float)fluid_conv.fluid_cb2amp(fluid_conv.FLUID_PEAK_ATTENUATION * (1f - fluidvoice.volenv_val)) *
                       synth.MPTK_Volume;
 
             }
@@ -379,8 +398,7 @@ namespace MidiPlayerTK
                     float velocity = 0f;
                     Audiosource.volume = Mathf.SmoothDamp(Audiosource.volume, amp, ref velocity, synth.DampVolume * 0.001f);
                 }
-                if (synth.VerboseVolume)
-                    Debug.LogFormat("Volume [Id:{0}] {1} TimeFromStart:{2} Delta:{3} Att:{4,0:F2} modlfo_val:{5,0:F2} modlfo_to_vol:{6,0:F2} volenv_val:{7,0:F2} modenv_val:{8,0:F2} Amp:{9,0:F3} --> volume:{10,0:F3} {11}",
+                if (synth.VerboseVolume) Debug.LogFormat("Volume [Id:{0}] {1} TimeFromStart:{2} Delta:{3} Att:{4,0:F2} modlfo_val:{5,0:F2} modlfo_to_vol:{6,0:F2} volenv_val:{7,0:F2} modenv_val:{8,0:F2} Amp:{9,0:F3} --> volume:{10,0:F3} {11}",
                         fluidvoice.id, "", fluidvoice.TimeFromStart / fluid_voice.Nano100ToMilli, fluidvoice.DeltaTimeWrite / fluid_voice.Nano100ToMilli,
                         fluidvoice.attenuation, fluidvoice.modlfo_val, fluidvoice.modlfo_to_vol, fluidvoice.volenv_val, fluidvoice.modenv_val, amp, Audiosource.volume, fluidvoice.volenv_section);
             }
@@ -467,118 +485,118 @@ namespace MidiPlayerTK
 
         }
 
-       // private float calculateFilter()
+        // private float calculateFilter()
         //{
-            /*************** resonant filter ******************/
+        /*************** resonant filter ******************/
 
-            /* calculate the frequency of the resonant filter in Hz */
-            //float localfres = fluid_conv.fluid_ct2hz(
-            //    fluidvoice.fres + fluidvoice.modlfo_val * fluidvoice.modlfo_to_fc * synth.LfoToFilterMod + fluidvoice.modenv_val * fluidvoice.modenv_to_fc * synth.FilterEnvelopeMod) + synth.FilterOffset;
+        /* calculate the frequency of the resonant filter in Hz */
+        //float localfres = fluid_conv.fluid_ct2hz(
+        //    fluidvoice.fres + fluidvoice.modlfo_val * fluidvoice.modlfo_to_fc * synth.LfoToFilterMod + fluidvoice.modenv_val * fluidvoice.modenv_to_fc * synth.FilterEnvelopeMod) + synth.FilterOffset;
 
-            //if (synth.VerboseFilter)
-            //    Debug.LogFormat("[{0,4}] {1} TimeDSP:{2:00000.000} Delta:{3:0.000} Fres:{4} modlfo_val:{5:0.000} modlfo_to_fc:{6:0.000} modenv_val:{7:0.000}  modenv_to_fc:{8:0.000} --> localfres:{9:0.000} q_lin:{10:0.000}",
-            //        fluidvoice.IdVoice, "", fluidvoice.TimeFromStart, fluidvoice.DeltaTimeWrite,
-            //        fluidvoice.fres, fluidvoice.modlfo_val, fluidvoice.modlfo_to_fc, fluidvoice.modenv_val, fluidvoice.modenv_to_fc, localfres, fluidvoice.q_lin * synth.FilterQMod);
+        //if (synth.VerboseFilter)
+        //    Debug.LogFormat("[{0,4}] {1} TimeDSP:{2:00000.000} Delta:{3:0.000} Fres:{4} modlfo_val:{5:0.000} modlfo_to_fc:{6:0.000} modenv_val:{7:0.000}  modenv_to_fc:{8:0.000} --> localfres:{9:0.000} q_lin:{10:0.000}",
+        //        fluidvoice.IdVoice, "", fluidvoice.TimeFromStart, fluidvoice.DeltaTimeWrite,
+        //        fluidvoice.fres, fluidvoice.modlfo_val, fluidvoice.modlfo_to_fc, fluidvoice.modenv_val, fluidvoice.modenv_to_fc, localfres, fluidvoice.q_lin * synth.FilterQMod);
 
-            /* FIXME - Still potential for a click during turn on, can we interpolate
-               between 20khz cutoff and 0 Q? */
+        /* FIXME - Still potential for a click during turn on, can we interpolate
+           between 20khz cutoff and 0 Q? */
 
-            /* I removed the optimization of turning the filter off when the
-             * resonance frequence is above the maximum frequency. Instead, the
-             * filter frequency is set to a maximum of 0.45 times the sampling
-             * rate. For a 44100 kHz sampling rate, this amounts to 19845
-             * Hz. The reason is that there were problems with anti-aliasing when the
-             * synthesizer was run at lower sampling rates. Thanks to Stephan
-             * Tassart for pointing me to this bug. By turning the filter on and
-             * clipping the maximum filter frequency at 0.45*srate, the filter
-             * is used as an anti-aliasing filter. */
+        /* I removed the optimization of turning the filter off when the
+         * resonance frequence is above the maximum frequency. Instead, the
+         * filter frequency is set to a maximum of 0.45 times the sampling
+         * rate. For a 44100 kHz sampling rate, this amounts to 19845
+         * Hz. The reason is that there were problems with anti-aliasing when the
+         * synthesizer was run at lower sampling rates. Thanks to Stephan
+         * Tassart for pointing me to this bug. By turning the filter on and
+         * clipping the maximum filter frequency at 0.45*srate, the filter
+         * is used as an anti-aliasing filter. */
 
-            //if (fres > 0.45f)// * output_rate)
-            //    fres = 0.45f;// * output_rate;
-            //else if (fres < 5)
-            //    fres = 5;
+        //if (fres > 0.45f)// * output_rate)
+        //    fres = 0.45f;// * output_rate;
+        //else if (fres < 5)
+        //    fres = 5;
 
-            /* if filter enabled and there is a significant frequency change.. */
-            //if ((Math.Abs(localfres - fluidvoice.last_fres) > 0.01d))
-            //{
-            //    if (LowPassFilter != null)
-            //    {
-            //        LowPassFilter.cutoffFrequency = (float)localfres;
-            //        LowPassFilter.lowpassResonanceQ = (float)(fluidvoice.q_lin * synth.FilterQMod);
-            //    }
-            //    /* The filter coefficients have to be recalculated (filter
-            //    * parameters have changed). Recalculation for various reasons is
-            //    * forced by setting last_fres to -1.  The flag filter_startup
-            //    * indicates, that the DSP loop runs for the first time, in this
-            //    * case, the filter is set directly, instead of smoothly fading
-            //    * between old and new settings.
-            //    *
-            //    * Those equations from Robert Bristow-Johnson's `Cookbook
-            //    * formulae for audio EQ biquad filter coefficients', obtained
-            //    * from Harmony-central.com / Computer / Programming. They are
-            //    * the result of the bilinear transform on an analogue filter
-            //    * prototype. To quote, `BLT frequency warping has been taken
-            //    * into account for both significant frequency relocation and for
-            //    * bandwidth readjustment'. */
+        /* if filter enabled and there is a significant frequency change.. */
+        //if ((Math.Abs(localfres - fluidvoice.last_fres) > 0.01d))
+        //{
+        //    if (LowPassFilter != null)
+        //    {
+        //        LowPassFilter.cutoffFrequency = (float)localfres;
+        //        LowPassFilter.lowpassResonanceQ = (float)(fluidvoice.q_lin * synth.FilterQMod);
+        //    }
+        //    /* The filter coefficients have to be recalculated (filter
+        //    * parameters have changed). Recalculation for various reasons is
+        //    * forced by setting last_fres to -1.  The flag filter_startup
+        //    * indicates, that the DSP loop runs for the first time, in this
+        //    * case, the filter is set directly, instead of smoothly fading
+        //    * between old and new settings.
+        //    *
+        //    * Those equations from Robert Bristow-Johnson's `Cookbook
+        //    * formulae for audio EQ biquad filter coefficients', obtained
+        //    * from Harmony-central.com / Computer / Programming. They are
+        //    * the result of the bilinear transform on an analogue filter
+        //    * prototype. To quote, `BLT frequency warping has been taken
+        //    * into account for both significant frequency relocation and for
+        //    * bandwidth readjustment'. */
 
-            //    //double omega = (2d * M_PI * (fres / 44100.0d));
-            //    //double sin_coeff = Math.Sin(omega);
-            //    //double cos_coeff = Math.Cos(omega);
-            //    //double alpha_coeff = sin_coeff / (2.0d * q_lin);
-            //    //double a0_inv = 1.0d / (1.0d + alpha_coeff);
+        //    //double omega = (2d * M_PI * (fres / 44100.0d));
+        //    //double sin_coeff = Math.Sin(omega);
+        //    //double cos_coeff = Math.Cos(omega);
+        //    //double alpha_coeff = sin_coeff / (2.0d * q_lin);
+        //    //double a0_inv = 1.0d / (1.0d + alpha_coeff);
 
-            //    /* Calculate the filter coefficients. All coefficients are
-            //     * normalized by a0. Think of `a1' as `a1/a0'.
-            //     *
-            //     * Here a couple of multiplications are saved by reusing common expressions.
-            //     * The original equations should be:
-            //     *  b0=(1.-cos_coeff)*a0_inv*0.5*filter_gain;
-            //     *  b1=(1.-cos_coeff)*a0_inv*filter_gain;
-            //     *  b2=(1.-cos_coeff)*a0_inv*0.5*filter_gain; */
+        //    /* Calculate the filter coefficients. All coefficients are
+        //     * normalized by a0. Think of `a1' as `a1/a0'.
+        //     *
+        //     * Here a couple of multiplications are saved by reusing common expressions.
+        //     * The original equations should be:
+        //     *  b0=(1.-cos_coeff)*a0_inv*0.5*filter_gain;
+        //     *  b1=(1.-cos_coeff)*a0_inv*filter_gain;
+        //     *  b2=(1.-cos_coeff)*a0_inv*0.5*filter_gain; */
 
-            //    //double a1_temp = -2d * cos_coeff * a0_inv;
-            //    //double a2_temp = (1d - alpha_coeff) * a0_inv;
-            //    //double b1_temp = (1d - cos_coeff) * a0_inv * filter_gain;
-            //    ///* both b0 -and- b2 */
-            //    //double b02_temp = b1_temp * 0.5f;
+        //    //double a1_temp = -2d * cos_coeff * a0_inv;
+        //    //double a2_temp = (1d - alpha_coeff) * a0_inv;
+        //    //double b1_temp = (1d - cos_coeff) * a0_inv * filter_gain;
+        //    ///* both b0 -and- b2 */
+        //    //double b02_temp = b1_temp * 0.5f;
 
-            //    //if (filter_startup)
-            //    //{
-            //    //    /* The filter is calculated, because the voice was started up.
-            //    //     * In this case set the filter coefficients without delay.
-            //    //     */
-            //    //    a1 = a1_temp;
-            //    //    a2 = a2_temp;
-            //    //    b02 = b02_temp;
-            //    //    b1 = b1_temp;
-            //    //    filter_coeff_incr_count = 0;
-            //    //    filter_startup = false;
-            //    //    //       printf("Setting initial filter coefficients.\n");
-            //    //}
-            //    //else
-            //    //{
+        //    //if (filter_startup)
+        //    //{
+        //    //    /* The filter is calculated, because the voice was started up.
+        //    //     * In this case set the filter coefficients without delay.
+        //    //     */
+        //    //    a1 = a1_temp;
+        //    //    a2 = a2_temp;
+        //    //    b02 = b02_temp;
+        //    //    b1 = b1_temp;
+        //    //    filter_coeff_incr_count = 0;
+        //    //    filter_startup = false;
+        //    //    //       printf("Setting initial filter coefficients.\n");
+        //    //}
+        //    //else
+        //    //{
 
-            //    //    /* The filter frequency is changed.  Calculate an increment
-            //    //     * factor, so that the new setting is reached after one buffer
-            //    //     * length. x_incr is added to the current value FLUID_BUFSIZE
-            //    //     * times. The length is arbitrarily chosen. Longer than one
-            //    //     * buffer will sacrifice some performance, though.  Note: If
-            //    //     * the filter is still too 'grainy', then increase this number
-            //    //     * at will.
-            //    //     */
+        //    //    /* The filter frequency is changed.  Calculate an increment
+        //    //     * factor, so that the new setting is reached after one buffer
+        //    //     * length. x_incr is added to the current value FLUID_BUFSIZE
+        //    //     * times. The length is arbitrarily chosen. Longer than one
+        //    //     * buffer will sacrifice some performance, though.  Note: If
+        //    //     * the filter is still too 'grainy', then increase this number
+        //    //     * at will.
+        //    //     */
 
-            //    //    a1_incr = (a1_temp - a1) / fluid_synth_t.FLUID_BUFSIZE;
-            //    //    a2_incr = (a2_temp - a2) / fluid_synth_t.FLUID_BUFSIZE;
-            //    //    b02_incr = (b02_temp - b02) / fluid_synth_t.FLUID_BUFSIZE;
-            //    //    b1_incr = (b1_temp - b1) / fluid_synth_t.FLUID_BUFSIZE;
-            //    //    /* Have to add the increments filter_coeff_incr_count times. */
-            //    //    filter_coeff_incr_count = fluid_synth_t.FLUID_BUFSIZE;
-            //    //}
-            //    fluidvoice.last_fres = localfres;
-            //}
+        //    //    a1_incr = (a1_temp - a1) / fluid_synth_t.FLUID_BUFSIZE;
+        //    //    a2_incr = (a2_temp - a2) / fluid_synth_t.FLUID_BUFSIZE;
+        //    //    b02_incr = (b02_temp - b02) / fluid_synth_t.FLUID_BUFSIZE;
+        //    //    b1_incr = (b1_temp - b1) / fluid_synth_t.FLUID_BUFSIZE;
+        //    //    /* Have to add the increments filter_coeff_incr_count times. */
+        //    //    filter_coeff_incr_count = fluid_synth_t.FLUID_BUFSIZE;
+        //    //}
+        //    fluidvoice.last_fres = localfres;
+        //}
 
-           // return localfres;
-     //   }
+        // return localfres;
+        //   }
 
 
         ///* No interpolation. Just take the sample, which is closest to

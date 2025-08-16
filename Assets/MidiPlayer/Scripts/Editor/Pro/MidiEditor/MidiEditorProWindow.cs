@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -968,14 +969,21 @@ namespace MidiPlayerTK
                     if (winPopupSynth != null)
                     {
                         winPopupSynth.Close();
-                        winPopupSynth = null;
+                        winPopupSynth = null; 
                     }
                     else
                     {
                         winPopupSynth = EditorWindow.GetWindow<PopupInfoSynth>(false, "Maestro MIDI Synth");
-                        winPopupSynth.minSize = new Vector2(760, 73);
-                        winPopupSynth.maxSize = new Vector2(760, 73);
                         winPopupSynth.MidiSynth = Player;
+
+                        StringBuilder infoSynth = Player.synthInfo.MPTK_BuildInfoSynth(Player);
+                        int count = 0;
+                        foreach (char c in infoSynth.ToString())
+                            if (c == '\n')
+                                count++;
+
+                        winPopupSynth.minSize = new Vector2(1000, 20 * count); // 73
+                        winPopupSynth.maxSize = new Vector2(1000, 20 * count);
                         winPopupSynth.ShowUtility();
                     }
                 }

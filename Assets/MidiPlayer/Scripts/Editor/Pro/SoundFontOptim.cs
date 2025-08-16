@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 #define LOG_SF
-using MEC;
 using MPTK.NAudio.Midi;
 using System;
 using System.Collections.Generic;
@@ -458,7 +457,7 @@ namespace MidiPlayerTK
                 SFLoad load = new SFLoad(pathSF, SFFile.SfSource.MPTK);
                 imsf.HiSf = load.SfData;
                 imsf.SoundFontName = Path.GetFileNameWithoutExtension(pathSF);
-
+                SFFile.CheckSampleName(imsf.HiSf);
                 LogInfo.Add("Load SoundFont from:");
                 LogInfo.Add(Path.GetFullPath(pathSF));
                 LogInfo.Add("");
@@ -487,7 +486,7 @@ namespace MidiPlayerTK
         static void ExtractWave(ImSoundFont imsf, string wavePath, Dictionary<string, string> waveSelected, BuilderInfo LogInfo)
         {
             int count = 0;
-            CreateWave createwave = new CreateWave();
+            CreateWave createWave = new CreateWave();
 
             foreach (ImBank b in imsf.Banks)
             {
@@ -520,7 +519,7 @@ namespace MidiPlayerTK
                                                 {
                                                     Debug.Log($"Add Sample {sample.Name,-20} for Preset {p.Name,-20} Type:{sample.SampleType:X4} Rate:{sample.SampleRate:D5} Position:[{sample.Start,6}-{sample.End,-6}] Loop:[{sample.LoopStart,6}-{sample.LoopEnd,-6}]");
                                                     string path = System.IO.Path.Combine(wavePath, sample.Name) + ".wav";
-                                                    createwave.Extract(path, sample, imsf.HiSf.SampleData);
+                                                    createWave.Extract(path, sample, imsf.HiSf.SampleData);
                                                     count++;
                                                     waveSelected.Add(sample.Name, null);
                                                     //Debug.Log(string.Format("Sample '{0,20}' Id:{1,3} OP:{2,3} PC{3,3} [{4,5},{5,5}] [{6,5},{7,5}]", sample.Name, izone.index, sample.origpitch, sample.pitchadj, izone.keylo, izone.keyhi, izone.vello, izone.velhi));

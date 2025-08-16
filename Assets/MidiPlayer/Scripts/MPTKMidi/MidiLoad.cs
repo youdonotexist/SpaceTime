@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace MidiPlayerTK
 {
@@ -177,7 +178,14 @@ namespace MidiPlayerTK
         /// @li Works only when MIDI is playing.
         /// @li Can't be changed.
         /// @li Used by the MIDI Editor (pro) to display the sequencer position in real time.
-        /// @li Also available from MidiFilePlayer.MPTK_MidiLoaded
+        /// @li Available from MidiFilePlayer.MPTK_MidiLoaded
+        /// @code
+        ///  void Update()
+        ///  {
+        ///    if (mfPlayer != null && mfPlayer.MPTK_MidiLoaded != null)
+        ///        TextMidiTime.text = $"Real-time MIDI sequencer position: {mfPlayer.MPTK_MidiLoaded.MPTK_TickPlayer}";
+        ///  }
+        /// @endcode
         /// </summary>
         public long MPTK_TickPlayer;
 
@@ -1046,10 +1054,24 @@ namespace MidiPlayerTK
                 if (mptkEvents.Count == 0)
                     throw new Exception("No midi event found");
 
-                // Quick sort (realloc new list)
-                mptkEvents = mptkEvents.OrderBy(o => o.Tick).ToList();
-                // Then sort with priotity on meta and preset change event (too long for a not pre-sorted list)
-                Sort(mptkEvents, 0, mptkEvents.Count - 1, new MidiEventComparer());
+                // MIDI events in a MIDI file are ordered by track then by ticks.
+                // We want a list ordered by ticks only.
+
+                //System.Diagnostics.Stopwatch watch = null;
+                //watch = new System.Diagnostics.Stopwatch(); // High resolution time
+                //watch.Start();
+
+                // Quick sort (realloc new list) < v2.14.1
+                //mptkEvents = mptkEvents.OrderBy(o => o.Tick).ToList();
+                // Then sort with priority of preset change, meta end (pre-sort by ticks is mandatory)
+                //Sort(mptkEvents, 0, mptkEvents.Count - 1, new MidiEventComparer());
+
+                // v2.14.1 - Sort by ticks with priority by bank change, preset change, note ... meta end the lower.
+                mptkEvents.Sort((x, y) => x.Compare(y));
+
+                //Debug.Log($"Stable sort time {watch.ElapsedMilliseconds} {watch.ElapsedTicks}");
+                //watch.Stop();
+
                 return mptkEvents;
 
                 //return mptkEvents.OrderBy(o => o.Tick).ToList(); 
@@ -1336,50 +1358,42 @@ namespace MidiPlayerTK
             }
         }
 
+        // Utility class for comparing MidiEvent objects -  DEPRECATED from 2.14.1.
+        // Comparer moved to MPTKEvent class.
+        //public class MidiEventComparer : IComparer<MPTKEvent>
+        //{
+        //    public int Compare(MPTKEvent x, MPTKEvent y)
+        //    {
+        //        long xTime = x.Tick;
+        //        long yTime = y.Tick;
 
-        /// <summary>@brief
-        /// Utility class for comparing MidiEvent objects
-        /// </summary>
-        public class MidiEventComparer : IComparer<MPTKEvent>
-        {
-            /// <summary>@brief
-            /// Compares two MidiEvents
-            /// Sorts by time, with EndTrack always sorted to the end
-            /// </summary>
-            public int Compare(MPTKEvent x, MPTKEvent y)
-            {
-                long xTime = x.Tick;
-                long yTime = y.Tick;
+        //        if (xTime == yTime)
+        //        {
+        //            if (x.Command != MPTKCommand.ControlChange && x.Command != MPTKCommand.PatchChange && x.Command != MPTKCommand.NoteOn &&
+        //                y.Command != MPTKCommand.ControlChange && y.Command != MPTKCommand.PatchChange && y.Command != MPTKCommand.NoteOn)
+        //                yTime = Int64.MinValue;
 
-                if (xTime == yTime)
-                {
-                    // set patch change position at the start of the same position
-                    if (x.Command == MPTKCommand.PatchChange)
-                        xTime = Int64.MinValue;
+        //            // sort meta events before note events, except end track
+        //            if (x.Command == MPTKCommand.MetaEvent)
+        //            {
+        //                if (x.Meta == MPTKMeta.EndTrack)
+        //                    xTime = Int64.MaxValue;
+        //                else
+        //                    xTime = Int64.MinValue;
+        //            }
+        //            if (y.Command == MPTKCommand.MetaEvent)
+        //            {
+        //                if (y.Meta == MPTKMeta.EndTrack)
+        //                    yTime = Int64.MaxValue;
+        //                else
+        //                    yTime = Int64.MinValue;
+        //            }
+        //            Debug.Log($"{x.Tick:0000} x:{x.Command} y:{y.Command} {(xTime < yTime ? "x first" : "y first")}");
 
-                    if (y.Command == MPTKCommand.PatchChange)
-                        yTime = Int64.MinValue;
-
-                    // sort meta events before note events, except end track
-                    if (x.Command == MPTKCommand.MetaEvent)
-                    {
-                        if (x.Meta == MPTKMeta.EndTrack)
-                            xTime = Int64.MaxValue;
-                        else
-                            xTime = Int64.MinValue;
-                    }
-                    if (y.Command == MPTKCommand.MetaEvent)
-                    {
-                        if (y.Meta == MPTKMeta.EndTrack)
-                            yTime = Int64.MaxValue;
-                        else
-                            yTime = Int64.MinValue;
-                    }
-                }
-                return xTime.CompareTo(yTime);
-            }
-        }
-
+        //        }
+        //        return xTime.CompareTo(yTime);
+        //    }
+        //}
 
         public void ClearMetaText()
         {
@@ -1415,14 +1429,30 @@ namespace MidiPlayerTK
             }
         }
 
+        // Level of quantization : 
+        //     -      0 = None 
+        //     -      1 = Beat Note
+        //     -      2 = Eighth Note
+        //     -      3 = 16th Note
+        //     -      4 = 32th Note
+        //     -      5 = 64th Note
+        //     -      6 = 128th Note
         public void ChangeQuantization(int level = 4)
         {
             try
             {
                 if (level <= 0)
+                {
+                    //Debug.Log($"ChangeQuantization to 0");
                     Quantization = 0;
+                }
                 else
-                    Quantization = MPTK_DeltaTicksPerQuarterNote / level;
+                {
+                    // Quantization = MPTK_DeltaTicksPerQuarterNote / level;
+                    // v2.16.0 Thanks to cihadturhan_unity
+                    //Debug.Log($"ChangeQuantization to {MPTK_DeltaTicksPerQuarterNote / (1 << (level - 1)):F2} for level {level} - previous was: {Quantization:F2} - DeltaTicksPerQuarterNote:{MPTK_DeltaTicksPerQuarterNote}");
+                    Quantization = MPTK_DeltaTicksPerQuarterNote / (1 << (level-1));
+                }
             }
             catch (System.Exception ex)
             {
@@ -1457,7 +1487,7 @@ namespace MidiPlayerTK
                 if (MPTK_TickPlayer < MPTK_CurrentTempoMap.FromTick ||
                     MPTK_TickPlayer > MPTK_CurrentTempoMap.ToTick)
                 {
-                    // Normmally, a new index will be found
+                    // Normally, a new index will be found
                     MPTK_CurrentIndexTempoMap = MPTKTempo.FindSegment(MPTK_TempoMap, MPTK_TickPlayer, MPTK_CurrentIndexTempoMap);
                     MPTK_CurrentTempoMap = MPTK_TempoMap[MPTK_CurrentIndexTempoMap];
                 }
@@ -1466,7 +1496,7 @@ namespace MidiPlayerTK
                 if (MPTK_TickPlayer < MPTK_CurrentSignMap.FromTick ||
                     MPTK_TickPlayer > MPTK_CurrentSignMap.ToTick)
                 {
-                    // Normmally, a new index will be found
+                    // Normally, a new index will be found
                     MPTK_CurrentIndexSignMap = MPTKSignature.FindSegment(MPTK_SignMap, MPTK_TickPlayer, MPTK_CurrentIndexSignMap);
                     MPTK_CurrentSignMap = MPTK_SignMap[MPTK_CurrentIndexSignMap];
                 }
@@ -1540,7 +1570,9 @@ namespace MidiPlayerTK
 
         private int fluid_player_get_bpm()
         {
-            return 60000000 / miditempo;
+            // return 60000000 / miditempo;
+            // v2.16.0 it’s floating point is something like 139.9xxx which is rounded to 139BPM.I changed my code as the following to fix this.
+            return Mathf.RoundToInt(60000000f / miditempo);
         }
 
         // not possible.  QueueMidiEvents.Enqueue will send list of events by reference ...
@@ -1551,7 +1583,7 @@ namespace MidiPlayerTK
         public List<MPTKEvent> fluid_player_callback(int msec, int idSession)
         {
             List<MPTKEvent> midiEvents = null;
-            
+
             //Debug.Log($"-------------- {msec} --- {next_event} --- TickPlayer:{MPTK_TickPlayer} --- TickCurrent:{MPTK_TickCurrent} --- TickSeek:{TickSeek} ---------------");
 
             try
@@ -1583,8 +1615,8 @@ namespace MidiPlayerTK
                         {
                             // Yes, start search MIDI events from seek position
                             ticks = TickSeek;
-                            if (ticks <= MPTK_TickCurrent) // was < before 2.10.0
-                                                           // Search events from the start of the MIDI but not note-on (reapply tempo, controller, ...)
+                            if (ticks <= MPTK_TickCurrent)
+                                // Search events from the start of the MIDI but not note-on will be excluded (apply tempo, controller, preset change ... from start)
                                 next_event = 0;
                             //Debug.Log($"Start seek - next_event:{next_event} TickFromTempoChange:{TickFromTempoChange} cur_msec:{cur_msec} start_msec:{start_msec}");
                         }
@@ -1604,8 +1636,9 @@ namespace MidiPlayerTK
 
                             MPTKEvent mptkEvent = MPTK_MidiEvents[next_event];
                             // 2.9.0 remove stupid shift half quanta
-                            long quantizedTick = Quantization != 0 ? ((mptkEvent.Tick /*+ Quantization / 2*/) / Quantization) * Quantization : mptkEvent.Tick;
-                            //Debug.Log($"MIDI events search. quantizedTick:{quantizedTick} ticks:{ticks}");
+
+                            long quantizedTick = Quantization != 0 ? (mptkEvent.Tick / Quantization) * Quantization : mptkEvent.Tick;
+                            //Debug.Log($"MIDI events search. {Quantization} ticks:{mptkEvent.Tick} --> quantizedTick:{quantizedTick}");
 
                             if (quantizedTick >= ticks) // V2.872 replaced > by >=    
                             {
@@ -1613,8 +1646,9 @@ namespace MidiPlayerTK
                                 //Debug.Log($"   Search over, break the loop. {((midiEvents == null) ? "No event.": midiEvents.Count.ToString()+" events.")} Player ticks:{ticks}  Next tick was:{quantizedTick} TickSeek:{TickSeek}");
                                 break;
                             }
+                            //Debug.Log($"MIDI events search. Quantization:{Quantization} TicksPerQuarterNote:{MPTK_DeltaTicksPerQuarterNote} ticks:{mptkEvent.Tick} --> quantizedTick:{quantizedTick}");
 
-                            // If not seeking get all events
+                            // If not seeking get next events
                             // If seeking exclude note-on and all META which are not SetTempo (MetaEvent.SetTempo, Preset, Control ... are kept)
                             // to replace the MIDI synth in the same context.
                             if (TickSeek < 0

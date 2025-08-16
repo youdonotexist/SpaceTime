@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -104,7 +103,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 2
+    serializedVersion: 3
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -117,7 +116,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    buildHeightMesh: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -156,7 +155,6 @@ RectTransform:
   m_Children:
   - {fileID: 470353352}
   m_Father: {fileID: 639322724}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -297,9 +295,17 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -333,13 +339,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103085402}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &169481060
 GameObject:
@@ -374,7 +380,6 @@ RectTransform:
   m_Children:
   - {fileID: 1169552808}
   m_Father: {fileID: 1537984157}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -508,7 +513,6 @@ RectTransform:
   m_Children:
   - {fileID: 1365088926}
   m_Father: {fileID: 1537984157}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -658,7 +662,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1001347203}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -738,7 +741,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 71529199}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -792,6 +794,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1755970444}
     m_Modifications:
     - target: {fileID: 1367716147436054, guid: f1aa4788763f8854c9826e449686c328, type: 3}
@@ -854,10 +857,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
-      propertyPath: showSpatialization
+      propertyPath: mPTK_CorePlayer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: MPTK_EffectUnity
+      value: 
+      objectReference: {fileID: 833091890}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showSpatialization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: MPTK_EffectSoundFont
+      value: 
+      objectReference: {fileID: 1964346500}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnityPerformanceParameter
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1aa4788763f8854c9826e449686c328, type: 3}
 --- !u!1 &518489067
 GameObject:
@@ -919,13 +955,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518489067}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &639322723
 GameObject:
@@ -960,7 +996,6 @@ RectTransform:
   m_Children:
   - {fileID: 71529199}
   m_Father: {fileID: 1271740200}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1061,11 +1096,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 639322723}
   m_CullTransparentMesh: 0
+--- !u!114 &833091890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5fc8a054b054664d86e518b31d75b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyReverb: 0
+  reverbRoom: 0.9
+  reverbRoomHF: 0.99
+  reverbRoomLF: 1
+  reverbReflectionLevel: 0.67254543
+  reverbReflectionDelay: 0
+  reverbDryLevel: 1
+  reverbDecayTime: 1.49
+  reverbDecayHFRatio: 0.83
+  reverbLevel: 0.85
+  reverbDelay: 0.011
+  reverbHfReference: 5000
+  reverbLfReference: 250
+  reverbDiffusion: 1
+  reverbDensity: 1
+  applyChorus: 0
+  chorusDryMix: 0.5
+  chorusWetMix1: 0.5
+  chorusWetMix2: 0.5
+  chorusWetMix3: 0.5
+  chorusDelay: 40
+  chorusRate: 0.8
+  chorusDepth: 0.03
 --- !u!1001 &868583542
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1626069443}
     m_Modifications:
     - target: {fileID: 1367716147436054, guid: f1aa4788763f8854c9826e449686c328, type: 3}
@@ -1128,10 +1199,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
-      propertyPath: showSpatialization
+      propertyPath: mPTK_CorePlayer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: MPTK_EffectUnity
+      value: 
+      objectReference: {fileID: 1936756225}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showSpatialization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: MPTK_EffectSoundFont
+      value: 
+      objectReference: {fileID: 990583503}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnityPerformanceParameter
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1aa4788763f8854c9826e449686c328, type: 3}
 --- !u!1 &893994932
 GameObject:
@@ -1219,14 +1323,41 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 893994932}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &990583503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc2b118d1a6c1154983be5ee4bf1b510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applySFReverb: 0
+  applySFChorus: 0
+  applySFFilter: 1
+  FilterFreqOffset: 0
+  ReverbAmplify: 0
+  ChorusAmplify: 0
+  filterQModOffset: 0
+  sfReverbRoomSize: 0.5
+  sfReverbDamp: 0.3
+  sfReverbWidth: 0.8
+  sfReverbLevel: 0.7
+  sfChorusLevel: 0.6
+  sfChorusSpeed: 0.2
+  sfChorusDepth: 4.25
+  sfChorusWidth: 10
 --- !u!1 &1001347202
 GameObject:
   m_ObjectHideFlags: 0
@@ -1260,7 +1391,6 @@ RectTransform:
   m_Children:
   - {fileID: 435761302}
   m_Father: {fileID: 1537984157}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1392,7 +1522,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1788648773}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1533,7 +1662,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -1552,7 +1683,6 @@ RectTransform:
   - {fileID: 1537984157}
   - {fileID: 1271740200}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1590,7 +1720,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 169481061}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1673,7 +1802,6 @@ RectTransform:
   - {fileID: 1788648773}
   - {fileID: 639322724}
   m_Father: {fileID: 1094400742}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1775,7 +1903,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 193340130}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1859,7 +1986,6 @@ RectTransform:
   - {fileID: 1001347203}
   - {fileID: 169481061}
   m_Father: {fileID: 1094400742}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1976,9 +2102,17 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1626069438}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1626069441
@@ -2038,6 +2172,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1626069438}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.22, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -2045,7 +2180,6 @@ Transform:
   m_Children:
   - {fileID: 245930580}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1687584863 stripped
 MonoBehaviour:
@@ -2111,9 +2245,17 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1755970439}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1755970442
@@ -2173,6 +2315,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1755970439}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.27, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -2180,7 +2323,6 @@ Transform:
   m_Children:
   - {fileID: 1687584864}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1788648772
 GameObject:
@@ -2215,7 +2357,6 @@ RectTransform:
   m_Children:
   - {fileID: 1047494772}
   m_Father: {fileID: 1271740200}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2316,3 +2457,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788648772}
   m_CullTransparentMesh: 0
+--- !u!114 &1936756225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5fc8a054b054664d86e518b31d75b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyReverb: 0
+  reverbRoom: 0.9
+  reverbRoomHF: 0.99
+  reverbRoomLF: 1
+  reverbReflectionLevel: 0.67254543
+  reverbReflectionDelay: 0
+  reverbDryLevel: 1
+  reverbDecayTime: 1.49
+  reverbDecayHFRatio: 0.83
+  reverbLevel: 0.85
+  reverbDelay: 0.011
+  reverbHfReference: 5000
+  reverbLfReference: 250
+  reverbDiffusion: 1
+  reverbDensity: 1
+  applyChorus: 0
+  chorusDryMix: 0.5
+  chorusWetMix1: 0.5
+  chorusWetMix2: 0.5
+  chorusWetMix3: 0.5
+  chorusDelay: 40
+  chorusRate: 0.8
+  chorusDepth: 0.03
+--- !u!114 &1964346500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc2b118d1a6c1154983be5ee4bf1b510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applySFReverb: 0
+  applySFChorus: 0
+  applySFFilter: 1
+  FilterFreqOffset: 0
+  ReverbAmplify: 0
+  ChorusAmplify: 0
+  filterQModOffset: 0
+  sfReverbRoomSize: 0.5
+  sfReverbDamp: 0.3
+  sfReverbWidth: 0.8
+  sfReverbLevel: 0.7
+  sfChorusLevel: 0.6
+  sfChorusSpeed: 0.2
+  sfChorusDepth: 4.25
+  sfChorusWidth: 10
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 103085405}
+  - {fileID: 893994934}
+  - {fileID: 1755970444}
+  - {fileID: 1626069443}
+  - {fileID: 518489070}
+  - {fileID: 1094400742}

@@ -124,8 +124,6 @@ namespace DemoMPTK
 
         void OnGUI()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
             HelperDemo.GUIScale();
 
             // Set custom Style. Good for background color 3E619800

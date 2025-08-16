@@ -1,5 +1,4 @@
 ﻿//#define DEBUGPERF
-using MEC;
 using UnityEngine;
 
 namespace MidiPlayerTK
@@ -129,7 +128,7 @@ namespace MidiPlayerTK
         {
             try
             {
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     chord.Channel = Mathf.Clamp(chord.Channel, 0, MPTK_Channels.Length - 1);
 
@@ -195,7 +194,7 @@ namespace MidiPlayerTK
         {
             try
             {
-                if (MidiPlayerGlobal.MPTK_SoundFontLoaded)
+                if (MPTK_SoundFont.IsReady)
                 {
                     chord.Channel = Mathf.Clamp(chord.Channel, 0, MPTK_Channels.Length - 1);
                     chord.MPTK_BuildFromLib(chord.FromLib);

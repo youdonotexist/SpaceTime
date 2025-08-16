@@ -23,17 +23,20 @@ namespace DemoMPTK
         public void Quit()
         {
             if (!Application.isEditor)
+            {
+                MidiPlayerGlobal.MPTK_Stop();
+                Application.Quit();
+                //for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+                //{
+                //    Debug.Log(SceneUtility.GetScenePathByBuildIndex(i));
 
-                for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
-                {
-                    Debug.Log(SceneUtility.GetScenePathByBuildIndex(i));
-
-                    if (SceneUtility.GetScenePathByBuildIndex(i).Contains("ScenesDemonstration"))
-                    {
-                        SceneManager.LoadScene(i, LoadSceneMode.Single);
-                        return;
-                    }
-                }
+                //    if (SceneUtility.GetScenePathByBuildIndex(i).Contains("ScenesDemonstration"))
+                //    {
+                //        SceneManager.LoadScene(i, LoadSceneMode.Single);
+                //        return;
+                //    }
+                //}
+            }
 #if UNITY_EDITOR
             else
                 UnityEditor.EditorApplication.isPlaying = false;

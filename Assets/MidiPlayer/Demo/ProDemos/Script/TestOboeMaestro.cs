@@ -16,6 +16,9 @@ using UnityEngine.UI;
 
 namespace MPTKDemoEuclidean
 {
+    // Look also at TestTapMidi.cs script
+    // which process MIDI note-on from tap on the UI.
+
     public class TestOboeMaestro : MonoBehaviour
     {
         public Slider SliderVolume;

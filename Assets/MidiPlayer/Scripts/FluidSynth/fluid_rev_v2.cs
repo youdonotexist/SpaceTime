@@ -179,6 +179,7 @@
   - DENORMALISING enable denormalising handling.
 -----------------------------------------------------------------------------*/
 //#define INFOS_PRINT /* allows message to be printed on the console. */
+#define DENORMALISING
 using System;
 using UnityEngine;
 
@@ -192,8 +193,11 @@ namespace MidiPlayerTK
           8 is the default.
          12 produces a better quality but is +50% cpu expensive
         */
+#if MPTK_REVERB_NBR_DELAYS_12
+        const int NBR_DELAYS = 12; /* default or 12*/
+#else
         const int NBR_DELAYS = 8; /* default or 12*/
-
+#endif
         /* response curve of parameter roomsize  */
         /*
             The default response is the same as Freeverb:
@@ -205,7 +209,6 @@ namespace MidiPlayerTK
         //#define ROOMSIZE_RESPONSE_LINEAR
 
         /* DENORMALISING enable denormalising handling */
-        //#define DENORMALISING
 
 #if DENORMALISING
         const float DC_OFFSET = 1e-8f;
@@ -901,9 +904,11 @@ namespace MidiPlayerTK
             {
                 /* Delay lines length table (in samples) */
                 int[] delay_length;
-                //if (NBR_DELAYS == 8)
-                delay_length = new int[] { 601, 691, 773, 839, 919, 997, 1061, 1093 };
-                //else delay_length = new int[] { 601, 691, 773, 839, 919, 997, 1061, 1093, 1129, 1151, 1171, 1187 };
+#if MPTK_REVERB_NBR_DELAYS_12
+                delay_length = new int[] { 601, 691, 773, 839, 919, 997, 1061, 1093, 1129, 1151, 1171, 1187 };
+#else
+                delay_length = new int[] { 601, 691, 773, 839, 919, 997, 1061, /* v1.9 1093*/ 1129 };
+#endif
                 int i;
 
                 /*

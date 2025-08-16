@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,6 +39,9 @@ namespace DemoMPTK
         ///     
         /// </summary>
 
+        public Text TextPlayWithTheOnlineMidiRoulette;
+        public Button BtPlayWithTheOnlineMidiRoulette;
+
         // Reference to the MidiExternalPlat prefab in the scene.
         public MidiExternalPlayer midiExternalPlayer;
 
@@ -58,6 +60,7 @@ namespace DemoMPTK
         public Button BtPlayRoulette;
         public InputField UrlMidi;
         public Button BtPlay;
+        public Button BtReplay;
         public Button BtPause;
         public Button BtStop;
         public Button BtSetPositionBy;
@@ -81,9 +84,12 @@ namespace DemoMPTK
         float currentVelocity = 0f;
         int modeSetPosition = 0; // 0 tick, 1 measure/bar
 
-
         private void Start()
         {
+#if UNITY_WEBGL
+            TextPlayWithTheOnlineMidiRoulette.text = "For WebGL builds, loading a MIDI file from an external website requires that the site supports CORS (Cross-Origin Resource Sharing). Unfortunately, midiworld does not enable CORS,\nso the \"Roulette\" feature won't work with it.";
+#endif
+
             // Warning: when defined by script, this event is not triggered at first load of MPTK 
             // because MidiPlayerGlobal is loaded before any other gamecomponent
             // To be done in Start event (not Awake)
@@ -148,7 +154,14 @@ namespace DemoMPTK
                     midiExternalPlayer.MPTK_Play();
             });
 
-            // PAuse or Unpause
+            // Replay the MIDI
+            BtReplay.onClick.AddListener(() =>
+            {
+                if (midiExternalPlayer != null && midiExternalPlayer.MPTK_MidiLoaded != null)
+                    midiExternalPlayer.MPTK_Play(alreadyLoaded: true);
+            });
+
+            // Pause or Unpause
             BtPause.onClick.AddListener(() =>
             {
                 if (midiExternalPlayer != null && midiExternalPlayer.MPTK_MidiLoaded != null)
@@ -158,7 +171,7 @@ namespace DemoMPTK
                         midiExternalPlayer.MPTK_Pause();
             });
 
-            // Syop playing the MIDI
+            // Stop playing the MIDI
             BtStop.onClick.AddListener(() =>
             {
                 if (midiExternalPlayer != null && midiExternalPlayer.MPTK_MidiLoaded != null)

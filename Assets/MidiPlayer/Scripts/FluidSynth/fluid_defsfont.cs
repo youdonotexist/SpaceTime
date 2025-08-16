@@ -1,6 +1,5 @@
 ﻿#define MPTK_PRO
 
-using MEC;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,7 +76,8 @@ namespace MidiPlayerTK
             if (MPTK_ReleaseSameNote)
                 fluid_synth_release_voice_on_same_note(note.Channel, note.Value);
 
-            ImSoundFont sfont = MidiPlayerGlobal.ImSFCurrent;
+            //ImSoundFont sfont = MidiPlayerGlobal.ImSFCurrent;
+            ImSoundFont soundFont = MPTK_SoundFont.SoundFont;
             note.Voices = new List<fluid_voice>();
 
             HiZone global_preset_zone = defpreset.GlobalZone;
@@ -96,7 +96,7 @@ namespace MidiPlayerTK
                 {
                     if (preset_zone.Index >= 0)
                     {
-                        HiInstrument inst = sfont.HiSf.inst[preset_zone.Index];
+                        HiInstrument inst = soundFont.HiSf.inst[preset_zone.Index];
                         HiZone global_inst_zone = inst.GlobalZone;
 
 
@@ -121,11 +121,11 @@ namespace MidiPlayerTK
                         // run thru all the zones of this instrument that could start a voice
                         foreach (HiZone voice_zone in inst.Zone)
                         {
-                            if (voice_zone.Index < 0 || voice_zone.Index >= sfont.HiSf.Samples.Length)
+                            if (voice_zone.Index < 0 || voice_zone.Index >= soundFont.HiSf.Samples.Length)
                                 continue;
 
                             // make sure this instrument zone has a valid sample
-                            hiSample = sfont.HiSf.Samples[voice_zone.Index];
+                            hiSample = soundFont.HiSf.Samples[voice_zone.Index];
                             if (hiSample == null)
                                 continue;
 
@@ -304,7 +304,7 @@ namespace MidiPlayerTK
                                     sLogSampleUse.Append($"Voice Channel:{note.Channel:00} Bank:{Channels[note.Channel].BankNum:000} Preset:{Channels[note.Channel].PresetNum:000} ");
                                     sLogSampleUse.Append($"{defpreset.Name,-21} Key:{note.Value,-3}({HelperNoteLabel.LabelFromMidi(note.Value),-3}) Velocity:{note.Velocity,-3} ");
                                     sLogSampleUse.Append(note.Duration >= 0 ? $"Duration:{note.Duration,6} ms {voice.DurationTick,9} ticks " : "Infinite ");
-                                    sLogSampleUse.Append($"Instr:{inst.Name,-21} Sample:{sfont.HiSf.Samples[voice_zone.Index].Name,-21} ");
+                                    sLogSampleUse.Append($"Instr:{inst.Name,-21} Sample:{soundFont.HiSf.Samples[voice_zone.Index].Name,-21} ");
                                     sLogSampleUse.Append($"Atten:{fluid_conv.fluid_cb2amp(voice.attenuation):F2} Pano:{voice.pan:F2}");
                                     //,Channels[note.Channel].cc[(int)MPTKController.VOLUME_MSB]  {12}
                                     Debug.Log(sLogSampleUse);

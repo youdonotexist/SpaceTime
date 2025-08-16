@@ -26,13 +26,13 @@ namespace MidiPlayerTK
 
             if (MidiPlayerGlobal.ImSFCurrent != null)
             {
-                //Debug.Log($"OnPreprocessAudio - {MidiPlayerGlobal.ImSFCurrent.SoundFontName} {Path.GetFileName(importer.assetPath)} LoadType:{(AudioClipLoadType)MidiPlayerGlobal.ImSFCurrent.LoadType}  CompressionFormat:{(AudioCompressionFormat)MidiPlayerGlobal.ImSFCurrent.CompressionFormat}");
+                Debug.Log($"OnPreprocessAudio - {MidiPlayerGlobal.ImSFCurrent.SoundFontName} {Path.GetFileName(importer.assetPath)} LoadType:{(AudioClipLoadType)MidiPlayerGlobal.ImSFCurrent.LoadType}  CompressionFormat:{(AudioCompressionFormat)MidiPlayerGlobal.ImSFCurrent.CompressionFormat}");
 
                 // Create a temp variable that contains everything you want to apply to the imported AudioClip (possible changes: .compressionFormat, .conversionMode, .loadType, .quality, .sampleRateOverride, .sampleRateSetting)
                 AudioImporterSampleSettings sampleSettings = importer.defaultSampleSettings;
                 sampleSettings.loadType = (AudioClipLoadType)MidiPlayerGlobal.ImSFCurrent.LoadType;// AudioClipLoadType.CompressedInMemory; //alternatives: .DecompressOnLoad, .Streaming
                 sampleSettings.compressionFormat = (AudioCompressionFormat)MidiPlayerGlobal.ImSFCurrent.CompressionFormat; //AudioCompressionFormat.PCM;  //alternatives: .Vorbis .AAC, .ADPCM, .GDADPCM, .HEVAG, .MP3, .PCM, .VAG, .XMA
-                sampleSettings.quality = 1f; //ranging from 0 (0%) to 1 (100%), currently set to 1, wich is the smallest value that can be set in the inspector | Probably only useful when the compression format is set to Vorbis
+                sampleSettings.quality = 1f; //ranging from 0 (0%) to 1 (100%), currently set to 1, which is the smallest value that can be set in the inspector | Probably only useful when the compression format is set to Vorbis
                                              //applying the temp variable values to the default settings (most important step!)
                 importer.defaultSampleSettings = sampleSettings;
             }
@@ -45,10 +45,10 @@ namespace MidiPlayerTK
         //-------------Post Processors
 
         // This event is called as soon as the audio asset is imported successfully
-        //private void OnPostprocessAudio(AudioClip import)
-        //{
-        //    Debug.Log("import " + import.name);
-        //}
+        private void OnPostprocessAudio(AudioClip import)
+        {
+            //Debug.Log("import " + import.name);
+        }
     }
 }
 #endif

@@ -314,14 +314,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
+      propertyPath: mPTK_CorePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
       propertyPath: MPTK_EffectUnity
       value: 
       objectReference: {fileID: 929516794}
     - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
         type: 3}
+      propertyPath: showSynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
       propertyPath: MPTK_EffectSoundFont
       value: 
       objectReference: {fileID: 893313076}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnitySynthParameter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320350483668748, guid: f1aa4788763f8854c9826e449686c328,
+        type: 3}
+      propertyPath: showUnityPerformanceParameter
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

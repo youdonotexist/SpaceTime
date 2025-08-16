@@ -1,4 +1,8 @@
-﻿
+﻿// uncomment to activate 
+//#define DEMO_DEPRECATED
+
+#if DEMO_DEPRECATED
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
@@ -123,8 +127,6 @@ namespace DemoMPTK
 
         void OnGUI()
         {
-            if (!HelperDemo.CheckSFExists()) return;
-
             Vector3 scale = HelperDemo.GUIScale();
 
             // Set custom Style. Good for background color 3E619800
@@ -488,3 +490,4 @@ namespace DemoMPTK
     }
 }
 
+#endif

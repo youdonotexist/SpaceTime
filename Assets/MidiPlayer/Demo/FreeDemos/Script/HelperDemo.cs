@@ -27,21 +27,24 @@ namespace DemoMPTK
             GUI.backgroundColor = savedBackColor;
             if (GUI.Button(new Rect(rectLabel.width - 85, rectLabel.y + 20, 90, 20), "Reset Stat"))
                 synth.MPTK_ResetStat();
-            if (GUI.Button(new Rect(rectLabel.width - 85 - 95, rectLabel.y + 20, 90, 20), "Active Voice"))
+            if (GUI.Button(new Rect(rectLabel.width - 85 - 95, rectLabel.y + 20, 90, 20), "Log Voice"))
+            {
                 synth.MPTK_DebugActiveVoice();
-            if (GUI.Button(new Rect(rectLabel.width - 85, rectLabel.y + 20+20 , 90, 20), "Help"))
+                synth.MPTK_DebugFreeVoice();
+            }
+            if (GUI.Button(new Rect(rectLabel.width - 85, rectLabel.y + 20 + 20, 90, 20), "Help"))
                 Application.OpenURL("https://paxstellar.fr/2024/11/23/deeper-dive-in-mptk/");
         }
 
-        static public bool CheckSFExists()
-        {
-            if (MidiPlayerGlobal.ImSFCurrent == null || !MidiPlayerGlobal.MPTK_SoundFontLoaded)
-            {
-                //Debug.Log(MidiPlayerGlobal.ErrorNoSoundFont);
-                return false;
-            }
-            return true;
-        }
+        //static public bool CheckSFExists()
+        //{
+        //    if (MidiPlayerGlobal.ImSFCurrent == null || !MidiPlayerGlobal.MPTK_SoundFontLoaded)
+        //    {
+        //        //Debug.Log(MidiPlayerGlobal.ErrorNoSoundFont);
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         // Removed from 2.12.2
 

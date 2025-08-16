@@ -126,7 +126,7 @@ namespace MidiPlayerTK
 
         public MPTKChannels(MidiSynth psynth, int countChannel = 16)
         {
-            if (psynth.VerboseChannel) Debug.Log("Create channels");
+            if (psynth.VerboseChannel) Debug.Log($"Create {countChannel} channels for synth '{psynth.name}'");
             Channels = new List<MPTKChannel>();
             for (int i = 0; i < countChannel; i++)
                 Channels.Add(new MPTKChannel(i, psynth));
@@ -269,6 +269,7 @@ namespace MidiPlayerTK
         // controller values
         public byte[] cc;
         private MidiSynth synth;
+        //private ImSoundFont sfont;
 
         // the micro-tuning TO BE DONE ... one day
         //private fluid_tuning tuning;
@@ -390,12 +391,12 @@ namespace MidiPlayerTK
             }
             set
             {
-                ImSoundFont sfont = MidiPlayerGlobal.ImSFCurrent;
-                if (sfont == null)
-                {
-                    Debug.LogWarning($"MPTK_Channel[{Channel}].PresetNum - no SoundFont defined");
-                }
-                else if (value < 0 || value > 127)
+                //if (!HelperDemo.CheckSFExists())
+                //{
+                //    Debug.LogWarning($"MPTK_Channel[{Channel}].PresetNum - no SoundFont defined");
+                //}
+                //else
+                if (value < 0 || value > 127)
                 {
                     Debug.LogWarning($"MPTK_Channel[{Channel}].PresetNum out of range, must be between 0 and 127, found {value}");
                 }
@@ -499,7 +500,10 @@ namespace MidiPlayerTK
                     if (LastBank >= 0)
                         banknum = LastBank;
                     else
-                        banknum = Channel == 9 ? MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber : MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber;
+                    {
+                        ImSoundFont sFont = synth.MPTK_SoundFont.SoundFont;
+                        banknum = Channel == 9 ? sFont.DrumKitBankNumber : sFont.DefaultBankNumber;
+                    }
                     forcedBank = -1;
                 }
             }
@@ -508,9 +512,10 @@ namespace MidiPlayerTK
         private void fluid_channel_init()
         {
             prognum = 0;
-            if (MidiPlayerGlobal.ImSFCurrent != null)
+            if (synth.MPTK_SoundFont.IsReady)
             {
-                banknum = Channel == 9 ? MidiPlayerGlobal.ImSFCurrent.DrumKitBankNumber : MidiPlayerGlobal.ImSFCurrent.DefaultBankNumber;
+                banknum = Channel == 9 ? synth.MPTK_SoundFont.SoundFont.DrumKitBankNumber : synth.MPTK_SoundFont.SoundFont.DefaultBankNumber;
+                // Search default preset for the channel
                 hiPreset = fluid_synth_find_preset(banknum, prognum);
             }
         }
@@ -608,8 +613,7 @@ namespace MidiPlayerTK
                 short previousValue = cc[(int)numController];
                 cc[(int)numController] = (byte)valueController;
 
-                if (synth.VerboseController || synth.VerboseChannel)
-                    Debug.Log($"MPTK_Channel[{Channel}].Controller Control:{numController} Value:{valueController} Previous:{previousValue}");
+                if (synth.VerboseController || synth.VerboseChannel) Debug.Log($"MPTK_Channel[{Channel}].Controller Control:{numController} Value:{valueController} Previous:{previousValue}");
 
                 switch (numController)
                 {
@@ -617,26 +621,51 @@ namespace MidiPlayerTK
                         {
                             if (valueController < 64)
                             {
-                                /*  	printf("** sustain off\n"); */
+                                // printf("** sustain off\n");
+                                // Send note-off to all active voices for this channel and if sustained
                                 synth.fluid_synth_damp_voices(Channel);
                             }
                             else
                             {
-                                /*  	printf("** sustain on\n"); */
+                                // printf("** sustain on\n");
+                                // cc[(int)numController] has been set to a valeur >= 64
+                                // So future note-off will not be applied on this channel
                             }
                         }
                         break;
 
-                    case MPTKController.BankSelectMsb:
+                    /* how the synthesizer interprets Bank Select messages. https://www.fluidsynth.org/api/settings_synth.html
+                        GM: (General MIDI): This is the basic standard for MIDI files, ensuring that MIDI music will sound consistent across different GM-compatible synthesizers. 
+                            It includes 128 standard instrument sounds plus some percussion sounds.
+                        GS: (General Standard): Developed by Roland, GS extends the GM standard. It adds more instruments, effects (such as reverb and chorus), 
+                            and other features for finer sound control. Specifically optimized for Roland synthesizers.
+
+                        CC0: MSB
+                        CC21: LSB
+
+                        GM: ignores CC0 and CC32 messages.
+                        GS: (default) CC0 becomes the bank number, CC32 is ignored.
+                        MMA: bank is calculated as CC0*128+CC32.
+                        XG: If CC0 is equal to 120, 126, or 127 then channel is set to drum and the bank number is set to 128 (CC32 is ignored).
+                            Otherwise the channel is set to melodic and CC32 is the bank number. 
+
+                        MPTK apply the GS bank number selection: CC0 becomes the bank number, CC32 is ignored.
+                     */
+                    case MPTKController.BankSelectMsb: // CC0
+                        // ex value = 120 --> bank = 120
                         banknum = valueController & 0x7F;
                         LastBank = banknum;
-                        //synth.fluid_synth_program_change(channum, prognum);
+                        // useless, we need to priorize bankselect before program change
+                        // synth.fluid_synth_program_change(channum, prognum);
                         break;
 
-                    case MPTKController.BankSelectLsb:
-                        banknum = banknum * 128 + (valueController & 0x7F);
-                        LastBank = banknum;
+                    case MPTKController.BankSelectLsb: // CC32
+                        // v2.14.1: CC32 ignored (default is GS)
+                        // ex value =0 and banknum=120 --> 15360
+                        //banknum = banknum * 128 + (valueController & 0x7F);
+                        //LastBank = banknum;
                         break;
+
 
                     case MPTKController.AllNotesOff:
                         synth.fluid_synth_noteoff(Channel, -1);
@@ -807,86 +836,87 @@ namespace MidiPlayerTK
         // Not recommended to use
         public HiPreset fluid_synth_find_preset(int banknum, int prognum)
         {
-            ImSoundFont sfont = MidiPlayerGlobal.ImSFCurrent;
+            if (synth.VerboseChannel) Debug.Log($"Find HiPreset for channel {Channel} bank:{banknum} preset:{prognum}");
 
-            if (synth.VerboseChannel)
-                Debug.Log($"Find Preset {Channel} bank:{banknum} preset:{prognum}");
-
-            HiPreset preset_found = CheckBankAndPresetExist(banknum, prognum, sfont);
+            HiPreset preset_found = CheckBankAndPresetExist(banknum, prognum);
             if (preset_found != null)
                 return preset_found;
 
-            if (synth.VerboseChannel)
-                Debug.Log($"Find Preset not found");
-
+            if (synth.VerboseChannel) Debug.LogWarning($"No HiPreset found");
+            ImSoundFont sFont = synth.MPTK_SoundFont.SoundFont;
             // v2.9.0 try to find the same preset in the first bank
             if (banknum != 0)
             {
                 banknum = 0;
-                if (banknum >= 0 && banknum < sfont.Banks.Length &&
-                   sfont.Banks[banknum] != null &&
-                   sfont.Banks[banknum].defpresets != null &&
-                   prognum < sfont.Banks[banknum].defpresets.Length &&
-                   sfont.Banks[banknum].defpresets[prognum] != null)
+                if (banknum >= 0 && banknum < sFont.Banks.Length &&
+                   sFont.Banks[banknum] != null &&
+                   sFont.Banks[banknum].defpresets != null &&
+                   prognum < sFont.Banks[banknum].defpresets.Length &&
+                   sFont.Banks[banknum].defpresets[prognum] != null)
                 {
-                    if (synth.VerboseVoice || synth.VerboseChannel)
-                        Debug.Log($"Select the preset {prognum} in the bank 0.");
-                    return sfont.Banks[banknum].defpresets[prognum];
+                    if (synth.VerboseVoice || synth.VerboseChannel) Debug.Log($"Select the HiPreset bank:{banknum} preset:{prognum}.");
+                    return sFont.Banks[banknum].defpresets[prognum];
                 }
             }
 
             // Not find, return the first available preset
-            foreach (ImBank bank in sfont.Banks)
+            foreach (ImBank bank in sFont.Banks)
                 if (bank != null)
                     foreach (HiPreset preset in bank.defpresets)
                         if (preset != null)
                         {
-                            if (synth.VerboseVoice || synth.VerboseChannel)
-                                Debug.Log($"Select the preset {preset.Num} in the bank {bank.BankNumber}.");
+                            if (synth.VerboseVoice || synth.VerboseChannel) Debug.Log($"Select the HiPreset {preset.Num} in the bank {bank.BankNumber}.");
                             return preset;
                         }
             return null;
         }
 
-        private HiPreset CheckBankAndPresetExist(int banknum, int prognum, ImSoundFont sfont)
+        private HiPreset CheckBankAndPresetExist(int banknum, int prognum)
         {
-            if (sfont == null)
+            if (synth.MPTK_SoundFont.IsReady)
             {
-                Debug.LogWarningFormat("Find preset: no soundfont defined");
-            }
-            else if (banknum >= 0 && banknum < sfont.Banks.Length && sfont.Banks[banknum] != null)
-            {
-                if (sfont.Banks[banknum].defpresets != null && prognum < sfont.Banks[banknum].defpresets.Length && sfont.Banks[banknum].defpresets[prognum] != null)
+                ImSoundFont sfont = synth.MPTK_SoundFont.SoundFont;
+                if (sfont == null)
                 {
-                    return sfont.Banks[banknum].defpresets[prognum];
+                    Debug.LogWarning("Find preset: no soundfont defined");
+                }
+                else if (banknum >= 0 && banknum < sfont.Banks.Length && sfont.Banks[banknum] != null)
+                {
+                    if (sfont.Banks[banknum].defpresets != null && prognum < sfont.Banks[banknum].defpresets.Length && sfont.Banks[banknum].defpresets[prognum] != null)
+                    {
+                        return sfont.Banks[banknum].defpresets[prognum];
+                    }
+                    else
+                        Debug.LogWarning($"Preset {prognum} not found in the bank {banknum} of the selected SoundFont.");
                 }
                 else
-                    Debug.LogWarning($"Preset {prognum} not found in the bank {banknum} of the selected SoundFont.");
+                    Debug.LogWarning($"Bank {banknum} not found in the selected SoundFont.");
             }
             else
-                Debug.LogWarning($"Bank {banknum} not found in the selected SoundFont.");
+                Debug.LogWarning("Find preset: no soundfont defined");
             return null;
         }
 
         // Not recommended to use
         public void fluid_synth_program_change(int preset)
         {
-            //MptkChannel channel;
-            //HiPreset hiPreset;
-            int banknum;
-
-            if (Channel != 9 || synth.MPTK_EnablePresetDrum == true) // V2.89.0
+            if (synth.MPTK_SoundFont.IsReady)
             {
-                if (ForcedPreset >= 0)
-                    preset = ForcedPreset;
+                int banknum;
 
-                banknum = ForcedBank >= 0 ? ForcedBank : BankNum; //fluid_channel_get_banknum
+                if (Channel != 9 || synth.MPTK_EnablePresetDrum == true) // V2.89.0
+                {
+                    if (ForcedPreset >= 0)
+                        preset = ForcedPreset;
 
-                prognum = preset; // fluid_channel_set_prognum
-                BankNum = banknum;
+                    banknum = ForcedBank >= 0 ? ForcedBank : BankNum; //fluid_channel_get_banknum
 
-                if (synth.VerboseVoice || synth.VerboseChannel) Debug.LogFormat("ProgramChange\tChannel:{0}\tBank:{1}\tPreset:{2}", Channel, banknum, preset);
-                hiPreset = fluid_synth_find_preset(banknum, preset);
+                    prognum = preset; // fluid_channel_set_prognum
+                    BankNum = banknum;
+
+                    if (synth.VerboseVoice || synth.VerboseChannel) Debug.LogFormat("ProgramChange\tChannel:{0}\tBank:{1}\tPreset:{2}", Channel, banknum, preset);
+                    hiPreset = fluid_synth_find_preset(banknum, preset);
+                }
             }
         }
     }
