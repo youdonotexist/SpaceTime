@@ -4,8 +4,8 @@
     <SoundFontInfo>
       <Name>UNDERTALE Soundfont</Name>
       <PatchCount>498</PatchCount>
-      <WaveCount>2304</WaveCount>
-      <WaveSize>496905306</WaveSize>
+      <WaveCount>2305</WaveCount>
+      <WaveSize>496914838</WaveSize>
       <SF2Path>C:/Users/camada/AppData/LocalLow/DefaultCompany/Space+Time\SoundFont\UNDERTALE Soundfont.sf2</SF2Path>
     </SoundFontInfo>
   </SoundFonts>
