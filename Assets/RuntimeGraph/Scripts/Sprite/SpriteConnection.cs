@@ -51,7 +51,7 @@ namespace RuntimeGraph.Sprite
         private SpriteRuntimeGraph graph;
         private ConnectionData connectionData;
         private LineRenderer lineRenderer;
-        private SpriteRenderer arrowheadRenderer;
+        private SpriteRenderer directionArrowRenderer;
         private bool isPendingConnection;
         private Vector3 pendingEndPoint;
         
@@ -61,22 +61,18 @@ namespace RuntimeGraph.Sprite
         public void Initialize(SpriteRuntimeGraph graph, ConnectionData data)
         {
             this.graph = graph;
-            this.connectionData = data;
+            connectionData = data;
             
             SetupLineRenderer();
             UpdateConnection();
+            SetInteractable(true);
         }
         
-        public void InitializeAsPending(SpriteRuntimeGraph graph, string fromNodeId, int fromAnchorIndex)
+        public void InitializeAsPending(SpriteRuntimeGraph graph, ConnectionData data)
         {
             this.graph = graph;
-            this.connectionData = new ConnectionData
-            {
-                id = "pending",
-                fromNodeId = fromNodeId,
-                fromAnchorIndex = fromAnchorIndex
-            };
-            this.isPendingConnection = true;
+            connectionData = data;
+            isPendingConnection = true;
             
             SetupLineRenderer();
             UpdatePendingConnection();
@@ -115,6 +111,9 @@ namespace RuntimeGraph.Sprite
             
             // Set name
             gameObject.name = isPendingConnection ? "PendingConnection" : $"Connection ({connectionData.fromNodeId} -> {connectionData.toNodeId})";
+            
+            // Setup direction arrow
+            SetupDirectionArrow();
         }
         
         private Material CreateDefaultMaterial()
@@ -123,6 +122,101 @@ namespace RuntimeGraph.Sprite
             Material mat = new Material(Shader.Find("Sprites/Default"));
             mat.color = Color.white;
             return mat;
+        }
+        
+        private void SetupDirectionArrow()
+        {
+            // Create direction arrow GameObject as child
+            var arrowGO = new GameObject("DirectionArrow");
+            arrowGO.transform.SetParent(transform);
+            
+            // Add SpriteRenderer
+            directionArrowRenderer = arrowGO.AddComponent<SpriteRenderer>();
+            directionArrowRenderer.sprite = CreateDirectionArrowSprite();
+            directionArrowRenderer.color = arrowheadColor;
+            directionArrowRenderer.sortingOrder = 6; // Above connections but below nodes
+            
+            // Set initial scale
+            arrowGO.transform.localScale = Vector3.one * 0.5f;
+        }
+        
+        private UnityEngine.Sprite CreateDirectionArrowSprite()
+        {
+            // Create a simple arrow sprite
+            const int size = 32;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            Color[] pixels = new Color[size * size];
+            
+            // Clear background
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = Color.clear;
+            }
+            
+            // Draw arrow shape (pointing right)
+            int centerY = size / 2;
+            int centerX = size / 2;
+            
+            // Arrow body (horizontal line)
+            for (int x = 4; x < size - 8; x++)
+            {
+                for (int y = centerY - 2; y <= centerY + 2; y++)
+                {
+                    if (x >= 0 && x < size && y >= 0 && y < size)
+                        pixels[y * size + x] = Color.white;
+                }
+            }
+            
+            // Arrow head (triangle)
+            for (int i = 0; i < 8; i++)
+            {
+                int x = size - 8 + i;
+                int yTop = centerY - (4 - i/2);
+                int yBottom = centerY + (4 - i/2);
+                
+                for (int y = yTop; y <= yBottom; y++)
+                {
+                    if (x >= 0 && x < size && y >= 0 && y < size)
+                        pixels[y * size + x] = Color.white;
+                }
+            }
+            
+            texture.SetPixels(pixels);
+            texture.Apply();
+            
+            return UnityEngine.Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+        }
+        
+        private void UpdateDirectionArrow(Vector3[] pathPoints)
+        {
+            if (directionArrowRenderer == null || pathPoints == null || pathPoints.Length < 2) return;
+            
+            // Find the midpoint of the path
+            Vector3 midpoint = GetMidpoint();
+            directionArrowRenderer.transform.position = midpoint;
+            
+            // Calculate direction for arrow rotation
+            Vector3 direction = Vector3.zero;
+            int midIndex = pathPoints.Length / 2;
+            
+            if (midIndex < pathPoints.Length - 1)
+            {
+                direction = (pathPoints[midIndex + 1] - pathPoints[midIndex]).normalized;
+            }
+            else if (midIndex > 0)
+            {
+                direction = (pathPoints[midIndex] - pathPoints[midIndex - 1]).normalized;
+            }
+            
+            // Rotate arrow to match direction
+            if (direction != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                directionArrowRenderer.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+            
+            // Show/hide arrow based on connection state
+            directionArrowRenderer.enabled = !isPendingConnection;
         }
         
         private void Update()
@@ -166,6 +260,9 @@ namespace RuntimeGraph.Sprite
             {
                 lineRenderer.SetPosition(i, pathPoints[i]);
             }
+            
+            // Update direction arrow position and rotation
+            UpdateDirectionArrow(pathPoints);
         }
         
         private void UpdatePendingConnection()
@@ -330,26 +427,6 @@ namespace RuntimeGraph.Sprite
             return (start + end) * 0.5f;
         }
         
-        public bool IsPointOnLine(Vector3 worldPoint, float threshold = 0.2f)
-        {
-            if (lineRenderer == null || lineRenderer.positionCount < 2) return false;
-            
-            Vector3 start = lineRenderer.GetPosition(0);
-            Vector3 end = lineRenderer.GetPosition(1);
-            
-            // Calculate distance from point to line segment
-            Vector3 lineDirection = (end - start).normalized;
-            Vector3 pointDirection = worldPoint - start;
-            
-            float projectionLength = Vector3.Dot(pointDirection, lineDirection);
-            projectionLength = Mathf.Clamp(projectionLength, 0f, Vector3.Distance(start, end));
-            
-            Vector3 closestPoint = start + lineDirection * projectionLength;
-            float distanceToLine = Vector3.Distance(worldPoint, closestPoint);
-            
-            return distanceToLine <= threshold;
-        }
-        
         public void SetInteractable(bool interactable)
         {
             // Add collider for interaction if needed
@@ -377,10 +454,20 @@ namespace RuntimeGraph.Sprite
                 for (int i = 0; i < lineRenderer.positionCount; i++)
                 {
                     Vector3 worldPos = lineRenderer.GetPosition(i);
-                    points[i] = new Vector2(worldPos.x, worldPos.y);
+                    points[i] = transform.InverseTransformPoint(worldPos);
                 }
                 collider.points = points;
+                collider.edgeRadius = lineWidth;
             }
+        }
+        
+        /// <summary>
+        /// Public method to refresh the collider, typically called after zoom operations
+        /// when nodes have been repositioned and the LineRenderer path has changed.
+        /// </summary>
+        public void RefreshCollider()
+        {
+            UpdateCollider();
         }
         
         // Mouse interaction for connection selection/deletion
@@ -388,10 +475,13 @@ namespace RuntimeGraph.Sprite
         {
             if (isPendingConnection) return;
             
-            // Handle connection interaction
-            Debug.Log($"Connection clicked: {connectionData.fromNodeId} -> {connectionData.toNodeId}");
+            // Handle connection selection
+            if (graph != null)
+            {
+                graph.SelectConnection(this);
+            }
             
-            // Could implement connection selection, deletion, or property editing here
+            // Handle deletion with Delete key
             if (Input.GetKey(KeyCode.Delete))
             {
                 RequestDeletion();

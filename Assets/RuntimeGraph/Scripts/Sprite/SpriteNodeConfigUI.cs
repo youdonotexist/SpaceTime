@@ -52,6 +52,7 @@ namespace RuntimeGraph.Sprite
         private InputField durationField;
         private InputField noteField;
         private InputField channelField;
+        private InputField rotationField;
         private Dropdown instrumentDropdown;
         
         // Instrument data
@@ -81,8 +82,14 @@ namespace RuntimeGraph.Sprite
                     
                     if (instrumentList != null && instrumentList.List != null)
                     {
-                        availableInstruments = instrumentList.List;
-                        Debug.Log($"Loaded {availableInstruments.Count} instruments from JSON");
+                        // Filter to only use the 16 selected chiptune instruments
+                        FilterToChiptuneInstruments(instrumentList);
+                        Debug.Log($"Filtered to {availableInstruments.Count} chiptune instruments from JSON for UI");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("instruments.json contains null data, using default instruments");
+                        CreateDefaultInstruments();
                     }
                 }
                 else
@@ -97,15 +104,100 @@ namespace RuntimeGraph.Sprite
                 CreateDefaultInstruments();
             }
         }
+
+        private void FilterToChiptuneInstruments(InstrumentList fullInstrumentList)
+        {
+            // Define the 16 chiptune instruments we want to use (same as sequencer)
+            var selectedPresets = new System.Collections.Generic.Dictionary<int, (string Name, int Channel)>
+            {
+                { 1, ("100 Square", 0) },
+                { 8, ("100 25% Pulse", 1) },
+                { 60, ("048 Pulse 50%", 2) },
+                { 9, ("100 12.5% Pulse", 3) },
+                { 10, ("100 75% Pulse", 4) },
+                { 11, ("100 PWM", 5) },
+                { 12, ("100 Triangle", 6) },
+                { 6, ("100 Saw Wave", 7) },
+                { 13, ("100 Noise", 8) },
+                { 4, ("100 Buzzy", 11) },
+                { 14, ("100 Sub Bass", 12) },
+                { 15, ("100 Lead", 13) },
+                { 16, ("100 Arp", 14) },
+                { 17, ("100 Pad", 15) }
+            };
+
+            // Drum sets (bank 128)
+            var selectedDrumPresets = new System.Collections.Generic.Dictionary<int, (string Name, int Channel)>
+            {
+                { 0, ("Standard Drums", 9) },
+                { 16, ("059 Drumkit", 10) }
+            };
+
+            availableInstruments = new System.Collections.Generic.List<Instrument>();
+
+            // Find and add matching instruments from the full list
+            foreach (var instrument in fullInstrumentList.List)
+            {
+                // Check regular instruments (bank 0)
+                if (instrument.BankNum == 0 && selectedPresets.ContainsKey(instrument.PresetNum))
+                {
+                    var selected = selectedPresets[instrument.PresetNum];
+                    availableInstruments.Add(new Instrument
+                    {
+                        BankNum = instrument.BankNum,
+                        PresetNum = instrument.PresetNum,
+                        Name = selected.Name,
+                        BoundChannel = selected.Channel
+                    });
+                }
+                // Check drum sets (bank 128)
+                else if (instrument.BankNum == 128 && selectedDrumPresets.ContainsKey(instrument.PresetNum))
+                {
+                    var selected = selectedDrumPresets[instrument.PresetNum];
+                    availableInstruments.Add(new Instrument
+                    {
+                        BankNum = instrument.BankNum,
+                        PresetNum = instrument.PresetNum,
+                        Name = selected.Name,
+                        BoundChannel = selected.Channel
+                    });
+                }
+            }
+
+            // If we couldn't find all instruments in the JSON, fall back to defaults
+            if (availableInstruments.Count < 16)
+            {
+                Debug.LogWarning($"Only found {availableInstruments.Count} of 16 expected chiptune instruments in JSON, using defaults");
+                CreateDefaultInstruments();
+            }
+        }
         
         private void CreateDefaultInstruments()
         {
+            // Create curated list of 16 chiptune instruments for MIDI channels 0-15 (same as sequencer)
             availableInstruments = new List<Instrument>
             {
-                new Instrument { BankNum = 0, PresetNum = 0, Name = "Piano", BoundChannel = 0 },
-                new Instrument { BankNum = 0, PresetNum = 24, Name = "Guitar", BoundChannel = 1 },
-                new Instrument { BankNum = 0, PresetNum = 32, Name = "Bass", BoundChannel = 2 },
-                new Instrument { BankNum = 128, PresetNum = 0, Name = "Drums", BoundChannel = 9 }
+                // Required chiptune waveforms
+                new Instrument { BankNum = 0, PresetNum = 1, Name = "100 Square", BoundChannel = 0 },
+                new Instrument { BankNum = 0, PresetNum = 8, Name = "100 25% Pulse", BoundChannel = 1 },
+                new Instrument { BankNum = 0, PresetNum = 60, Name = "048 Pulse 50%", BoundChannel = 2 },
+                new Instrument { BankNum = 0, PresetNum = 9, Name = "100 12.5% Pulse", BoundChannel = 3 },
+                new Instrument { BankNum = 0, PresetNum = 10, Name = "100 75% Pulse", BoundChannel = 4 },
+                new Instrument { BankNum = 0, PresetNum = 11, Name = "100 PWM", BoundChannel = 5 }, // PWM for chorusy motion
+                new Instrument { BankNum = 0, PresetNum = 12, Name = "100 Triangle", BoundChannel = 6 },
+                new Instrument { BankNum = 0, PresetNum = 6, Name = "100 Saw Wave", BoundChannel = 7 },
+                new Instrument { BankNum = 0, PresetNum = 13, Name = "100 Noise", BoundChannel = 8 },
+                
+                // Drum sets
+                new Instrument { BankNum = 128, PresetNum = 0, Name = "Standard Drums", BoundChannel = 9 },
+                new Instrument { BankNum = 128, PresetNum = 16, Name = "059 Drumkit", BoundChannel = 10 },
+                
+                // Additional chiptune-aesthetic instruments
+                new Instrument { BankNum = 0, PresetNum = 4, Name = "100 Buzzy", BoundChannel = 11 },
+                new Instrument { BankNum = 0, PresetNum = 14, Name = "100 Sub Bass", BoundChannel = 12 },
+                new Instrument { BankNum = 0, PresetNum = 15, Name = "100 Lead", BoundChannel = 13 },
+                new Instrument { BankNum = 0, PresetNum = 16, Name = "100 Arp", BoundChannel = 14 },
+                new Instrument { BankNum = 0, PresetNum = 17, Name = "100 Pad", BoundChannel = 15 }
             };
         }
         
@@ -198,6 +290,9 @@ namespace RuntimeGraph.Sprite
             
             // Channel field
             channelField = CreateIntField("Channel", 1);
+            
+            // Rotation field
+            rotationField = CreateFloatField("Rotation", 0f);
             
             // Instrument dropdown
             instrumentDropdown = CreateDropdownField("Instrument", 0);
@@ -590,6 +685,7 @@ namespace RuntimeGraph.Sprite
                 durationField.text = node.NodeDataInstance.duration.ToString("F2");
                 noteField.text = node.NodeDataInstance.note.ToString();
                 channelField.text = node.NodeDataInstance.channel.ToString();
+                rotationField.text = node.NodeDataInstance.rotation.ToString("F0");
                 instrumentDropdown.value = node.NodeDataInstance.selectedInstrumentIndex;
                 
                 // Setup event listeners
@@ -637,6 +733,21 @@ namespace RuntimeGraph.Sprite
                     currentNode.NodeDataInstance.channel = Mathf.Clamp(result, 0, 16);
             });
             
+            // Rotation field
+            rotationField.onEndEdit.AddListener((value) => {
+                if (currentNode?.NodeDataInstance != null && float.TryParse(value, out float result))
+                {
+                    // Clamp rotation to valid 90-degree increments (0, 90, 180, 270)
+                    float clampedRotation = Mathf.Round(result / 90f) * 90f;
+                    clampedRotation = clampedRotation % 360f;
+                    if (clampedRotation < 0f) clampedRotation += 360f;
+                    
+                    currentNode.NodeDataInstance.rotation = clampedRotation;
+                    rotationField.text = clampedRotation.ToString("F0");
+                    currentNode.UpdateVisuals();
+                }
+            });
+            
             // Instrument dropdown
             instrumentDropdown.onValueChanged.AddListener((value) => {
                 if (currentNode?.NodeDataInstance != null && value >= 0 && value < availableInstruments.Count)
@@ -653,6 +764,7 @@ namespace RuntimeGraph.Sprite
             durationField?.onEndEdit.RemoveAllListeners();
             noteField?.onEndEdit.RemoveAllListeners();
             channelField?.onEndEdit.RemoveAllListeners();
+            rotationField?.onEndEdit.RemoveAllListeners();
             instrumentDropdown?.onValueChanged.RemoveAllListeners();
         }
         

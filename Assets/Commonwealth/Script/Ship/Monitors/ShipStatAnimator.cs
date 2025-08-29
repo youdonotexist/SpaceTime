@@ -29,14 +29,20 @@ namespace Commonwealth.Script.Ship.Monitors
         
         public void AnimateValueChange(float fromValue, float toValue, Action<float> onUpdate = null, Action onComplete = null)
         {
+            if (!gameObject.activeSelf)
+                return;
+            
             if (currentAnimation != null)
                 StopCoroutine(currentAnimation);
-                
+            
             currentAnimation = StartCoroutine(AnimateValueCoroutine(fromValue, toValue, onUpdate, onComplete));
         }
         
         public void AnimateColorTransition(Color fromColor, Color toColor, Action<Color> onUpdate = null, Action onComplete = null)
         {
+            if (!gameObject.activeSelf)
+                return;
+            
             if (colorAnimation != null)
                 StopCoroutine(colorAnimation);
                 
@@ -45,6 +51,9 @@ namespace Commonwealth.Script.Ship.Monitors
         
         public void StartRiskAnimation(ShipStatState state, Action<float> onUpdate = null)
         {
+            if (!gameObject.activeSelf)
+                return;
+            
             if (riskAnimation != null)
                 StopCoroutine(riskAnimation);
                 
@@ -172,6 +181,9 @@ namespace Commonwealth.Script.Ship.Monitors
         
         public void ShowValueChangeIndicator(float oldValue, float newValue, Action<Color> onColorUpdate)
         {
+            if (!gameObject.activeSelf)
+                return;
+            
             Color indicatorColor = newValue > oldValue ? increaseColor : decreaseColor;
             StartCoroutine(ValueChangeIndicatorCoroutine(indicatorColor, onColorUpdate));
         }

@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace RuntimeGraph.Sprite
 {
@@ -43,7 +44,7 @@ namespace RuntimeGraph.Sprite
         public int columnsPerRow = 2;
         public float itemSpacing = 5f;
         public float categorySpacing = 10f;
-        public float itemHeight = 60f;
+        public float itemHeight = 120f;
         public float itemWidth = 120f;
         public RectOffset padding;
 
@@ -78,232 +79,105 @@ namespace RuntimeGraph.Sprite
 
         private void InitializeNodeCategories()
         {
-            // Create sample node categories with random MIDI values and colors
+            nodeCategories.Clear();
             
-            // Parts category
-            var partsCategory = new NodeCategory
-            {
-                categoryName = "Parts",
-                categoryColor = new Color(0.4f, 0.6f, 0.8f, 1f)
-            };
+            // Get all engine parts from catalog
+            var allParts = EnginePartCatalog.GetAllEngineParts();
             
-            partsCategory.nodeTypes.AddRange(new[]
+            // Group parts by category
+            var categoryGroups = new Dictionary<string, List<EnginePartNodeData>>();
+            foreach (var part in allParts)
             {
-                new NodeTypeData
+                if (!categoryGroups.ContainsKey(part.category))
                 {
-                    name = "Kick",
-                    category = "Parts",
-                    color = new Color(0.8f, 0.3f, 0.3f, 1f),
-                    note = 36, // C2 - typical kick drum
-                    velocity = UnityEngine.Random.Range(80, 127),
-                    channel = 10, // Drum channel
-                    duration = 0.04f,
-                    description = "Bass drum sound"
-                },
-                new NodeTypeData
-                {
-                    name = "Snare",
-                    category = "Parts",
-                    color = new Color(0.9f, 0.6f, 0.2f, 1f),
-                    note = 38, // D2 - typical snare
-                    velocity = UnityEngine.Random.Range(70, 110),
-                    channel = 10,
-                    duration = 0.04f,
-                    description = "Snare drum sound"
-                },
-                new NodeTypeData
-                {
-                    name = "Hi-Hat",
-                    category = "Parts",
-                    color = new Color(0.7f, 0.7f, 0.3f, 1f),
-                    note = 42, // F#2 - closed hi-hat
-                    velocity = UnityEngine.Random.Range(50, 90),
-                    channel = 10,
-                    duration = 0.04f,
-                    description = "Hi-hat cymbal"
-                },
-                new NodeTypeData
-                {
-                    name = "Bass",
-                    category = "Parts",
-                    color = new Color(0.4f, 0.2f, 0.8f, 1f),
-                    note = UnityEngine.Random.Range(24, 48),
-                    velocity = UnityEngine.Random.Range(80, 120),
-                    channel = 3,
-                    duration = 0.04f,
-                    description = "Bass line element"
+                    categoryGroups[part.category] = new List<EnginePartNodeData>();
                 }
-            });
-
-            // Elements category
-            var elementsCategory = new NodeCategory
-            {
-                categoryName = "Elements",
-                categoryColor = new Color(0.6f, 0.8f, 0.4f, 1f)
-            };
+                categoryGroups[part.category].Add(part);
+            }
             
-            elementsCategory.nodeTypes.AddRange(new[]
+            // Create node categories for each engine part category
+            foreach (var categoryGroup in categoryGroups)
             {
-                new NodeTypeData
+                var nodeCategory = new NodeCategory
                 {
-                    name = "Melody",
-                    category = "Elements",
-                    color = new Color(0.2f, 0.8f, 0.6f, 1f),
-                    note = UnityEngine.Random.Range(60, 84), // C4 to C6
-                    velocity = UnityEngine.Random.Range(60, 100),
-                    channel = 1,
-                    duration = 0.04f,
-                    description = "Melodic phrase"
-                },
-                new NodeTypeData
+                    categoryName = categoryGroup.Key,
+                    categoryColor = categoryGroup.Value.First().color
+                };
+                
+                // Convert engine parts to node types
+                foreach (var part in categoryGroup.Value)
                 {
-                    name = "Chord",
-                    category = "Elements",
-                    color = new Color(0.6f, 0.4f, 0.9f, 1f),
-                    note = UnityEngine.Random.Range(48, 72), // C3 to C5
-                    velocity = UnityEngine.Random.Range(70, 110),
-                    channel = 2,
-                    duration = 0.04f,
-                    description = "Harmonic chord"
-                },
-                new NodeTypeData
-                {
-                    name = "Arp",
-                    category = "Elements",
-                    color = new Color(0.9f, 0.4f, 0.7f, 1f),
-                    note = UnityEngine.Random.Range(60, 96),
-                    velocity = UnityEngine.Random.Range(50, 90),
-                    channel = 4,
-                    duration = 0.04f,
-                    description = "Arpeggio pattern"
-                },
-                new NodeTypeData
-                {
-                    name = "Lead",
-                    category = "Elements",
-                    color = new Color(1f, 0.7f, 0.2f, 1f),
-                    note = UnityEngine.Random.Range(72, 108),
-                    velocity = UnityEngine.Random.Range(90, 127),
-                    channel = 5,
-                    duration = 0.04f,
-                    description = "Lead synthesizer"
+                    // Determine engine type from part name for consistent channel assignment
+                    var engineType = DetermineEngineTypeFromName(part.name);
+                    
+                    var nodeType = new NodeTypeData
+                    {
+                        name = part.name,
+                        category = part.category,
+                        color = part.color,
+                        description = part.description,
+                        // Default MIDI values for compatibility
+                        note = UnityEngine.Random.Range(36, 84),
+                        velocity = UnityEngine.Random.Range(60, 100),
+                        channel = GetEngineTypeChannel(engineType), // Each engine category uses its own channel
+                        duration = 0.08f,
+                        // Generate procedural icon
+                        icon = EnginePartIconGenerator.GenerateIconForPart(part)
+                    };
+                    
+                    nodeCategory.nodeTypes.Add(nodeType);
                 }
-            });
-
-            // Resources category
-            var resourcesCategory = new NodeCategory
-            {
-                categoryName = "Resources",
-                categoryColor = new Color(0.8f, 0.6f, 0.4f, 1f)
-            };
+                
+                nodeCategories.Add(nodeCategory);
+            }
+        }
+        
+        private SpriteNode.EngineType DetermineEngineTypeFromName(string partName)
+        {
+            string lowerName = partName.ToLowerInvariant();
             
-            resourcesCategory.nodeTypes.AddRange(new[]
+            // Check for thruster keywords
+            if (lowerName.Contains("thruster") || lowerName.Contains("rcs") || 
+                lowerName.Contains("maneuvering") || lowerName.Contains("attitude"))
             {
-                new NodeTypeData
-                {
-                    name = "Pad",
-                    category = "Resources",
-                    color = new Color(0.5f, 0.6f, 0.9f, 1f),
-                    note = UnityEngine.Random.Range(36, 60),
-                    velocity = UnityEngine.Random.Range(40, 80),
-                    channel = 6,
-                    duration = 0.04f,
-                    description = "Atmospheric pad"
-                },
-                new NodeTypeData
-                {
-                    name = "FX",
-                    category = "Resources",
-                    color = new Color(0.8f, 0.8f, 0.5f, 1f),
-                    note = UnityEngine.Random.Range(96, 120),
-                    velocity = UnityEngine.Random.Range(30, 70),
-                    channel = 7,
-                    duration = 0.04f,
-                    description = "Sound effect"
-                },
-                new NodeTypeData
-                {
-                    name = "Ambient",
-                    category = "Resources",
-                    color = new Color(0.6f, 0.9f, 0.7f, 1f),
-                    note = UnityEngine.Random.Range(24, 48),
-                    velocity = UnityEngine.Random.Range(20, 60),
-                    channel = 8,
-                    duration = 0.04f,
-                    description = "Ambient texture"
-                },
-                new NodeTypeData
-                {
-                    name = "Percussion",
-                    category = "Resources",
-                    color = new Color(0.9f, 0.5f, 0.4f, 1f),
-                    note = UnityEngine.Random.Range(60, 84),
-                    velocity = UnityEngine.Random.Range(60, 100),
-                    channel = 10,
-                    duration = 0.04f,
-                    description = "Auxiliary percussion"
-                }
-            });
-
-            // Engines category
-            var enginesCategory = new NodeCategory
-            {
-                categoryName = "Engines",
-                categoryColor = new Color(0.8f, 0.4f, 0.2f, 1f)
-            };
+                return SpriteNode.EngineType.Thruster;
+            }
             
-            enginesCategory.nodeTypes.AddRange(new[]
+            // Check for retro engine keywords
+            if (lowerName.Contains("retro") || lowerName.Contains("reverse") || 
+                lowerName.Contains("brake") || lowerName.Contains("deceleration"))
             {
-                new NodeTypeData
-                {
-                    name = "Main Engine",
-                    category = "Engines",
-                    color = new Color(0.2f, 0.4f, 0.8f, 1f),
-                    note = 60, // C4
-                    velocity = UnityEngine.Random.Range(100, 127),
-                    channel = 9,
-                    duration = 0.04f,
-                    description = "Primary propulsion system"
-                },
-                new NodeTypeData
-                {
-                    name = "Thruster",
-                    category = "Engines",
-                    color = new Color(0.8f, 0.4f, 0.2f, 1f),
-                    note = 72, // C5
-                    velocity = UnityEngine.Random.Range(80, 110),
-                    channel = 9,
-                    duration = 0.04f,
-                    description = "Maneuvering thruster"
-                },
-                new NodeTypeData
-                {
-                    name = "Retro Engine",
-                    category = "Engines",
-                    color = new Color(0.6f, 0.2f, 0.8f, 1f),
-                    note = 48, // C3
-                    velocity = UnityEngine.Random.Range(90, 120),
-                    channel = 9,
-                    duration = 0.04f,
-                    description = "Reverse thrust system"
-                },
-                new NodeTypeData
-                {
-                    name = "Stability Engine",
-                    category = "Engines",
-                    color = new Color(0.2f, 0.8f, 0.4f, 1f),
-                    note = 84, // C6
-                    velocity = UnityEngine.Random.Range(60, 90),
-                    channel = 9,
-                    duration = 0.04f,
-                    description = "Attitude control system"
-                }
-            });
-
-            nodeCategories.Add(partsCategory);
-            nodeCategories.Add(elementsCategory);
-            nodeCategories.Add(resourcesCategory);
-            nodeCategories.Add(enginesCategory);
+                return SpriteNode.EngineType.RetroEngine;
+            }
+            
+            // Check for stability engine keywords
+            if (lowerName.Contains("stability") || lowerName.Contains("stabilizer") || 
+                lowerName.Contains("gyro") || lowerName.Contains("control"))
+            {
+                return SpriteNode.EngineType.StabilityEngine;
+            }
+            
+            // Default to main engine for anything else with engine-like keywords
+            if (lowerName.Contains("engine") || lowerName.Contains("propulsion") || 
+                lowerName.Contains("drive") || lowerName.Contains("motor"))
+            {
+                return SpriteNode.EngineType.MainEngine;
+            }
+            
+            // Fallback to main engine
+            return SpriteNode.EngineType.MainEngine;
+        }
+        
+        private int GetEngineTypeChannel(SpriteNode.EngineType engineType)
+        {
+            return engineType switch
+            {
+                SpriteNode.EngineType.MainEngine => 0,      // Channel 0 for MainEngine
+                SpriteNode.EngineType.Thruster => 1,        // Channel 1 for Thruster
+                SpriteNode.EngineType.RetroEngine => 2,     // Channel 2 for RetroEngine
+                SpriteNode.EngineType.StabilityEngine => 3, // Channel 3 for StabilityEngine
+                _ => 0
+            };
         }
 
         private void CreatePaletteUI()
@@ -509,9 +383,9 @@ namespace RuntimeGraph.Sprite
             var button = buttonGO.AddComponent<Button>();
             button.onClick.AddListener(() => OnNodeTypeButtonClicked(nodeType));
             
-            // Add button background
+            // Add button background (transparent for engine parts)
             var buttonImage = buttonGO.AddComponent<Image>();
-            buttonImage.color = nodeType.color;
+            buttonImage.color = Color.clear; // Remove background by making it transparent
             button.targetGraphic = buttonImage;
             
             // Create content layout
@@ -531,6 +405,22 @@ namespace RuntimeGraph.Sprite
             contentLayout.childForceExpandWidth = true;
             contentLayout.spacing = 2f;
             
+            // Add icon image if available
+            if (nodeType.icon != null)
+            {
+                var iconGO = new GameObject("Icon");
+                iconGO.transform.SetParent(contentGO.transform, false);
+                
+                var iconImage = iconGO.AddComponent<Image>();
+                iconImage.sprite = nodeType.icon;
+                iconImage.preserveAspect = true;
+                iconImage.GetComponent<RectTransform>().sizeDelta = new Vector2(80f, 80f); // Set size to match sprite size>()
+                
+                var iconLayoutElement = iconGO.AddComponent<LayoutElement>();
+                iconLayoutElement.preferredHeight = 24f; // Reserve space for icon
+                iconLayoutElement.flexibleHeight = 0;
+            }
+            
             // Add node name text
             var nameTextGO = new GameObject("NameText");
             nameTextGO.transform.SetParent(contentGO.transform, false);
@@ -538,9 +428,9 @@ namespace RuntimeGraph.Sprite
             var nameText = nameTextGO.AddComponent<Text>();
             nameText.text = nodeType.name;
             nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            nameText.fontSize = 12;
+            nameText.fontSize = 10; // Reduced font size to make room for icon
             nameText.color = Color.white;
-            nameText.alignment = TextAnchor.MiddleCenter;
+            nameText.alignment = TextAnchor.UpperCenter;
             nameText.fontStyle = FontStyle.Bold;
             
             // Add info text
@@ -552,7 +442,7 @@ namespace RuntimeGraph.Sprite
             infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             infoText.fontSize = 8;
             infoText.color = new Color(0.9f, 0.9f, 0.9f, 0.8f);
-            infoText.alignment = TextAnchor.MiddleCenter;
+            infoText.alignment = TextAnchor.LowerCenter;
         }
 
         private void OnNodeTypeButtonClicked(NodeTypeData nodeType)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RuntimeGraph.Sprite
@@ -67,7 +68,9 @@ namespace RuntimeGraph.Sprite
             public Color thrustColor = Color.cyan;
             public int gridWidth = 1; // Width in grid cells
             public int gridHeight = 1; // Height in grid cells
+            public float rotation = 0f; // Rotation angle in degrees (0, 90, 180, 270)
             public List<string> connectedNodeIds = new List<string>();
+            public UnityEngine.Sprite icon;
         }
         
         [System.Serializable]
@@ -115,6 +118,8 @@ namespace RuntimeGraph.Sprite
         private SpriteRenderer spriteRenderer;
         private SpriteRenderer startSymbolRenderer;
         private BoxCollider2D nodeCollider;
+        private CompositeEngineRenderer compositeEngineRenderer;
+        private CompositeShipPartRenderer compositeShipPartRenderer;
         private bool isSelected;
         private bool isPendingHighlight;
         private bool isDragging;
@@ -156,12 +161,12 @@ namespace RuntimeGraph.Sprite
                 nodeCollider = gameObject.AddComponent<BoxCollider2D>();
             }
             
-            // Set sprite based on node type
-            if (nodeData.isEngine)
+            // Set sprite based on node type - use composite rendering for ALL ship parts
+            bool isShipPart = IsShipPart();
+            if (isShipPart)
             {
-                spriteRenderer.sprite = CreateEngineSprite();
-                // Set collider size based on engine grid dimensions
-                nodeCollider.size = new Vector2(nodeData.gridWidth, nodeData.gridHeight);
+                // Use composite ship part renderer for all ship parts
+                SetupCompositeShipPartRenderer();
             }
             else
             {
@@ -174,7 +179,7 @@ namespace RuntimeGraph.Sprite
             CreateStartSymbol();
             
             // Set name
-            gameObject.name = nodeData.isEngine ? $"EngineNode ({nodeData.title})" : $"GraphNode ({nodeData.title})";
+            gameObject.name = isShipPart ? $"ShipPartNode ({nodeData.title})" : $"GraphNode ({nodeData.title})";
             
             // Ensure proper layer and sorting
             gameObject.layer = LayerMask.NameToLayer("Default");
@@ -186,7 +191,7 @@ namespace RuntimeGraph.Sprite
             transform.position = nodeData.worldPosition;
         }
         
-        private void UpdateVisuals()
+        public void UpdateVisuals()
         {
             Color targetColor = nodeData.color;
             
@@ -195,12 +200,24 @@ namespace RuntimeGraph.Sprite
             else if (isSelected)
                 targetColor = selectedColor;
             
-            spriteRenderer.color = targetColor;
-            
-            // Update start symbol visibility
-            if (startSymbolRenderer != null)
+            // Update visuals based on node type
+            if (compositeShipPartRenderer != null)
             {
-                startSymbolRenderer.enabled = nodeData.isStart;
+                // Update universal composite ship part renderer
+                compositeShipPartRenderer.UpdateBlockColors(targetColor);
+                compositeShipPartRenderer.ApplyRotation(nodeData.rotation);
+            }
+            else if (nodeData.isEngine && compositeEngineRenderer != null)
+            {
+                // Update legacy composite engine renderer (fallback)
+                compositeEngineRenderer.UpdateBlockColors(targetColor);
+                compositeEngineRenderer.ApplyRotation(nodeData.rotation);
+            }
+            else
+            {
+                // Update regular sprite renderer for non-ship parts
+                spriteRenderer.color = targetColor;
+                transform.rotation = Quaternion.Euler(0, 0, nodeData.rotation);
             }
         }
         
@@ -214,12 +231,12 @@ namespace RuntimeGraph.Sprite
             
             // Add sprite renderer for the start symbol
             startSymbolRenderer = symbolGO.AddComponent<SpriteRenderer>();
-            startSymbolRenderer.sprite = CreateStarSprite();
+            //startSymbolRenderer.sprite = nodeData.icon;
             startSymbolRenderer.color = Color.white;
             startSymbolRenderer.sortingOrder = 11; // Above the main node sprite
             
             // Initially hidden - will be shown based on isStart in UpdateVisuals
-            startSymbolRenderer.enabled = false;
+            //startSymbolRenderer.enabled = false;
         }
         
         private UnityEngine.Sprite CreateNodeSprite()
@@ -244,6 +261,76 @@ namespace RuntimeGraph.Sprite
             texture.Apply();
             
             return UnityEngine.Sprite.Create(texture, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
+        }
+        
+        private bool IsShipPart()
+        {
+            // Check if this node is a ship part based on metadata or engine flag
+            if (nodeData.isEngine) return true;
+            
+            // Check metadata for ship part categories
+            foreach (var metadata in nodeData.metadata)
+            {
+                if (metadata.key == "Category")
+                {
+                    string category = metadata.value;
+                    return category == "Power & Energy" ||
+                           category == "Thermal & Coolant" ||
+                           category == "Atmosphere & Life Support" ||
+                           category == "Structural & Hull" ||
+                           category == "Propulsion & Maneuvering" ||
+                           category == "Navigation, Comms & Sensors" ||
+                           category == "Data, Control & Security" ||
+                           category == "Manufacturing, Inventory & Logistics" ||
+                           category == "Defense & Shielding";
+                }
+            }
+            
+            // Fallback: check part name for ship part keywords
+            string partName = nodeData.title.ToLowerInvariant();
+            return partName.Contains("reactor") || partName.Contains("power") || partName.Contains("battery") ||
+                   partName.Contains("coolant") || partName.Contains("heat") || partName.Contains("thermal") ||
+                   partName.Contains("life") || partName.Contains("atmosphere") || partName.Contains("filter") ||
+                   partName.Contains("hull") || partName.Contains("structural") || partName.Contains("armor") ||
+                   partName.Contains("engine") || partName.Contains("thruster") || partName.Contains("propulsion") ||
+                   partName.Contains("navigation") || partName.Contains("sensor") || partName.Contains("antenna") ||
+                   partName.Contains("control") || partName.Contains("security") || partName.Contains("memory") ||
+                   partName.Contains("fabricator") || partName.Contains("manufacturing") || partName.Contains("inventory") ||
+                   partName.Contains("shield") || partName.Contains("defense");
+        }
+        
+        private void SetupCompositeShipPartRenderer()
+        {
+            // Hide the main sprite renderer for ship parts - we'll use composite blocks instead
+            spriteRenderer.sprite = null;
+            spriteRenderer.color = Color.clear;
+            
+            // Get or create the composite ship part renderer component
+            compositeShipPartRenderer = GetComponent<CompositeShipPartRenderer>();
+            if (compositeShipPartRenderer == null)
+            {
+                compositeShipPartRenderer = gameObject.AddComponent<CompositeShipPartRenderer>();
+            }
+            
+            // Initialize the composite renderer with this node
+            compositeShipPartRenderer.Initialize(this);
+        }
+        
+        private void SetupCompositeEngineRenderer()
+        {
+            // Hide the main sprite renderer for engine parts - we'll use composite blocks instead
+            spriteRenderer.sprite = null;
+            spriteRenderer.color = Color.clear;
+            
+            // Get or create the composite engine renderer component
+            compositeEngineRenderer = GetComponent<CompositeEngineRenderer>();
+            if (compositeEngineRenderer == null)
+            {
+                compositeEngineRenderer = gameObject.AddComponent<CompositeEngineRenderer>();
+            }
+            
+            // Initialize the composite renderer with this node
+            compositeEngineRenderer.Initialize(this);
         }
         
         private UnityEngine.Sprite CreateEngineSprite()
@@ -476,6 +563,18 @@ namespace RuntimeGraph.Sprite
         
         public Vector3 GetAnchorWorldPosition(int anchorIndex)
         {
+            // For composite ship parts, use block-specific anchors
+            if (compositeShipPartRenderer != null)
+            {
+                return GetCompositeShipPartAnchorPosition(anchorIndex);
+            }
+            // Legacy: For composite engine parts, use block-specific anchors
+            else if (nodeData.isEngine && compositeEngineRenderer != null)
+            {
+                return GetCompositeEngineAnchorPosition(anchorIndex);
+            }
+            
+            // Standard node anchor calculation
             if (anchorIndex < 0 || anchorIndex >= TotalAnchors)
                 return transform.position;
             
@@ -510,6 +609,58 @@ namespace RuntimeGraph.Sprite
             }
             
             return anchorPos;
+        }
+
+        private Vector3 GetCompositeShipPartAnchorPosition(int anchorIndex)
+        {
+            var partBlocks = compositeShipPartRenderer.PartBlocks;
+            
+            // Find which block this anchor belongs to
+            foreach (var block in partBlocks)
+            {
+                if (block.availableAnchorIndices.Contains(anchorIndex))
+                {
+                    // Get anchor positions for this specific block
+                    var blockAnchorPositions = compositeShipPartRenderer.GetBlockAnchorPositions(block);
+                    
+                    // Find the local index within the block's anchors
+                    int localAnchorIndex = block.availableAnchorIndices.IndexOf(anchorIndex);
+                    
+                    if (localAnchorIndex >= 0 && localAnchorIndex < blockAnchorPositions.Length)
+                    {
+                        return blockAnchorPositions[localAnchorIndex];
+                    }
+                }
+            }
+            
+            // Fallback to center position if anchor not found
+            return transform.position;
+        }
+        
+        private Vector3 GetCompositeEngineAnchorPosition(int anchorIndex)
+        {
+            var engineBlocks = compositeEngineRenderer.EngineBlocks;
+            
+            // Find which block this anchor belongs to
+            foreach (var block in engineBlocks)
+            {
+                if (block.availableAnchorIndices.Contains(anchorIndex))
+                {
+                    // Get anchor positions for this specific block
+                    var blockAnchorPositions = compositeEngineRenderer.GetBlockAnchorPositions(block);
+                    
+                    // Find the local index within the block's anchors
+                    int localAnchorIndex = block.availableAnchorIndices.IndexOf(anchorIndex);
+                    
+                    if (localAnchorIndex >= 0 && localAnchorIndex < blockAnchorPositions.Length)
+                    {
+                        return blockAnchorPositions[localAnchorIndex];
+                    }
+                }
+            }
+            
+            // Fallback to center position if anchor not found
+            return transform.position;
         }
         
         public int GetNearestAnchorIndex(Vector3 worldPos)

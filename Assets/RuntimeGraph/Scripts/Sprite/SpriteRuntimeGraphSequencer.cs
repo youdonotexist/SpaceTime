@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MidiPlayerTK;
 using UE.Script;
 using UE.Script.Models;
@@ -130,19 +131,169 @@ namespace RuntimeGraph.Sprite
         
         private void InitializeInstruments()
         {
-            // Setup default MIDI channels if none configured
+            // Load instruments from JSON file
+            LoadInstrumentsFromJson();
+            
+            // Setup MIDI channels from loaded instruments
             if (midiChannels.Count == 0)
             {
-                // Create default channels for common instruments
-                midiChannels.Add(new MidiChannel { channel = 0, bankNum = 0, presetNum = 1 }); // Piano
-                midiChannels.Add(new MidiChannel { channel = 1, bankNum = 0, presetNum = 25 }); // Steel Guitar
-                midiChannels.Add(new MidiChannel { channel = 2, bankNum = 0, presetNum = 33 }); // Bass
-                midiChannels.Add(new MidiChannel { channel = 9, bankNum = 128, presetNum = 0 }); // Drums
+                CreateMidiChannelsFromInstruments();
             }
             
             // Initialize channel configurations
             //midiPlayer.OnEventSynthStarted.AddListener(SetupMidiChannels);
             SetupMidiChannels();
+        }
+        
+        private void LoadInstrumentsFromJson()
+        {
+            try
+            {
+                string jsonPath = System.IO.Path.Combine(UnityEngine.Application.dataPath, "instruments.json");
+                if (System.IO.File.Exists(jsonPath))
+                {
+                    string jsonContent = System.IO.File.ReadAllText(jsonPath);
+                    InstrumentList instrumentList = UnityEngine.JsonUtility.FromJson<InstrumentList>(jsonContent);
+                    
+                    if (instrumentList != null && instrumentList.List != null)
+                    {
+                        // Filter to only use the 16 selected chiptune instruments
+                        FilterToChiptuneInstruments(instrumentList);
+                        UnityEngine.Debug.Log($"Filtered to {availableInstruments.List.Count} chiptune instruments from instruments.json for MIDI sequencer");
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogWarning("instruments.json contains null data, using default instruments");
+                        CreateDefaultInstruments();
+                    }
+                }
+                else
+                {
+                    UnityEngine.Debug.LogWarning("instruments.json file not found, using default instruments");
+                    CreateDefaultInstruments();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"Failed to load instruments.json: {ex.Message}");
+                CreateDefaultInstruments();
+            }
+        }
+
+        private void FilterToChiptuneInstruments(InstrumentList fullInstrumentList)
+        {
+            // Define the 16 chiptune instruments we want to use (preset numbers from JSON)
+            var selectedPresets = new Dictionary<int, (string Name, int Channel)>
+            {
+                { 1, ("100 Square", 0) },
+                { 8, ("100 25% Pulse", 1) },
+                { 60, ("048 Pulse 50%", 2) },
+                { 9, ("100 12.5% Pulse", 3) },
+                { 10, ("100 75% Pulse", 4) },
+                { 11, ("100 PWM", 5) },
+                { 12, ("100 Triangle", 6) },
+                { 6, ("100 Saw Wave", 7) },
+                { 13, ("100 Noise", 8) },
+                { 4, ("100 Buzzy", 11) },
+                { 14, ("100 Sub Bass", 12) },
+                { 15, ("100 Lead", 13) },
+                { 16, ("100 Arp", 14) },
+                { 17, ("100 Pad", 15) }
+            };
+
+            // Drum sets (bank 128)
+            var selectedDrumPresets = new System.Collections.Generic.Dictionary<int, (string Name, int Channel)>
+            {
+                { 0, ("Standard Drums", 9) },
+                { 16, ("059 Drumkit", 10) }
+            };
+
+            availableInstruments = new InstrumentList();
+            availableInstruments.List = new System.Collections.Generic.List<Instrument>();
+
+            // Find and add matching instruments from the full list
+            foreach (var instrument in fullInstrumentList.List)
+            {
+                // Check regular instruments (bank 0)
+                if (instrument.BankNum == 0 && selectedPresets.ContainsKey(instrument.PresetNum))
+                {
+                    var selected = selectedPresets[instrument.PresetNum];
+                    availableInstruments.List.Add(new Instrument
+                    {
+                        BankNum = instrument.BankNum,
+                        PresetNum = instrument.PresetNum,
+                        Name = selected.Name,
+                        BoundChannel = selected.Channel
+                    });
+                }
+                // Check drum sets (bank 128)
+                else if (instrument.BankNum == 128 && selectedDrumPresets.ContainsKey(instrument.PresetNum))
+                {
+                    var selected = selectedDrumPresets[instrument.PresetNum];
+                    availableInstruments.List.Add(new Instrument
+                    {
+                        BankNum = instrument.BankNum,
+                        PresetNum = instrument.PresetNum,
+                        Name = selected.Name,
+                        BoundChannel = selected.Channel
+                    });
+                }
+            }
+
+            // If we couldn't find all instruments in the JSON, fall back to defaults
+            if (availableInstruments.List.Count < 16)
+            {
+                UnityEngine.Debug.LogWarning($"Only found {availableInstruments.List.Count} of 16 expected chiptune instruments in JSON, using defaults");
+                CreateDefaultInstruments();
+            }
+        }
+        
+        private void CreateDefaultInstruments()
+        {
+            // Create curated list of 16 chiptune instruments for MIDI channels 1-16
+            availableInstruments.List = new System.Collections.Generic.List<Instrument>
+            {
+                // Required chiptune waveforms
+                new Instrument { BankNum = 0, PresetNum = 1, Name = "100 Square", BoundChannel = 0 },
+                new Instrument { BankNum = 0, PresetNum = 8, Name = "100 25% Pulse", BoundChannel = 1 },
+                new Instrument { BankNum = 0, PresetNum = 60, Name = "048 Pulse 50%", BoundChannel = 2 },
+                new Instrument { BankNum = 0, PresetNum = 9, Name = "100 12.5% Pulse", BoundChannel = 3 },
+                new Instrument { BankNum = 0, PresetNum = 10, Name = "100 75% Pulse", BoundChannel = 4 },
+                new Instrument { BankNum = 0, PresetNum = 11, Name = "100 PWM", BoundChannel = 5 }, // PWM for chorusy motion
+                new Instrument { BankNum = 0, PresetNum = 12, Name = "100 Triangle", BoundChannel = 6 },
+                new Instrument { BankNum = 0, PresetNum = 6, Name = "100 Saw Wave", BoundChannel = 7 },
+                new Instrument { BankNum = 0, PresetNum = 13, Name = "100 Noise", BoundChannel = 8 },
+                
+                // Drum sets
+                new Instrument { BankNum = 128, PresetNum = 0, Name = "Standard Drums", BoundChannel = 9 },
+                new Instrument { BankNum = 128, PresetNum = 16, Name = "059 Drumkit", BoundChannel = 10 },
+                
+                // Additional chiptune-aesthetic instruments
+                new Instrument { BankNum = 0, PresetNum = 4, Name = "100 Buzzy", BoundChannel = 11 },
+                new Instrument { BankNum = 0, PresetNum = 14, Name = "100 Sub Bass", BoundChannel = 12 },
+                new Instrument { BankNum = 0, PresetNum = 15, Name = "100 Lead", BoundChannel = 13 },
+                new Instrument { BankNum = 0, PresetNum = 16, Name = "100 Arp", BoundChannel = 14 },
+                new Instrument { BankNum = 0, PresetNum = 17, Name = "100 Pad", BoundChannel = 15 }
+            };
+        }
+        
+        private void CreateMidiChannelsFromInstruments()
+        {
+            foreach (var instrument in availableInstruments.List)
+            {
+                // Create a MIDI channel for each instrument
+                var midiChannel = new MidiChannel 
+                { 
+                    channel = instrument.BoundChannel, 
+                    bankNum = instrument.BankNum, 
+                    presetNum = instrument.PresetNum,
+                    volume = 1.0f,
+                    mute = false
+                };
+                midiChannels.Add(midiChannel);
+            }
+            
+            UnityEngine.Debug.Log($"Created {midiChannels.Count} MIDI channels from loaded instruments");
         }
 
 
@@ -249,7 +400,7 @@ namespace RuntimeGraph.Sprite
                 Value = Mathf.Clamp(note, 0, 127),
                 Duration = Mathf.RoundToInt(duration * 1000),
                 Channel = midiChannel.channel,
-                Velocity = Mathf.RoundToInt(velocity )
+                Velocity = Mathf.RoundToInt(velocity)
             };
             
             midiPlayer.MPTK_PlayDirectEvent(noteEvent);
@@ -359,6 +510,68 @@ namespace RuntimeGraph.Sprite
             OnNodeActivated(nodeData);
         }
         
+        /// <summary>
+        /// Debug method that plays a sequence of notes on each loaded instrument/channel
+        /// </summary>
+        public void DebugPlayAllInstruments()
+        {
+            if (midiPlayer == null)
+            {
+                Debug.LogError("MidiPlayer is null - cannot play debug notes");
+                return;
+            }
+
+            StartCoroutine(DebugPlayAllInstrumentsCoroutine());
+        }
+
+        private System.Collections.IEnumerator DebugPlayAllInstrumentsCoroutine()
+        {
+            Debug.Log($"[DEBUG_LOG] Starting debug playback of all {midiChannels.Count} loaded instruments");
+
+            // Define a sequence of notes to play (C major scale)
+            int[] testNotes = { 60, 62, 64, 65, 67, 69, 71, 72 }; // C4 to C5
+            float noteDuration = 1f;
+            float noteVelocity = 0.8f;
+
+            for (int channelIndex = 0; channelIndex < midiChannels.Count; channelIndex++)
+            {
+                var midiChannel = midiChannels[channelIndex];
+                
+                // Skip muted channels
+                if (midiChannel.mute)
+                {
+                    Debug.Log($"[DEBUG_LOG] Skipping muted channel {channelIndex} (MIDI Channel {midiChannel.channel})");
+                    continue;
+                }
+
+                // Find the corresponding instrument name
+                string instrumentName = "Unknown";
+                var instrument = availableInstruments.List.FirstOrDefault(inst => 
+                    inst.BankNum == midiChannel.bankNum && 
+                    inst.PresetNum == midiChannel.presetNum &&
+                    inst.BoundChannel == midiChannel.channel);
+                
+                if (instrument != null)
+                {
+                    instrumentName = instrument.Name;
+                }
+
+                Debug.Log($"[DEBUG_LOG] Playing notes on channel {channelIndex}: {instrumentName} (Bank: {midiChannel.bankNum}, Preset: {midiChannel.presetNum}, MIDI Channel: {midiChannel.channel})");
+
+                // Play each note in the sequence
+                foreach (int note in testNotes)
+                {
+                    PlayNoteOnChannel(note, channelIndex, noteDuration, noteVelocity);
+                    yield return new WaitForSeconds(noteDuration + 0.1f); // Small gap between notes
+                }
+
+                // Pause between instruments
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            Debug.Log("[DEBUG_LOG] Finished debug playback of all instruments");
+        }
+
         public void DebugPrintInstruments()
         {
             ImSoundFont sfont = MidiPlayerGlobal.ImSFCurrent;

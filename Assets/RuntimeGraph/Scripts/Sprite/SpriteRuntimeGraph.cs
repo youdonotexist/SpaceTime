@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Commonwealth.Script.Ship.Monitors;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,11 +11,12 @@ namespace RuntimeGraph.Sprite
     /// Sprite-based RuntimeGraph system for world space usage
     /// Replaces UI Toolkit-based system to work in game world
     /// </summary>
-    public class SpriteRuntimeGraph : MonoBehaviour
+    public class SpriteRuntimeGraph : MonoBehaviour, ProceduralShipLayoutGenerator.IShipLayoutTarget
     {
         [Header("Prefabs")]
         public GameObject nodePrefab;
         public GameObject connectionPrefab;
+        public ShipStatsUI shipStatsUIPrefab;
         
         [Header("Settings")]
         public float nodeSize = 5f;
@@ -33,6 +36,9 @@ namespace RuntimeGraph.Sprite
         public AudioClip nodeBeepClip;
         public float nodeBeepVolume = 0.5f;
         
+        [Header("Procedural Generation")]
+        public ProceduralShipLayoutGenerator.GeneratorSettings generatorSettings;
+        
         // Graph data
         [SerializeField] private List<SpriteNode.NodeData> nodes = new List<SpriteNode.NodeData>();
         [SerializeField] private List<SpriteConnection.ConnectionData> connections = new List<SpriteConnection.ConnectionData>();
@@ -40,11 +46,15 @@ namespace RuntimeGraph.Sprite
         // Runtime components
         private Dictionary<string, SpriteNode> nodeInstances = new Dictionary<string, SpriteNode>();
         private Dictionary<string, SpriteConnection> connectionInstances = new Dictionary<string, SpriteConnection>();
+        private ProceduralShipLayoutGenerator proceduralGenerator;
+        private SpriteConnection pendingConnectionInstance;
         private SpriteGraphGrid gridRenderer;
         private SpriteGraphToolbar toolbar;
         private SpritePlaybackController playbackController;
         private SpriteNodeConfigUI nodeConfigUI;
+        private SpriteConnectionConfigUI connectionConfigUI;
         private SpriteNodePalette nodePalette;
+        private ShipPartCategoryUI categoryUI;
         private Transform nodeContainer;
         
         // Interaction state
@@ -52,10 +62,16 @@ namespace RuntimeGraph.Sprite
         public InteractionMode currentMode = InteractionMode.Select;
         
         private string selectedNodeId;
+        private string selectedConnectionId;
         private string pendingFromNodeId;
         private int pendingFromAnchorIndex = -1;
         private SpriteNode draggedNode;
         private Vector3 dragOffset;
+        
+        // Ghost part state for temporary placement preview
+        private GameObject ghostPart;
+        private SpriteNodePalette.NodeTypeData ghostNodeType;
+        private bool isGhostActive = false;
         
         // Input state
         private bool isPanning;
@@ -70,6 +86,7 @@ namespace RuntimeGraph.Sprite
         private float panSmoothSpeed = 20f;
         
         public event Action<string> NodeSelected;
+        public event Action<string> ConnectionSelected;
         public event Action<SpriteNode.NodeData> NodeCreated;
         public event Action<SpriteConnection.ConnectionData> ConnectionCreated;
         public System.Action<SpriteNode.NodeData> OnNodeActivated;
@@ -82,7 +99,10 @@ namespace RuntimeGraph.Sprite
             InitializeToolbar();
             InitializePlaybackController();
             InitializeNodeConfigUI();
+            proceduralGenerator = new ProceduralShipLayoutGenerator(generatorSettings);
+            InitializeConnectionConfigUI();
             InitializeNodePalette();
+            InitializeCategoryUI();
             InitializeAudio();
             InitializeStatsUI();
             EnsureNodeIds();
@@ -160,6 +180,18 @@ namespace RuntimeGraph.Sprite
             nodeConfigUI.Initialize();
         }
         
+        private void InitializeConnectionConfigUI()
+        {
+            var connectionConfigGO = new GameObject("ConnectionConfigUI");
+            connectionConfigGO.transform.SetParent(transform);
+            connectionConfigUI = connectionConfigGO.AddComponent<SpriteConnectionConfigUI>();
+            connectionConfigUI.Initialize(this);
+            
+            // Subscribe to events
+            connectionConfigUI.OnConnectionDeleted += OnConnectionDeleted;
+            connectionConfigUI.OnConnectionDirectionChanged += OnConnectionDirectionChanged;
+        }
+        
         private void InitializeNodePalette()
         {
             var nodePaletteGO = new GameObject("NodePalette");
@@ -167,6 +199,147 @@ namespace RuntimeGraph.Sprite
             nodePalette = nodePaletteGO.AddComponent<SpriteNodePalette>();
             nodePalette.Initialize(this);
             nodePalette.SetVisible(false); // Hidden by default, only show in Node mode
+        }
+        
+        private void InitializeCategoryUI()
+        {
+            var categoryUIGO = new GameObject("ShipPartCategoryUI");
+            categoryUIGO.transform.SetParent(transform);
+            categoryUI = categoryUIGO.AddComponent<ShipPartCategoryUI>();
+            categoryUI.Initialize(nodePalette);
+            
+            // Subscribe to node selection events
+            categoryUI.OnNodeTypeSelected += OnCategoryNodeTypeSelected;
+        }
+        
+        private void OnCategoryNodeTypeSelected(SpriteNodePalette.NodeTypeData nodeType)
+        {
+            // Set the selected node type in the original palette system for compatibility
+            if (nodePalette != null)
+            {
+                // Access the palette's selection mechanism
+                nodePalette.OnNodeTypeSelected?.Invoke(nodeType);
+            }
+            
+            // Switch to node placement mode
+            currentMode = InteractionMode.Node;
+            
+            // Create ghost part for visual feedback
+            CreateGhostPart(nodeType);
+            
+            Debug.Log($"Category UI selected: {nodeType.name} from {nodeType.category}");
+        }
+        
+        private void CreateGhostPart(SpriteNodePalette.NodeTypeData nodeType)
+        {
+            // Clear any existing ghost part
+            ClearGhostPart();
+            
+            // Store the node type data
+            ghostNodeType = nodeType;
+            
+            // Create a temporary node data for the ghost part
+            var tempNodeData = new SpriteNode.NodeData
+            {
+                id = "ghost_temp",
+                title = nodeType.name,
+                worldPosition = Vector3.zero,
+                color = new Color(nodeType.color.r, nodeType.color.g, nodeType.color.b, 0.5f), // Semi-transparent
+                metadata = new List<SpriteNode.MetadataEntry>
+                {
+                    new SpriteNode.MetadataEntry { key = "Type", value = nodeType.name },
+                    new SpriteNode.MetadataEntry { key = "Category", value = nodeType.category },
+                    new SpriteNode.MetadataEntry { key = "Description", value = nodeType.description }
+                },
+                note = nodeType.note,
+                velocity = nodeType.velocity,
+                channel = nodeType.channel,
+                duration = nodeType.duration,
+                icon = nodeType.icon,
+                isEngine = nodeType.category == "Propulsion & Maneuvering"
+            };
+            
+            // Create the ghost GameObject
+            ghostPart = new GameObject("GhostPart");
+            ghostPart.transform.SetParent(nodeContainer, false);
+            
+            // Add SpriteNode component and initialize it
+            var ghostSpriteNode = ghostPart.AddComponent<SpriteNode>();
+            ghostSpriteNode.Initialize(this, tempNodeData);
+            
+            // Make it semi-transparent and disable collider
+            var renderers = ghostPart.GetComponentsInChildren<SpriteRenderer>();
+            foreach (var renderer in renderers)
+            {
+                var color = renderer.color;
+                color.a = 0.5f;
+                renderer.color = color;
+            }
+            
+            var colliders = ghostPart.GetComponentsInChildren<Collider2D>();
+            foreach (var collider in colliders)
+            {
+                collider.enabled = false;
+            }
+            
+            isGhostActive = true;
+        }
+        
+        private void ClearGhostPart()
+        {
+            if (ghostPart != null)
+            {
+                DestroyImmediate(ghostPart);
+                ghostPart = null;
+            }
+            ghostNodeType = null;
+            isGhostActive = false;
+        }
+        
+        private void PlaceGhostPart(Vector3 worldPos)
+        {
+            if (!isGhostActive || ghostNodeType == null) return;
+            
+            // Snap the position to grid
+            Vector3 snappedPos = gridRenderer?.SnapToGrid(worldPos, true) ?? worldPos;
+            
+            // Check for collision with existing nodes
+            if (IsPositionOccupied(snappedPos))
+            {
+                Debug.LogWarning("Cannot place part: Position is already occupied!");
+                return;
+            }
+            
+            // Create the actual node from ghost data
+            var nodeData = new SpriteNode.NodeData
+            {
+                id = Guid.NewGuid().ToString("N"),
+                title = ghostNodeType.name,
+                worldPosition = snappedPos,
+                color = ghostNodeType.color,
+                metadata = new List<SpriteNode.MetadataEntry>
+                {
+                    new SpriteNode.MetadataEntry { key = "Type", value = ghostNodeType.name },
+                    new SpriteNode.MetadataEntry { key = "Category", value = ghostNodeType.category },
+                    new SpriteNode.MetadataEntry { key = "Description", value = ghostNodeType.description }
+                },
+                note = ghostNodeType.note,
+                velocity = ghostNodeType.velocity,
+                channel = ghostNodeType.channel,
+                duration = ghostNodeType.duration,
+                icon = ghostNodeType.icon,
+                isEngine = ghostNodeType.category == "Propulsion & Maneuvering"
+            };
+            
+            // Add to nodes list and create instance
+            nodes.Add(nodeData);
+            CreateNodeInstance(nodeData);
+            NodeCreated?.Invoke(nodeData);
+            
+            // Clear the ghost part after placement
+            ClearGhostPart();
+            
+            Debug.Log($"Placed ship part: {ghostNodeType.name} at {snappedPos}");
         }
         
         private void InitializeAudio()
@@ -190,9 +363,7 @@ namespace RuntimeGraph.Sprite
         private void InitializeStatsUI()
         {
             // Create ship stats UI integration
-            var statsGO = new GameObject("ShipStatsUI");
-            statsGO.transform.SetParent(transform);
-            var statsIntegration = statsGO.AddComponent<Commonwealth.Script.Ship.Monitors.SpriteRuntimeGraphStatsIntegration>();
+            Instantiate(shipStatsUIPrefab, FindFirstObjectByType<Canvas>().transform);
         }
         
         private AudioClip CreateNodeBeepSound()
@@ -249,6 +420,7 @@ namespace RuntimeGraph.Sprite
         {
             HandleInput();
             HandleSmoothPanning();
+            HandleGhostPart();
         }
         
         private void HandleSmoothPanning()
@@ -267,6 +439,9 @@ namespace RuntimeGraph.Sprite
                 {
                     graphCamera.transform.position = targetCameraPos;
                     smoothPanning = false;
+                    
+                    // Update all connection colliders after panning completes
+                    UpdateAllConnectionColliders();
                 }
                 
                 // Update grid less frequently during smooth panning to reduce jitter
@@ -275,6 +450,21 @@ namespace RuntimeGraph.Sprite
                     gridRenderer?.UpdateGrid();
                 }
             }
+        }
+        
+        private void HandleGhostPart()
+        {
+            if (!isGhostActive || ghostPart == null) return;
+            
+            // Get mouse world position
+            Vector3 mouseWorldPos = graphCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0;
+            
+            // Snap to grid
+            Vector3 snappedPos = gridRenderer?.SnapToGrid(mouseWorldPos, true) ?? mouseWorldPos;
+            
+            // Update ghost part position
+            ghostPart.transform.position = snappedPos;
         }
         
         private void HandleInput()
@@ -338,11 +528,6 @@ namespace RuntimeGraph.Sprite
                 HandleZoom(scroll, mouseWorldPos);
             }
             
-            // Handle dynamic connection slot selection
-            if (!string.IsNullOrEmpty(pendingFromNodeId) && currentMode == InteractionMode.Connect)
-            {
-                UpdateDynamicConnectionSlot(mouseWorldPos);
-            }
             
             lastMouseWorldPos = mouseWorldPos;
         }
@@ -356,12 +541,59 @@ namespace RuntimeGraph.Sprite
             
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                ClearSelection();
+                // Clear ghost part first, then selection
+                if (isGhostActive)
+                {
+                    ClearGhostPart();
+                }
+                else
+                {
+                    ClearSelection();
+                }
             }
+            
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                RotateSelectedNode();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                RotateSelectedNode();
+            }
+        }
+        
+        private void RotateSelectedNode()
+        {
+            if (string.IsNullOrEmpty(selectedNodeId)) return;
+            
+            var selectedNode = GetNode(selectedNodeId);
+            if (selectedNode == null) return;
+            
+            var nodeData = selectedNode.NodeDataInstance;
+            
+            // Rotate by 90 degrees, snapping to grid-aligned angles (0, 90, 180, 270)
+            nodeData.rotation += 90f;
+            if (nodeData.rotation >= 360f)
+            {
+                nodeData.rotation = 0f;
+            }
+            
+            // Update the visual representation
+            selectedNode.UpdateVisuals();
+            
+            Debug.Log($"Rotated node '{nodeData.title}' to {nodeData.rotation} degrees");
         }
         
         private void HandleRightClick(Vector3 worldPos)
         {
+            // Cancel any pending connection on right-click
+            if (!string.IsNullOrEmpty(pendingFromNodeId))
+            {
+                ClearPendingConnection();
+                return;
+            }
+            
             if (currentMode == InteractionMode.Node)
             {
                 CreateNode(worldPos);
@@ -395,7 +627,15 @@ namespace RuntimeGraph.Sprite
             }
             else if (currentMode == InteractionMode.Node)
             {
-                CreateNode(worldPos);
+                // Handle ghost part placement
+                if (isGhostActive && ghostNodeType != null)
+                {
+                    PlaceGhostPart(worldPos);
+                }
+                else
+                {
+                    CreateNode(worldPos);
+                }
             }
             else
             {
@@ -441,6 +681,9 @@ namespace RuntimeGraph.Sprite
             
             // Also re-snap all existing engine components
             ResnapAllEnginesToGrid();
+            
+            // Update all connection colliders after nodes have been repositioned
+            UpdateAllConnectionColliders();
         }
         
         private void ResnapAllEnginesToGrid()
@@ -449,10 +692,29 @@ namespace RuntimeGraph.Sprite
             // This method is kept for compatibility but does nothing
         }
         
+        private void UpdateAllConnectionColliders()
+        {
+            // Update all connection colliders after nodes have been repositioned during zoom
+            foreach (var connectionInstance in connectionInstances.Values)
+            {
+                if (connectionInstance != null)
+                {
+                    connectionInstance.RefreshCollider();
+                }
+            }
+        }
+        
         public SpriteNode.NodeData CreateNode(Vector3 worldPos)
         {
             // Snap the position to the nearest grid intersection
             Vector3 snappedPos = gridRenderer?.SnapToGrid(worldPos, true) ?? worldPos;
+            
+            // Check for collision with existing nodes
+            if (IsPositionOccupied(snappedPos))
+            {
+                Debug.LogWarning("Cannot place node: Position is already occupied!");
+                return null; // Prevent placement on occupied positions
+            }
             
             // Check if selected type is an engine component
             if (nodePalette != null && nodePalette.SelectedNodeType != null && 
@@ -481,6 +743,7 @@ namespace RuntimeGraph.Sprite
                 nodeData.velocity = selectedType.velocity;
                 nodeData.channel = selectedType.channel;
                 nodeData.duration = selectedType.duration;
+                nodeData.icon = selectedType.icon;
                 
                 // Add metadata for node type info
                 nodeData.metadata.Clear();
@@ -498,15 +761,15 @@ namespace RuntimeGraph.Sprite
         
         private void CreateEngineFromNodeType(Vector3 worldPos, SpriteNodePalette.NodeTypeData nodeType)
         {
-            // Create a regular SpriteNode with engine properties
-            SpriteNode.EngineType engineType = nodeType.name switch
+            // Check for collision with existing nodes
+            if (IsPositionOccupied(worldPos))
             {
-                "Main Engine" => SpriteNode.EngineType.MainEngine,
-                "Thruster" => SpriteNode.EngineType.Thruster,
-                "Retro Engine" => SpriteNode.EngineType.RetroEngine,
-                "Stability Engine" => SpriteNode.EngineType.StabilityEngine,
-                _ => SpriteNode.EngineType.MainEngine
-            };
+                Debug.LogWarning("Cannot place engine node: Position is already occupied!");
+                return; // Prevent placement on occupied positions
+            }
+            
+            // Determine engine type from node type name
+            var engineType = DetermineEngineTypeFromName(nodeType.name);
             
             var nodeData = new SpriteNode.NodeData
             {
@@ -516,30 +779,98 @@ namespace RuntimeGraph.Sprite
                 color = nodeType.color,
                 note = nodeType.note,
                 velocity = nodeType.velocity,
-                channel = nodeType.channel,
+                channel = GetEngineTypeChannel(engineType), // Each engine category uses its own channel
                 duration = nodeType.duration,
                 metadata = new List<SpriteNode.MetadataEntry>(),
                 
-                // Engine-specific properties
+                // Set as engine part
                 isEngine = true,
                 engineType = engineType,
-                thrust = GetEngineTypeThrust(engineType),
+                thrust = 1.0f,
                 efficiency = 0.8f,
-                showThrustEffect = true,
-                thrustColor = Color.cyan,
-                gridWidth = GetEngineTypeGridDimensions(engineType).x,
-                gridHeight = GetEngineTypeGridDimensions(engineType).y,
+                showThrustEffect = DetermineShowThrustEffect(nodeType.name),
+                thrustColor = nodeType.color,
+                gridWidth = 1,
+                gridHeight = 1,
                 connectedNodeIds = new List<string>()
             };
             
-            // Add metadata for engine info
+            // Add metadata for engine part info
             nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Type", value = nodeType.name });
-            nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Category", value = "Engine" });
+            nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Category", value = nodeType.category });
             nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Description", value = nodeType.description });
+            
+            // Connect to ship stats system
+            ConnectNodeToShipStats(nodeData, nodeType);
             
             nodes.Add(nodeData);
             CreateNodeInstance(nodeData);
             NodeCreated?.Invoke(nodeData);
+        }
+        
+        private bool DetermineShowThrustEffect(string partName)
+        {
+            return partName.Contains("Thruster") || partName.Contains("Engine") || 
+                   partName.Contains("Propulsion") || partName.Contains("Drive");
+        }
+        
+        private SpriteNode.EngineType DetermineEngineTypeFromName(string partName)
+        {
+            string lowerName = partName.ToLowerInvariant();
+            
+            // Check for thruster keywords
+            if (lowerName.Contains("thruster") || lowerName.Contains("rcs") || 
+                lowerName.Contains("maneuvering") || lowerName.Contains("attitude"))
+            {
+                return SpriteNode.EngineType.Thruster;
+            }
+            
+            // Check for retro engine keywords
+            if (lowerName.Contains("retro") || lowerName.Contains("reverse") || 
+                lowerName.Contains("brake") || lowerName.Contains("deceleration"))
+            {
+                return SpriteNode.EngineType.RetroEngine;
+            }
+            
+            // Check for stability engine keywords
+            if (lowerName.Contains("stability") || lowerName.Contains("stabilizer") || 
+                lowerName.Contains("gyro") || lowerName.Contains("control"))
+            {
+                return SpriteNode.EngineType.StabilityEngine;
+            }
+            
+            // Default to main engine for anything else with engine-like keywords
+            if (lowerName.Contains("engine") || lowerName.Contains("propulsion") || 
+                lowerName.Contains("drive") || lowerName.Contains("motor"))
+            {
+                return SpriteNode.EngineType.MainEngine;
+            }
+            
+            // Fallback to main engine
+            return SpriteNode.EngineType.MainEngine;
+        }
+        
+        private void ConnectNodeToShipStats(SpriteNode.NodeData nodeData, SpriteNodePalette.NodeTypeData nodeType)
+        {
+            // Find the ship stats manager
+            var statsManager = FindObjectOfType<Commonwealth.Script.Ship.Monitors.ShipStatsManager>();
+            if (statsManager == null) return;
+            
+            // Store affected stats in metadata for the node
+            var enginePart = RuntimeGraph.Sprite.EnginePartCatalog.GetAllEngineParts()
+                .FirstOrDefault(p => p.name == nodeType.name);
+            
+            if (enginePart != null && enginePart.affectedStats != null)
+            {
+                foreach (var statName in enginePart.affectedStats)
+                {
+                    nodeData.metadata.Add(new SpriteNode.MetadataEntry 
+                    { 
+                        key = "AffectedStat", 
+                        value = statName 
+                    });
+                }
+            }
         }
         
         private SpriteNode CreateNodeInstance(SpriteNode.NodeData nodeData)
@@ -617,11 +948,13 @@ namespace RuntimeGraph.Sprite
             if (connectionPrefab != null)
             {
                 connectionGO = Instantiate(connectionPrefab, transform);
+                connectionGO.transform.position = Vector3.zero;
             }
             else
             {
                 connectionGO = CreateDefaultConnection();
                 connectionGO.transform.SetParent(transform);
+                connectionGO.transform.position = Vector3.zero;
             }
             
             var spriteConnection = connectionGO.GetComponent<SpriteConnection>();
@@ -678,9 +1011,39 @@ namespace RuntimeGraph.Sprite
             NodeSelected?.Invoke(selectedNodeId);
         }
         
+        public void SelectConnection(SpriteConnection connection)
+        {
+            // Clear node selection
+            if (!string.IsNullOrEmpty(selectedNodeId) && nodeInstances.TryGetValue(selectedNodeId, out var prevNode))
+            {
+                prevNode.SetSelected(false);
+            }
+            selectedNodeId = null;
+            nodeConfigUI?.HideNodeConfiguration();
+            
+            // Deselect previous connection
+            if (!string.IsNullOrEmpty(selectedConnectionId) && connectionInstances.TryGetValue(selectedConnectionId, out var prevConnection))
+            {
+                prevConnection.UpdateVisualStyle(false);
+            }
+            
+            selectedConnectionId = connection?.ConnectionDataInstance?.id;
+            
+            // Select new connection
+            if (connection != null && currentMode == InteractionMode.Select)
+            {
+                connection.UpdateVisualStyle(true);
+                // Show connection configuration UI
+                connectionConfigUI?.ShowConnectionConfiguration(connection);
+            }
+            
+            ConnectionSelected?.Invoke(selectedConnectionId);
+        }
+        
         public void ClearSelection()
         {
             SelectNode(null);
+            SelectConnection(null);
             ClearPendingConnection();
         }
         
@@ -689,6 +1052,13 @@ namespace RuntimeGraph.Sprite
             if (!string.IsNullOrEmpty(pendingFromNodeId) && nodeInstances.TryGetValue(pendingFromNodeId, out var node))
             {
                 node.SetPendingHighlight(false);
+            }
+            
+            // Destroy visual pending connection
+            if (pendingConnectionInstance != null)
+            {
+                DestroyImmediate(pendingConnectionInstance.gameObject);
+                pendingConnectionInstance = null;
             }
             
             pendingFromNodeId = null;
@@ -706,6 +1076,9 @@ namespace RuntimeGraph.Sprite
                 pendingFromNodeId = node.NodeDataInstance.id;
                 pendingFromAnchorIndex = anchorIndex;
                 node.SetPendingHighlight(true);
+                
+                // Create visual pending connection
+                CreatePendingConnection(pendingFromNodeId, pendingFromAnchorIndex);
             }
             else if (pendingFromNodeId != node.NodeDataInstance.id)
             {
@@ -713,9 +1086,8 @@ namespace RuntimeGraph.Sprite
                 nodeInstances.TryGetValue(pendingFromNodeId, out var fromNode);
                 if (fromNode)
                 {
-                    int anchorIndexFrom = node.GetNearestAvailableAnchorIndex(fromNode.GetAnchorWorldPosition(pendingFromAnchorIndex));
-                
-                    CreateConnection(pendingFromNodeId, pendingFromAnchorIndex, node.NodeDataInstance.id, anchorIndexFrom);
+                    int anchorIndexTo = node.GetNearestAvailableAnchorIndex(worldPos);
+                    CreateConnection(pendingFromNodeId, pendingFromAnchorIndex, node.NodeDataInstance.id, anchorIndexTo);
                 }
 
                 ClearPendingConnection();
@@ -751,6 +1123,50 @@ namespace RuntimeGraph.Sprite
             {
                 node.SetPendingHighlight(true);
             }
+            
+            // Create visual pending connection
+            CreatePendingConnection(nodeId, anchorIndex);
+        }
+        
+        private void CreatePendingConnection(string fromNodeId, int fromAnchorIndex)
+        {
+            // Clear any existing pending connection first
+            if (pendingConnectionInstance != null)
+            {
+                DestroyImmediate(pendingConnectionInstance.gameObject);
+            }
+            
+            // Create pending connection data
+            var pendingConnectionData = new SpriteConnection.ConnectionData
+            {
+                id = "pending",
+                fromNodeId = fromNodeId,
+                fromAnchorIndex = fromAnchorIndex,
+                toNodeId = "",
+                toAnchorIndex = -1
+            };
+            
+            // Create connection GameObject
+            GameObject connectionGO;
+            if (connectionPrefab != null)
+            {
+                connectionGO = Instantiate(connectionPrefab, transform);
+            }
+            else
+            {
+                connectionGO = CreateDefaultConnection();
+                connectionGO.transform.SetParent(transform);
+            }
+            
+            // Setup pending connection
+            var spriteConnection = connectionGO.GetComponent<SpriteConnection>();
+            if (spriteConnection == null)
+            {
+                spriteConnection = connectionGO.AddComponent<SpriteConnection>();
+            }
+            
+            spriteConnection.InitializeAsPending(this, pendingConnectionData);
+            pendingConnectionInstance = spriteConnection;
         }
         
         public void OnNodeMoved(SpriteNode node)
@@ -766,21 +1182,6 @@ namespace RuntimeGraph.Sprite
             }
         }
         
-        private void UpdateDynamicConnectionSlot(Vector3 mouseWorldPos)
-        {
-            // Get the starting node for the pending connection
-            if (nodeInstances.TryGetValue(pendingFromNodeId, out var fromNode))
-            {
-                // Find the nearest available anchor on the starting node based on mouse position
-                int newAnchorIndex = fromNode.GetNearestAvailableAnchorIndex(mouseWorldPos);
-                
-                // Update the anchor if it's different and available
-                if (newAnchorIndex != -1 && newAnchorIndex != pendingFromAnchorIndex)
-                {
-                    pendingFromAnchorIndex = newAnchorIndex;
-                }
-            }
-        }
         
         private void DeleteSelectedNode()
         {
@@ -815,6 +1216,8 @@ namespace RuntimeGraph.Sprite
         private void OnModeChanged(InteractionMode newMode)
         {
             currentMode = newMode;
+            
+            // Clear any pending connection when switching away from Connect mode
             if (newMode != InteractionMode.Connect)
             {
                 ClearPendingConnection();
@@ -823,7 +1226,13 @@ namespace RuntimeGraph.Sprite
             // Show/hide node palette based on interaction mode
             if (nodePalette != null)
             {
-                nodePalette.SetVisible(newMode == InteractionMode.Node);
+                nodePalette.SetVisible(false); // Always hide the node palette
+            }
+            
+            // Show/hide ship part category UI based on interaction mode
+            if (categoryUI != null)
+            {
+                categoryUI.SetVisible(newMode == InteractionMode.Node);
             }
         }
         
@@ -932,6 +1341,7 @@ namespace RuntimeGraph.Sprite
         // Properties for external access
         public InteractionMode CurrentMode => currentMode;
         public string SelectedNodeId => selectedNodeId;
+        public string SelectedConnectionId => selectedConnectionId;
         public string PendingFromNodeId => pendingFromNodeId;
         public int PendingFromAnchorIndex => pendingFromAnchorIndex;
         public Camera GraphCamera => graphCamera;
@@ -955,6 +1365,18 @@ namespace RuntimeGraph.Sprite
             };
         }
         
+        private int GetEngineTypeChannel(SpriteNode.EngineType engineType)
+        {
+            return engineType switch
+            {
+                SpriteNode.EngineType.MainEngine => 0,      // Channel 0 for MainEngine
+                SpriteNode.EngineType.Thruster => 1,        // Channel 1 for Thruster
+                SpriteNode.EngineType.RetroEngine => 2,     // Channel 2 for RetroEngine
+                SpriteNode.EngineType.StabilityEngine => 3, // Channel 3 for StabilityEngine
+                _ => 0
+            };
+        }
+        
         private Vector2Int GetEngineTypeGridDimensions(SpriteNode.EngineType engineType)
         {
             return engineType switch
@@ -965,6 +1387,182 @@ namespace RuntimeGraph.Sprite
                 SpriteNode.EngineType.StabilityEngine => new Vector2Int(1, 2), // Tall stability engine: 1x2 grid cells
                 _ => new Vector2Int(1, 1)
             };
+        }
+        
+        // Procedural Ship Layout Generation
+        public void GenerateRandomShipLayout()
+        {
+            proceduralGenerator?.GenerateRandomShipLayout(this);
+        }
+        
+        public void ClearAllNodesAndConnections()
+        {
+            // Clear connections first to avoid orphaned references
+            var connectionInstancesCopy = new List<SpriteConnection>(connectionInstances.Values);
+            foreach (var connection in connectionInstancesCopy)
+            {
+                if (connection != null)
+                {
+                    DestroyImmediate(connection.gameObject);
+                }
+            }
+            connectionInstances.Clear();
+            connections.Clear();
+            
+            // Clear nodes
+            var nodeInstancesCopy = new List<SpriteNode>(nodeInstances.Values);
+            foreach (var node in nodeInstancesCopy)
+            {
+                if (node != null)
+                {
+                    DestroyImmediate(node.gameObject);
+                }
+            }
+            nodeInstances.Clear();
+            nodes.Clear();
+            
+            // Clear selection
+            ClearSelection();
+        }
+        
+        
+        public SpriteNode.NodeData CreateShipPartNode(EnginePartNodeData part, Vector3 position)
+        {
+            return CreateShipPartNode(part, position, false);
+        }
+
+        public SpriteNode.NodeData CreateShipPartNode(EnginePartNodeData part, Vector3 position, bool isStartNode)
+        {
+            // Determine engine type from part name
+            var engineType = DetermineEngineTypeFromName(part.name);
+            
+            var nodeData = new SpriteNode.NodeData
+            {
+                id = System.Guid.NewGuid().ToString("N"),
+                title = part.name,
+                worldPosition = position,
+                color = part.color,
+                metadata = new List<SpriteNode.MetadataEntry>(),
+                isStart = isStartNode, // Set the start node status
+                
+                // Set as engine part
+                isEngine = true,
+                engineType = engineType,
+                thrust = UnityEngine.Random.Range(0.5f, 2.0f),
+                efficiency = UnityEngine.Random.Range(0.6f, 0.9f),
+                showThrustEffect = DetermineShowThrustEffect(part.name),
+                thrustColor = part.color,
+                gridWidth = 1,
+                gridHeight = 1,
+                rotation = UnityEngine.Random.Range(0, 4) * 90f, // Random rotation (0, 90, 180, or 270 degrees)
+                connectedNodeIds = new List<string>(),
+                
+                // MIDI properties
+                note = UnityEngine.Random.Range(36, 84),
+                velocity = UnityEngine.Random.Range(60, 100),
+                channel = GetEngineTypeChannel(engineType), // Each engine category uses its own channel
+                duration = 0.08f,
+                icon = EnginePartIconGenerator.GenerateIconForPart(part)
+            };
+            
+            // Add metadata
+            nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Type", value = part.name });
+            nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Category", value = part.category });
+            nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Description", value = part.description });
+            
+            nodes.Add(nodeData);
+            CreateNodeInstance(nodeData);
+            NodeCreated?.Invoke(nodeData);
+            
+            return nodeData;
+        }
+        
+        public void CreateAutoConnection(string fromNodeId, string toNodeId)
+        {
+            var connectionData = new SpriteConnection.ConnectionData
+            {
+                id = System.Guid.NewGuid().ToString("N"),
+                fromNodeId = fromNodeId,
+                toNodeId = toNodeId,
+                fromAnchorIndex = 0, // Use first available anchor
+                toAnchorIndex = 0,
+                weight = UnityEngine.Random.Range(0.5f, 2.0f),
+                creationOrder = connections.Count
+            };
+            
+            connections.Add(connectionData);
+            CreateConnectionInstance(connectionData);
+        }
+
+        // IShipLayoutTarget interface implementation
+        public Vector3 SnapToGrid(Vector3 position)
+        {
+            return gridRenderer?.SnapToGrid(position, true) ?? position;
+        }
+
+        public int GetCurrentNodeCount()
+        {
+            return nodes.Count;
+        }
+
+        public bool IsPositionOccupied(Vector3 position, float tolerance = 1f)
+        {
+            foreach (var node in nodes)
+            {
+                float distance = Vector3.Distance(node.worldPosition, position);
+                if (distance < tolerance)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Connection configuration event handlers
+        private void OnConnectionDeleted(SpriteConnection connection)
+        {
+            if (connection == null || connection.ConnectionDataInstance == null) return;
+            
+            string connectionId = connection.ConnectionDataInstance.id;
+            
+            // Remove from data structures
+            connections.RemoveAll(c => c.id == connectionId);
+            
+            if (connectionInstances.TryGetValue(connectionId, out var connectionInstance))
+            {
+                connectionInstances.Remove(connectionId);
+                DestroyImmediate(connectionInstance.gameObject);
+            }
+            
+            // Clear selection
+            SelectConnection(null);
+        }
+        
+        private void OnConnectionDirectionChanged(SpriteConnection connection, bool shouldReverse)
+        {
+            if (connection == null || connection.ConnectionDataInstance == null) return;
+            
+            var connectionData = connection.ConnectionDataInstance;
+            
+            if (shouldReverse)
+            {
+                // Swap from and to nodes
+                string tempNodeId = connectionData.fromNodeId;
+                int tempAnchorIndex = connectionData.fromAnchorIndex;
+                
+                connectionData.fromNodeId = connectionData.toNodeId;
+                connectionData.fromAnchorIndex = connectionData.toAnchorIndex;
+                connectionData.toNodeId = tempNodeId;
+                connectionData.toAnchorIndex = tempAnchorIndex;
+                
+                //TODO: Update is called on a framebasis, so I don't think we need to call this
+                // Update the connection display
+                //connection.UpdateConnection();
+                
+                
+                // Update the configuration UI to reflect the change
+                connectionConfigUI?.ShowConnectionConfiguration(connection);
+            }
         }
     }
 }

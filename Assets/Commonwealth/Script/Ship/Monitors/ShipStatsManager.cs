@@ -70,7 +70,7 @@ namespace Commonwealth.Script.Ship.Monitors
             
             // Structural & Hull Stats
             allStats.Add(new ShipStat("Hull Stress", "%", "Structural & Hull", 0, 100, 70, 85, false));
-            allStats.Add(new ShipStat("Microfracture Index", "#/m²", "Structural & Hull", 0, 1000, 500, 750, false));
+            allStats.Add(new ShipStat("Microfracture Index", "#/m", "Structural & Hull", 0, 1000, 500, 750, false));
             allStats.Add(new ShipStat("Bulkhead Integrity", "%", "Structural & Hull", 0, 100, 60, 40, true));
             allStats.Add(new ShipStat("Seal Leakage Rate", "Pa/s", "Structural & Hull", 0, 100, 50, 80, false));
             allStats.Add(new ShipStat("Vibration RMS", "g RMS", "Structural & Hull", 0, 10, 7, 9, false));

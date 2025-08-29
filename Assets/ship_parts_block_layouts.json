@@ -1,0 +1,2714 @@
+{
+  "conventions": {
+    "origin": "(0,0) = visual center; x right; y up",
+    "tile_size": 64,
+    "units": "grid cells",
+    "note": "center_is_block indicates whether a tile occupies the origin"
+  },
+  "parts": [
+    {
+      "name": "Fusion Reactor Core",
+      "slug": "fusion_reactor_core",
+      "category": "power",
+      "coords": [
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "block_count": 20,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Auxiliary Microreactor",
+      "slug": "auxiliary_microreactor",
+      "category": "power",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 9,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Capacitor Bank",
+      "slug": "capacitor_bank",
+      "category": "power",
+      "coords": [
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "block_count": 12,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Battery Rack",
+      "slug": "battery_rack",
+      "category": "power",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "block_count": 14,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Power Inverter Rectifier Unit",
+      "slug": "power_inverter_rectifier_unit",
+      "category": "power",
+      "coords": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          -3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "block_count": 16,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Overclock Controller",
+      "slug": "overclock_controller",
+      "category": "power",
+      "coords": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 13,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Bus Tie Breaker ATS",
+      "slug": "bus_tie_breaker_ats",
+      "category": "power",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 9,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Coolant Pump Assembly",
+      "slug": "coolant_pump_assembly",
+      "category": "thermal",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "block_count": 16,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Heat Exchanger",
+      "slug": "heat_exchanger",
+      "category": "thermal",
+      "coords": [
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "block_count": 17,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Radiator Panel Array",
+      "slug": "radiator_panel_array",
+      "category": "thermal",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          -2
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          2
+        ]
+      ],
+      "block_count": 22,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Heat Sink Block",
+      "slug": "heat_sink_block",
+      "category": "thermal",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "block_count": 15,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Phase-Change Reservoir",
+      "slug": "phase_change_reservoir",
+      "category": "thermal",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Thermal Control Valve",
+      "slug": "thermal_control_valve",
+      "category": "thermal",
+      "coords": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 6,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "O2 Generator (Electrolyzer)",
+      "slug": "o2_generator_electrolyzer",
+      "category": "atmo",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 14,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "CO2 Scrubber Cartridge",
+      "slug": "co2_scrubber_cartridge",
+      "category": "atmo",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 13,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Air Circulation Blower",
+      "slug": "air_circulation_blower",
+      "category": "atmo",
+      "coords": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "HEPA Filter Cassette",
+      "slug": "hepa_filter_cassette",
+      "category": "atmo",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Dehumidifier Unit",
+      "slug": "dehumidifier_unit",
+      "category": "atmo",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Humidifier Vaporizer",
+      "slug": "humidifier_vaporizer",
+      "category": "atmo",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "block_count": 8,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Pressure Regulator / Relief Valve",
+      "slug": "pressure_regulator_relief_valve",
+      "category": "atmo",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "UV Sterilizer / Biofilter",
+      "slug": "uv_sterilizer_biofilter",
+      "category": "atmo",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "block_count": 15,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Hull Plate Segment (Composite Tile)",
+      "slug": "hull_plate_segment_composite_tile",
+      "category": "struct",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 8,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Bulkhead Door Actuator",
+      "slug": "bulkhead_door_actuator",
+      "category": "struct",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 14,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Seal/Gasket Ring Set",
+      "slug": "seal_gasket_ring_set",
+      "category": "struct",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "block_count": 16,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Vibration Dampener / Isolator",
+      "slug": "vibration_dampener_isolator",
+      "category": "struct",
+      "coords": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "block_count": 8,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Microfracture Sensor Mesh",
+      "slug": "microfracture_sensor_mesh",
+      "category": "struct",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Micrometeor Shield Tile (Whipple)",
+      "slug": "micrometeor_shield_tile_whipple",
+      "category": "struct",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "block_count": 6,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Main Thruster Nozzle",
+      "slug": "main_thruster_nozzle",
+      "category": "prop",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          -1
+        ]
+      ],
+      "block_count": 12,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Reaction Mass Tank",
+      "slug": "reaction_mass_tank",
+      "category": "prop",
+      "coords": [
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Thrust Vector Gimbal",
+      "slug": "thrust_vector_gimbal",
+      "category": "prop",
+      "coords": [
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 6,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Drive Core Field Coil",
+      "slug": "drive_core_field_coil",
+      "category": "prop",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "block_count": 17,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "FTL Spool / Condenser",
+      "slug": "ftl_spool_condenser",
+      "category": "prop",
+      "coords": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "RCS Thruster Quad",
+      "slug": "rcs_thruster_quad",
+      "category": "prop",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Navigation Computer",
+      "slug": "navigation_computer",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Star Tracker Camera",
+      "slug": "star_tracker_camera",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Inertial Measurement Unit (IMU)",
+      "slug": "inertial_measurement_unit_imu",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 10,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Sensor Array Receiver (Multi-band)",
+      "slug": "sensor_array_receiver_multi_band",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "High-Gain Antenna",
+      "slug": "high_gain_antenna",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "block_count": 7,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Quantum/Ka-Band Transceiver",
+      "slug": "quantum_ka_band_transceiver",
+      "category": "nav",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 8,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Signal Processing DSP Module",
+      "slug": "signal_processing_dsp_module",
+      "category": "nav",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "block_count": 12,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Control Router / PLC Backplane",
+      "slug": "control_router_plc_backplane",
+      "category": "data",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 13,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Error-Correcting Memory Bank",
+      "slug": "error_correcting_memory_bank",
+      "category": "data",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "block_count": 9,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Security Firewall Appliance",
+      "slug": "security_firewall_appliance",
+      "category": "data",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "block_count": 12,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Intrusion Detection Node (IDS)",
+      "slug": "intrusion_detection_node_ids",
+      "category": "data",
+      "coords": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Redundant Controller (Hot-Standby PLC)",
+      "slug": "redundant_controller_hot_standby_plc",
+      "category": "data",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 8,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Fabricator (Multi-Material Printer)",
+      "slug": "fabricator_multi_material_printer",
+      "category": "mfg",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "block_count": 12,
+      "center_is_block": false,
+      "tile_size": 64
+    },
+    {
+      "name": "Smart Parts Locker (RFID)",
+      "slug": "smart_parts_locker_rfid",
+      "category": "mfg",
+      "coords": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "block_count": 15,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Salvage Drone (Autonomous EVA)",
+      "slug": "salvage_drone_autonomous_eva",
+      "category": "mfg",
+      "coords": [
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "block_count": 5,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Shield Emitter Array",
+      "slug": "shield_emitter_array",
+      "category": "def",
+      "coords": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "block_count": 21,
+      "center_is_block": true,
+      "tile_size": 64
+    },
+    {
+      "name": "Shield Capacitor Bank",
+      "slug": "shield_capacitor_bank",
+      "category": "def",
+      "coords": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "block_count": 13,
+      "center_is_block": true,
+      "tile_size": 64
+    }
+  ]
+}

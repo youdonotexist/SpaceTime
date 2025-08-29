@@ -9,7 +9,7 @@ namespace Commonwealth.Script.Ship.Monitors
     public class ShipStatsUI : MonoBehaviour
     {
         [Header("UI References")]
-        [SerializeField] private GameObject statItemPrefab;
+        [SerializeField] public GameObject statItemPrefab;
         [SerializeField] private Transform statsContainer;
         [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private Button toggleButton;
@@ -71,9 +71,34 @@ namespace Commonwealth.Script.Ship.Monitors
         
         private void InitializeUI()
         {
+            // Pin to top-right corner of UI canvas
+            SetupTopRightPositioning();
+            
             CreateStatItems();
             RefreshDisplay();
             UpdateHeaderText();
+        }
+        
+        private void SetupTopRightPositioning()
+        {
+            // Get or ensure RectTransform component
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                rectTransform = gameObject.AddComponent<RectTransform>();
+            }
+            
+            // Pin to top-right corner
+            rectTransform.anchorMin = new Vector2(1, 1); // Top-right anchor
+            rectTransform.anchorMax = new Vector2(1, 1);
+            rectTransform.pivot = new Vector2(1, 1); // Pivot at top-right
+            rectTransform.anchoredPosition = new Vector2(-20, -20); // 20px offset from edges
+            
+            // Set a reasonable size if not already set
+            if (rectTransform.sizeDelta == Vector2.zero)
+            {
+                rectTransform.sizeDelta = new Vector2(300, 400); // Default size
+            }
         }
         
         private void CreateStatItems()

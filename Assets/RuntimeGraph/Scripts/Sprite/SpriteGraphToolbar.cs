@@ -29,6 +29,8 @@ namespace RuntimeGraph.Sprite
         private Button nodeButton;
         private Button connectButton;
         private Button playButton;
+        private Button randomButton;
+        private Button debugInstrumentsButton;
         
         private SpriteRuntimeGraph.InteractionMode currentMode = SpriteRuntimeGraph.InteractionMode.Select;
         
@@ -95,7 +97,7 @@ namespace RuntimeGraph.Sprite
             rectTransform.anchorMax = new Vector2(0, 1);
             rectTransform.pivot = new Vector2(0, 1);
             rectTransform.anchoredPosition = screenPosition;
-            rectTransform.sizeDelta = new Vector2(buttonWidth * 4 + buttonSpacing * 5, buttonHeight + buttonSpacing * 2);
+            rectTransform.sizeDelta = new Vector2(buttonWidth * 6 + buttonSpacing * 7, buttonHeight + buttonSpacing * 2);
             
             // Add background image
             var backgroundImage = toolbarPanel.AddComponent<Image>();
@@ -119,6 +121,12 @@ namespace RuntimeGraph.Sprite
             
             // Play Button - Toggle playback instead of setting mode
             playButton = CreateButton("Play", 3, () => TogglePlayback());
+            
+            // Random Button - Generate random ship layout
+            randomButton = CreateButton("Random", 4, () => GenerateRandomLayout());
+            
+            // Debug Instruments Button - Play all instruments for debugging
+            debugInstrumentsButton = CreateButton("Debug", 5, () => DebugInstruments());
         }
         
         private Button CreateButton(string text, int index, System.Action onClick)
@@ -250,11 +258,41 @@ namespace RuntimeGraph.Sprite
         
         private void TogglePlayback()
         {
-            // Call the playback controller through the runtime graph
             if (graph?.PlaybackController != null)
             {
                 graph.PlaybackController.TogglePlayback();
                 UpdatePlayButtonText();
+            }
+        }
+        
+        private void GenerateRandomLayout()
+        {
+            if (graph != null)
+            {
+                graph.GenerateRandomShipLayout();
+                Debug.Log("Generated random ship layout");
+            }
+        }
+        
+        private void DebugInstruments()
+        {
+            if (graph != null)
+            {
+                var sequencer = graph.GetComponent<SpriteRuntimeGraphSequencer>();
+                if (sequencer == null)
+                {
+                    sequencer = FindObjectOfType<SpriteRuntimeGraphSequencer>();
+                }
+                
+                if (sequencer != null)
+                {
+                    sequencer.DebugPlayAllInstruments();
+                    Debug.Log("Started debug playback of all instruments");
+                }
+                else
+                {
+                    Debug.LogError("SpriteRuntimeGraphSequencer not found - cannot play debug instruments");
+                }
             }
         }
         

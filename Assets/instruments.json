@@ -1,1 +1,2992 @@
-{"List":[{"BankNum":0,"PresetNum":0,"Name":"100 Over. Gt.","BoundChannel":0},{"BankNum":0,"PresetNum":1,"Name":"100 Square","BoundChannel":0},{"BankNum":0,"PresetNum":2,"Name":"100 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":3,"Name":"072 Brass","BoundChannel":0},{"BankNum":0,"PresetNum":4,"Name":"100 Buzzy","BoundChannel":0},{"BankNum":0,"PresetNum":5,"Name":"100 Brass","BoundChannel":0},{"BankNum":0,"PresetNum":6,"Name":"100 Saw Wave","BoundChannel":0},{"BankNum":0,"PresetNum":7,"Name":"100 Violin","BoundChannel":0},{"BankNum":0,"PresetNum":8,"Name":"100 25% Square","BoundChannel":0},{"BankNum":0,"PresetNum":9,"Name":"100 Impact Hit","BoundChannel":0},{"BankNum":0,"PresetNum":10,"Name":"100 Ooh Choir","BoundChannel":0},{"BankNum":0,"PresetNum":11,"Name":"100 Organ 3","BoundChannel":0},{"BankNum":0,"PresetNum":12,"Name":"100 Rock Organ","BoundChannel":0},{"BankNum":0,"PresetNum":13,"Name":"100 Bg. Gt.","BoundChannel":0},{"BankNum":0,"PresetNum":14,"Name":"100 Bass","BoundChannel":0},{"BankNum":0,"PresetNum":15,"Name":"Special Instrument ;","BoundChannel":0},{"BankNum":0,"PresetNum":16,"Name":"015 Clavinet","BoundChannel":0},{"BankNum":0,"PresetNum":17,"Name":"015 Drums","BoundChannel":0},{"BankNum":0,"PresetNum":18,"Name":"016 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":19,"Name":"016 Square Wave 25%","BoundChannel":0},{"BankNum":0,"PresetNum":20,"Name":"016 White Noise","BoundChannel":0},{"BankNum":0,"PresetNum":21,"Name":"024 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":22,"Name":"024 Square Wave 25","BoundChannel":0},{"BankNum":0,"PresetNum":23,"Name":"024 Drums","BoundChannel":0},{"BankNum":0,"PresetNum":24,"Name":"024 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":25,"Name":"024 Xylophone","BoundChannel":0},{"BankNum":0,"PresetNum":26,"Name":"024 Flute","BoundChannel":0},{"BankNum":0,"PresetNum":27,"Name":"024 Hi Hat","BoundChannel":0},{"BankNum":0,"PresetNum":28,"Name":"024 Solo Violin","BoundChannel":0},{"BankNum":0,"PresetNum":29,"Name":"086 Grand Piano","BoundChannel":0},{"BankNum":0,"PresetNum":30,"Name":"072 Dist. Gt.","BoundChannel":0},{"BankNum":0,"PresetNum":31,"Name":"086 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":32,"Name":"086 Glockenspiel","BoundChannel":0},{"BankNum":0,"PresetNum":33,"Name":"086 Drums","BoundChannel":0},{"BankNum":0,"PresetNum":34,"Name":"034 Glockenspiel","BoundChannel":0},{"BankNum":0,"PresetNum":35,"Name":"015 Bass","BoundChannel":0},{"BankNum":0,"PresetNum":36,"Name":"072 Slap Bass","BoundChannel":0},{"BankNum":0,"PresetNum":37,"Name":"031 Choir Aahs","BoundChannel":0},{"BankNum":0,"PresetNum":38,"Name":"031 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":39,"Name":"031 Cymbals","BoundChannel":0},{"BankNum":0,"PresetNum":40,"Name":"024 Violin","BoundChannel":0},{"BankNum":0,"PresetNum":41,"Name":"031 Bass Drum","BoundChannel":0},{"BankNum":0,"PresetNum":42,"Name":"031 Glockenspiel","BoundChannel":0},{"BankNum":0,"PresetNum":43,"Name":"031 Violin","BoundChannel":0},{"BankNum":0,"PresetNum":44,"Name":"031 Tubular Bells","BoundChannel":0},{"BankNum":0,"PresetNum":45,"Name":"033 Celesta","BoundChannel":0},{"BankNum":0,"PresetNum":46,"Name":"035 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":47,"Name":"031 Timpani","BoundChannel":0},{"BankNum":0,"PresetNum":48,"Name":"072 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":49,"Name":"035 Tubular Bells","BoundChannel":0},{"BankNum":0,"PresetNum":50,"Name":"035 Square","BoundChannel":0},{"BankNum":0,"PresetNum":51,"Name":"036 Acoustic Bass","BoundChannel":0},{"BankNum":0,"PresetNum":52,"Name":"024 Choir","BoundChannel":0},{"BankNum":0,"PresetNum":53,"Name":"036 Mellow Piano","BoundChannel":0},{"BankNum":0,"PresetNum":54,"Name":"036 Venus","BoundChannel":0},{"BankNum":0,"PresetNum":55,"Name":"036 Waspy","BoundChannel":0},{"BankNum":0,"PresetNum":56,"Name":"036 Moonside Cafe","BoundChannel":0},{"BankNum":0,"PresetNum":57,"Name":"036 Trumpet","BoundChannel":0},{"BankNum":0,"PresetNum":58,"Name":"024 Tuba","BoundChannel":0},{"BankNum":0,"PresetNum":59,"Name":"036 Saw Wave","BoundChannel":0},{"BankNum":0,"PresetNum":60,"Name":"032 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":61,"Name":"024 Brass","BoundChannel":0},{"BankNum":0,"PresetNum":62,"Name":"014 White Noise","BoundChannel":0},{"BankNum":0,"PresetNum":63,"Name":"014 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":64,"Name":"014 Pulse 25%","BoundChannel":0},{"BankNum":0,"PresetNum":65,"Name":"014 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":66,"Name":"014 Standard Drums","BoundChannel":0},{"BankNum":0,"PresetNum":67,"Name":"015 Baritone Sax","BoundChannel":0},{"BankNum":0,"PresetNum":68,"Name":"014 Orchestra Drums","BoundChannel":0},{"BankNum":0,"PresetNum":69,"Name":"014 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":70,"Name":"014 Choir Aahs","BoundChannel":0},{"BankNum":0,"PresetNum":71,"Name":"014 French Horns","BoundChannel":0},{"BankNum":0,"PresetNum":72,"Name":"014 Quartet 4","BoundChannel":0},{"BankNum":0,"PresetNum":73,"Name":"014 Oboe","BoundChannel":0},{"BankNum":0,"PresetNum":74,"Name":"014 Solo Bo_0_57","BoundChannel":0},{"BankNum":0,"PresetNum":75,"Name":"014 Flute","BoundChannel":0},{"BankNum":0,"PresetNum":76,"Name":"012 Nylon-str. Gt.","BoundChannel":0},{"BankNum":0,"PresetNum":77,"Name":"013 Music Box","BoundChannel":0},{"BankNum":0,"PresetNum":78,"Name":"011 Square","BoundChannel":0},{"BankNum":0,"PresetNum":79,"Name":"010 Moonside Cafe","BoundChannel":0},{"BankNum":0,"PresetNum":80,"Name":"072 Square","BoundChannel":0},{"BankNum":0,"PresetNum":81,"Name":"010 Venus","BoundChannel":0},{"BankNum":0,"PresetNum":82,"Name":"010 Mellow Piano","BoundChannel":0},{"BankNum":0,"PresetNum":83,"Name":"010 Acoustic Bass","BoundChannel":0},{"BankNum":0,"PresetNum":84,"Name":"010 Waspy","BoundChannel":0},{"BankNum":0,"PresetNum":85,"Name":"010 Trumpet","BoundChannel":0},{"BankNum":0,"PresetNum":86,"Name":"001 Pulse 25%","BoundChannel":0},{"BankNum":0,"PresetNum":87,"Name":"001 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":88,"Name":"001 White Noise","BoundChannel":0},{"BankNum":0,"PresetNum":89,"Name":"001 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":90,"Name":"002 Square","BoundChannel":0},{"BankNum":0,"PresetNum":91,"Name":"003 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":92,"Name":"003 Duty Cycle","BoundChannel":0},{"BankNum":0,"PresetNum":93,"Name":"004 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":94,"Name":"004 Bass","BoundChannel":0},{"BankNum":0,"PresetNum":95,"Name":"004 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":96,"Name":"005 Glockenspiel","BoundChannel":0},{"BankNum":0,"PresetNum":97,"Name":"005 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":98,"Name":"005 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":99,"Name":"005 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":100,"Name":"005 Sine Wave","BoundChannel":0},{"BankNum":0,"PresetNum":101,"Name":"005 Square Wave","BoundChannel":0},{"BankNum":0,"PresetNum":102,"Name":"006 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":103,"Name":"006 Drumkit","BoundChannel":0},{"BankNum":0,"PresetNum":104,"Name":"007 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":105,"Name":"007 Percussion","BoundChannel":0},{"BankNum":0,"PresetNum":106,"Name":"007 Drumkit","BoundChannel":0},{"BankNum":0,"PresetNum":107,"Name":"010 YNP 2","BoundChannel":0},{"BankNum":0,"PresetNum":108,"Name":"008 Triangle","BoundChannel":0},{"BankNum":0,"PresetNum":109,"Name":"008 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":110,"Name":"008 White Noise","BoundChannel":0},{"BankNum":0,"PresetNum":111,"Name":"009 Pulse 25%","BoundChannel":0},{"BankNum":0,"PresetNum":112,"Name":"009 Pulse 12.5%","BoundChannel":0},{"BankNum":0,"PresetNum":113,"Name":"009 Triangle Wave","BoundChannel":0},{"BankNum":0,"PresetNum":114,"Name":"009 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":115,"Name":"009 Drumkit","BoundChannel":0},{"BankNum":0,"PresetNum":116,"Name":"009 Glockenspiel","BoundChannel":0},{"BankNum":0,"PresetNum":117,"Name":"009 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":118,"Name":"009 Violin","BoundChannel":0},{"BankNum":0,"PresetNum":119,"Name":"017 Piano","BoundChannel":0},{"BankNum":0,"PresetNum":120,"Name":"017 Violin","BoundChannel":0},{"BankNum":0,"PresetNum":121,"Name":"018 Tubular Bells","BoundChannel":0},{"BankNum":0,"PresetNum":122,"Name":"018 Drumkit","BoundChannel":0},{"BankNum":0,"PresetNum":123,"Name":"018 Strings","BoundChannel":0},{"BankNum":0,"PresetNum":124,"Name":"019 Drumkit","BoundChannel":0},{"BankNum":0,"PresetNum":125,"Name":"019 Bass","BoundChannel":0},{"BankNum":0,"PresetNum":126,"Name":"020 Sine Wave","BoundChannel":0},{"BankNum":0,"PresetNum":127,"Name":"021 Mario","BoundChannel":0},{"BankNum":1,"PresetNum":0,"Name":"021 Dog","BoundChannel":0},{"BankNum":1,"PresetNum":1,"Name":"022 Vibraphone","BoundChannel":0},{"BankNum":1,"PresetNum":2,"Name":"022 Xylophone","BoundChannel":0},{"BankNum":1,"PresetNum":3,"Name":"022 Tubular Bells","BoundChannel":0},{"BankNum":1,"PresetNum":4,"Name":"022 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":5,"Name":"072 Over Gt.","BoundChannel":0},{"BankNum":1,"PresetNum":6,"Name":"022 Pizzicato Str.","BoundChannel":0},{"BankNum":1,"PresetNum":7,"Name":"022 Viola","BoundChannel":0},{"BankNum":1,"PresetNum":8,"Name":"022 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":9,"Name":"022 Slow Strings","BoundChannel":0},{"BankNum":1,"PresetNum":10,"Name":"022 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":11,"Name":"023 Clarinet","BoundChannel":0},{"BankNum":1,"PresetNum":12,"Name":"072 Organ","BoundChannel":0},{"BankNum":1,"PresetNum":13,"Name":"023 Slow Strings","BoundChannel":0},{"BankNum":1,"PresetNum":14,"Name":"023 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":15,"Name":"023 Pizzicato Str.","BoundChannel":0},{"BankNum":1,"PresetNum":16,"Name":"023 Glockenspiel","BoundChannel":0},{"BankNum":1,"PresetNum":17,"Name":"025 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":18,"Name":"025 Glockenspiel","BoundChannel":0},{"BankNum":1,"PresetNum":19,"Name":"025 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":20,"Name":"025 Square","BoundChannel":0},{"BankNum":1,"PresetNum":21,"Name":"026 Square","BoundChannel":0},{"BankNum":1,"PresetNum":22,"Name":"026 Drums","BoundChannel":0},{"BankNum":1,"PresetNum":23,"Name":"027 Square","BoundChannel":0},{"BankNum":1,"PresetNum":24,"Name":"027 Orchestra Hit","BoundChannel":0},{"BankNum":1,"PresetNum":25,"Name":"027 Glockenspiel","BoundChannel":0},{"BankNum":1,"PresetNum":26,"Name":"027 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":27,"Name":"027 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":28,"Name":"027 Flute","BoundChannel":0},{"BankNum":1,"PresetNum":29,"Name":"028 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":30,"Name":"029: Cellio","BoundChannel":0},{"BankNum":1,"PresetNum":31,"Name":"030 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":32,"Name":"030 Harpsichord","BoundChannel":0},{"BankNum":1,"PresetNum":33,"Name":"006 fbassfd","BoundChannel":0},{"BankNum":1,"PresetNum":34,"Name":"030 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":35,"Name":"030 Rhodes EP","BoundChannel":0},{"BankNum":1,"PresetNum":36,"Name":"004 Pad","BoundChannel":0},{"BankNum":1,"PresetNum":37,"Name":"030 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":38,"Name":"030 Sine Wave","BoundChannel":0},{"BankNum":1,"PresetNum":39,"Name":"037 Square","BoundChannel":0},{"BankNum":1,"PresetNum":40,"Name":"038 Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":41,"Name":"039 Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":42,"Name":"041 Tremolo","BoundChannel":0},{"BankNum":1,"PresetNum":43,"Name":"042 Drums","BoundChannel":0},{"BankNum":1,"PresetNum":44,"Name":"042 Synth","BoundChannel":0},{"BankNum":1,"PresetNum":45,"Name":"043 Doo","BoundChannel":0},{"BankNum":1,"PresetNum":46,"Name":"043 Bird","BoundChannel":0},{"BankNum":1,"PresetNum":47,"Name":"043 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":48,"Name":"044 Square","BoundChannel":0},{"BankNum":1,"PresetNum":49,"Name":"045 Orchestra Hit","BoundChannel":0},{"BankNum":1,"PresetNum":50,"Name":"045 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":51,"Name":"045 Timpani","BoundChannel":0},{"BankNum":1,"PresetNum":52,"Name":"045 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":53,"Name":"045 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":54,"Name":"045 Pulse 25%","BoundChannel":0},{"BankNum":1,"PresetNum":55,"Name":"046 Romantic Tp","BoundChannel":0},{"BankNum":1,"PresetNum":56,"Name":"045 Brass Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":57,"Name":"046 Brass Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":58,"Name":"046 Orchestra Hit","BoundChannel":0},{"BankNum":1,"PresetNum":59,"Name":"046 Ahh Choir","BoundChannel":0},{"BankNum":1,"PresetNum":60,"Name":"046 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":61,"Name":"046 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":62,"Name":"046 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":63,"Name":"046 Honky Tonk","BoundChannel":0},{"BankNum":1,"PresetNum":64,"Name":"046 Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":65,"Name":"046 Pulse 25%","BoundChannel":0},{"BankNum":1,"PresetNum":66,"Name":"046 Triangle","BoundChannel":0},{"BankNum":1,"PresetNum":67,"Name":"047 Choir Aahs","BoundChannel":0},{"BankNum":1,"PresetNum":68,"Name":"047 Sine Lead","BoundChannel":0},{"BankNum":1,"PresetNum":69,"Name":"048 Synth Multi+","BoundChannel":0},{"BankNum":1,"PresetNum":70,"Name":"048 Xylophone","BoundChannel":0},{"BankNum":1,"PresetNum":71,"Name":"048 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":72,"Name":"048 Warbly Synth","BoundChannel":0},{"BankNum":1,"PresetNum":73,"Name":"048 Music Box","BoundChannel":0},{"BankNum":1,"PresetNum":74,"Name":"048 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":75,"Name":"048 Vibraphone","BoundChannel":0},{"BankNum":1,"PresetNum":76,"Name":"049 Square Wave","BoundChannel":0},{"BankNum":1,"PresetNum":77,"Name":"049 Mute Trumpet","BoundChannel":0},{"BankNum":1,"PresetNum":78,"Name":"049 Synth Bass","BoundChannel":0},{"BankNum":1,"PresetNum":79,"Name":"049 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":80,"Name":"049 Drumset","BoundChannel":0},{"BankNum":1,"PresetNum":81,"Name":"049 Taiko Drum","BoundChannel":0},{"BankNum":1,"PresetNum":82,"Name":"050 White Noise","BoundChannel":0},{"BankNum":1,"PresetNum":83,"Name":"050 Triangle Wave","BoundChannel":0},{"BankNum":1,"PresetNum":84,"Name":"050 Drums","BoundChannel":0},{"BankNum":1,"PresetNum":85,"Name":"051 Ahh Choir","BoundChannel":0},{"BankNum":1,"PresetNum":86,"Name":"051 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":87,"Name":"051 Choir Aahs 2","BoundChannel":0},{"BankNum":1,"PresetNum":88,"Name":"051 Square Wave","BoundChannel":0},{"BankNum":1,"PresetNum":89,"Name":"051 Saw","BoundChannel":0},{"BankNum":1,"PresetNum":90,"Name":"052 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":91,"Name":"052 Square","BoundChannel":0},{"BankNum":1,"PresetNum":92,"Name":"053 Brass","BoundChannel":0},{"BankNum":1,"PresetNum":93,"Name":"053 Percussion","BoundChannel":0},{"BankNum":1,"PresetNum":94,"Name":"053 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":95,"Name":"053 Square","BoundChannel":0},{"BankNum":1,"PresetNum":96,"Name":"053 Sawtooth","BoundChannel":0},{"BankNum":1,"PresetNum":97,"Name":"053 Piano 1","BoundChannel":0},{"BankNum":1,"PresetNum":98,"Name":"053 Pulse 25%","BoundChannel":0},{"BankNum":1,"PresetNum":99,"Name":"053 Pulse 12.5%","BoundChannel":0},{"BankNum":1,"PresetNum":100,"Name":"053 Triangle Wave","BoundChannel":0},{"BankNum":1,"PresetNum":101,"Name":"054 Nylon Frets","BoundChannel":0},{"BankNum":1,"PresetNum":102,"Name":"054 Acoustic Bass","BoundChannel":0},{"BankNum":1,"PresetNum":103,"Name":"054 Vibraphone","BoundChannel":0},{"BankNum":1,"PresetNum":104,"Name":"054 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":105,"Name":"054 Acoustic Bass 2","BoundChannel":0},{"BankNum":1,"PresetNum":106,"Name":"055 Nylon Frets","BoundChannel":0},{"BankNum":1,"PresetNum":107,"Name":"055 Acoustic Bass","BoundChannel":0},{"BankNum":1,"PresetNum":108,"Name":"055 Vibraphone","BoundChannel":0},{"BankNum":1,"PresetNum":109,"Name":"055 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":110,"Name":"055 Acoustic Bass 2","BoundChannel":0},{"BankNum":1,"PresetNum":111,"Name":"056 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":112,"Name":"056 E. Piano","BoundChannel":0},{"BankNum":1,"PresetNum":113,"Name":"057 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":114,"Name":"057 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":115,"Name":"058 Piano","BoundChannel":0},{"BankNum":1,"PresetNum":116,"Name":"058 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":117,"Name":"058 Timpani","BoundChannel":0},{"BankNum":1,"PresetNum":118,"Name":"058 Drumkit","BoundChannel":0},{"BankNum":1,"PresetNum":119,"Name":"058 Choir Aahs","BoundChannel":0},{"BankNum":1,"PresetNum":120,"Name":"059 Pulse 25%","BoundChannel":0},{"BankNum":1,"PresetNum":121,"Name":"059 Square","BoundChannel":0},{"BankNum":1,"PresetNum":122,"Name":"059 Triangle","BoundChannel":0},{"BankNum":1,"PresetNum":123,"Name":"059 White Noise","BoundChannel":0},{"BankNum":1,"PresetNum":124,"Name":"059 Pulse 12%","BoundChannel":0},{"BankNum":1,"PresetNum":125,"Name":"059 Choir Aahs","BoundChannel":0},{"BankNum":1,"PresetNum":126,"Name":"059 Strings","BoundChannel":0},{"BankNum":1,"PresetNum":127,"Name":"072 Percussive","BoundChannel":0},{"BankNum":2,"PresetNum":0,"Name":"059 Harpsichord","BoundChannel":0},{"BankNum":2,"PresetNum":1,"Name":"059 Choir+Horn","BoundChannel":0},{"BankNum":2,"PresetNum":2,"Name":"060 Pulse 25%","BoundChannel":0},{"BankNum":2,"PresetNum":3,"Name":"060 Square","BoundChannel":0},{"BankNum":2,"PresetNum":4,"Name":"060 Triangle","BoundChannel":0},{"BankNum":2,"PresetNum":5,"Name":"060 White Noise","BoundChannel":0},{"BankNum":2,"PresetNum":6,"Name":"060 Timpani","BoundChannel":0},{"BankNum":2,"PresetNum":7,"Name":"061 Harp","BoundChannel":0},{"BankNum":2,"PresetNum":8,"Name":"061 Reed","BoundChannel":0},{"BankNum":2,"PresetNum":9,"Name":"061 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":10,"Name":"061 Tenor","BoundChannel":0},{"BankNum":2,"PresetNum":11,"Name":"062 Trumpet","BoundChannel":0},{"BankNum":2,"PresetNum":12,"Name":"062 Trumpet 2","BoundChannel":0},{"BankNum":2,"PresetNum":13,"Name":"062 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":14,"Name":"062 French Horn","BoundChannel":0},{"BankNum":2,"PresetNum":15,"Name":"062 Harp","BoundChannel":0},{"BankNum":2,"PresetNum":16,"Name":"062 Timpani","BoundChannel":0},{"BankNum":2,"PresetNum":17,"Name":"062 Tuba","BoundChannel":0},{"BankNum":2,"PresetNum":18,"Name":"062 Flute","BoundChannel":0},{"BankNum":2,"PresetNum":19,"Name":"062 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":20,"Name":"062 Reverse Cym.","BoundChannel":0},{"BankNum":2,"PresetNum":21,"Name":"063 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":22,"Name":"063 Acoustic Bass","BoundChannel":0},{"BankNum":2,"PresetNum":23,"Name":"063 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":24,"Name":"063 Rain","BoundChannel":0},{"BankNum":2,"PresetNum":25,"Name":"063 VivesPS06","BoundChannel":0},{"BankNum":2,"PresetNum":26,"Name":"063 Electric Piano","BoundChannel":0},{"BankNum":2,"PresetNum":27,"Name":"064 Nylon Frets","BoundChannel":0},{"BankNum":2,"PresetNum":28,"Name":"064 Acoustic Bass","BoundChannel":0},{"BankNum":2,"PresetNum":29,"Name":"064 Vibraphone","BoundChannel":0},{"BankNum":2,"PresetNum":30,"Name":"064 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":31,"Name":"064 Acoustic Bass","BoundChannel":0},{"BankNum":2,"PresetNum":32,"Name":"065 Ahh Choir","BoundChannel":0},{"BankNum":2,"PresetNum":33,"Name":"065 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":34,"Name":"065 Glockenspiel","BoundChannel":0},{"BankNum":2,"PresetNum":35,"Name":"065 Brass","BoundChannel":0},{"BankNum":2,"PresetNum":36,"Name":"065 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":37,"Name":"065 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":38,"Name":"065 Saw","BoundChannel":0},{"BankNum":2,"PresetNum":39,"Name":"066 DUTY CYCLE","BoundChannel":0},{"BankNum":2,"PresetNum":40,"Name":"066 Choir Aahs","BoundChannel":0},{"BankNum":2,"PresetNum":41,"Name":"067 Guitar","BoundChannel":0},{"BankNum":2,"PresetNum":42,"Name":"068 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":43,"Name":"068 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":44,"Name":"068 Alto Sax","BoundChannel":0},{"BankNum":2,"PresetNum":45,"Name":"068 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":46,"Name":"068 Impact Hit","BoundChannel":0},{"BankNum":2,"PresetNum":47,"Name":"068 Rhodes EP","BoundChannel":0},{"BankNum":2,"PresetNum":48,"Name":"069 E.Piano","BoundChannel":0},{"BankNum":2,"PresetNum":49,"Name":"069 Reed","BoundChannel":0},{"BankNum":2,"PresetNum":50,"Name":"069 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":51,"Name":"069 Tenor","BoundChannel":0},{"BankNum":2,"PresetNum":52,"Name":"070 Misc Sound","BoundChannel":0},{"BankNum":2,"PresetNum":53,"Name":"071 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":54,"Name":"071 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":55,"Name":"071 Mute Guitar","BoundChannel":0},{"BankNum":2,"PresetNum":56,"Name":"071 Glockenspiel","BoundChannel":0},{"BankNum":2,"PresetNum":57,"Name":"071 Square","BoundChannel":0},{"BankNum":2,"PresetNum":58,"Name":"071 Grand Piano","BoundChannel":0},{"BankNum":2,"PresetNum":59,"Name":"074 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":60,"Name":"075 Giygas Breath","BoundChannel":0},{"BankNum":2,"PresetNum":61,"Name":"076 Pulse 25%","BoundChannel":0},{"BankNum":2,"PresetNum":62,"Name":"076 Triangle Wave","BoundChannel":0},{"BankNum":2,"PresetNum":63,"Name":"076 Duty Cycle","BoundChannel":0},{"BankNum":2,"PresetNum":64,"Name":"077 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":65,"Name":"077 Square","BoundChannel":0},{"BankNum":2,"PresetNum":66,"Name":"077 White Noise","BoundChannel":0},{"BankNum":2,"PresetNum":67,"Name":"077 Triangle Wave","BoundChannel":0},{"BankNum":2,"PresetNum":68,"Name":"077 25% Pulse","BoundChannel":0},{"BankNum":2,"PresetNum":69,"Name":"077 12.5% Pulse","BoundChannel":0},{"BankNum":2,"PresetNum":70,"Name":"077 Glockenspiel","BoundChannel":0},{"BankNum":2,"PresetNum":71,"Name":"077 Tubular Bells","BoundChannel":0},{"BankNum":2,"PresetNum":72,"Name":"077 Square 2","BoundChannel":0},{"BankNum":2,"PresetNum":73,"Name":"077 Violin","BoundChannel":0},{"BankNum":2,"PresetNum":74,"Name":"077 Timpani","BoundChannel":0},{"BankNum":2,"PresetNum":75,"Name":"077 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":76,"Name":"077 Choir Aahs","BoundChannel":0},{"BankNum":2,"PresetNum":77,"Name":"077 Orchestra Hit","BoundChannel":0},{"BankNum":2,"PresetNum":78,"Name":"077 Brass","BoundChannel":0},{"BankNum":2,"PresetNum":79,"Name":"077 Oboe","BoundChannel":0},{"BankNum":2,"PresetNum":80,"Name":"077 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":81,"Name":"079 Grand Piano","BoundChannel":0},{"BankNum":2,"PresetNum":82,"Name":"079 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":83,"Name":"079 Concert Choir","BoundChannel":0},{"BankNum":2,"PresetNum":84,"Name":"079 Music Box","BoundChannel":0},{"BankNum":2,"PresetNum":85,"Name":"079 Ohh Voices","BoundChannel":0},{"BankNum":2,"PresetNum":86,"Name":"079 Picked Bass","BoundChannel":0},{"BankNum":2,"PresetNum":87,"Name":"079 Duty Cycle","BoundChannel":0},{"BankNum":2,"PresetNum":88,"Name":"079 Duty Cycle 2","BoundChannel":0},{"BankNum":2,"PresetNum":89,"Name":"079 Square","BoundChannel":0},{"BankNum":2,"PresetNum":90,"Name":"079 White Noise","BoundChannel":0},{"BankNum":2,"PresetNum":91,"Name":"079 Square Wave 12%","BoundChannel":0},{"BankNum":2,"PresetNum":92,"Name":"080 Piano 3","BoundChannel":0},{"BankNum":2,"PresetNum":93,"Name":"080 Piano 1","BoundChannel":0},{"BankNum":2,"PresetNum":94,"Name":"080 Choir Aahs","BoundChannel":0},{"BankNum":2,"PresetNum":95,"Name":"080 Glockenspiel","BoundChannel":0},{"BankNum":2,"PresetNum":96,"Name":"080 Tubular Bells","BoundChannel":0},{"BankNum":2,"PresetNum":97,"Name":"080 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":98,"Name":"080 Trumpet","BoundChannel":0},{"BankNum":2,"PresetNum":99,"Name":"080 Strings marc","BoundChannel":0},{"BankNum":2,"PresetNum":100,"Name":"080 SuperSawA","BoundChannel":0},{"BankNum":2,"PresetNum":101,"Name":"081 Strings","BoundChannel":0},{"BankNum":2,"PresetNum":102,"Name":"081 Grand","BoundChannel":0},{"BankNum":2,"PresetNum":103,"Name":"082 Piano","BoundChannel":0},{"BankNum":2,"PresetNum":104,"Name":"083 Boris America","BoundChannel":0},{"BankNum":2,"PresetNum":105,"Name":"083 Piano 1","BoundChannel":0},{"BankNum":2,"PresetNum":106,"Name":"083 Choir Aahs","BoundChannel":0},{"BankNum":2,"PresetNum":107,"Name":"083 Synth Strings 2","BoundChannel":0},{"BankNum":2,"PresetNum":108,"Name":"083 Solo Vox","BoundChannel":0},{"BankNum":2,"PresetNum":109,"Name":"083 Choir 3","BoundChannel":0},{"BankNum":2,"PresetNum":110,"Name":"083 Dog","BoundChannel":0},{"BankNum":2,"PresetNum":111,"Name":"084 The Past","BoundChannel":0},{"BankNum":2,"PresetNum":112,"Name":"084 Kraken String","BoundChannel":0},{"BankNum":2,"PresetNum":113,"Name":"084 Giygas Breath","BoundChannel":0},{"BankNum":2,"PresetNum":114,"Name":"084 Giygas Static","BoundChannel":0},{"BankNum":2,"PresetNum":115,"Name":"084 Drumkit","BoundChannel":0},{"BankNum":2,"PresetNum":116,"Name":"084 Bump","BoundChannel":0},{"BankNum":2,"PresetNum":117,"Name":"084 Unsettling Opp.","BoundChannel":0},{"BankNum":2,"PresetNum":118,"Name":"084 Tt. For All Time","BoundChannel":0},{"BankNum":2,"PresetNum":119,"Name":"084 Onett Bass","BoundChannel":0},{"BankNum":2,"PresetNum":120,"Name":"084 Bongo","BoundChannel":0},{"BankNum":2,"PresetNum":121,"Name":"085 Mellow Piano","BoundChannel":0},{"BankNum":2,"PresetNum":122,"Name":"085 Pad","BoundChannel":0},{"BankNum":2,"PresetNum":123,"Name":"085 Strings 3","BoundChannel":0},{"BankNum":2,"PresetNum":124,"Name":"084 Panflute","BoundChannel":0},{"BankNum":2,"PresetNum":125,"Name":"087 Violin Detache","BoundChannel":0},{"BankNum":2,"PresetNum":126,"Name":"087 Piano 1","BoundChannel":0},{"BankNum":2,"PresetNum":127,"Name":"087 POWER","BoundChannel":0},{"BankNum":3,"PresetNum":0,"Name":"087 Glockenspiel","BoundChannel":0},{"BankNum":3,"PresetNum":1,"Name":"087 Flute","BoundChannel":0},{"BankNum":3,"PresetNum":2,"Name":"087 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":3,"Name":"087 Choir Aahs","BoundChannel":0},{"BankNum":3,"PresetNum":4,"Name":"087 Viola","BoundChannel":0},{"BankNum":3,"PresetNum":5,"Name":"087 Pulse 25%","BoundChannel":0},{"BankNum":3,"PresetNum":6,"Name":"087 Pulse 50%","BoundChannel":0},{"BankNum":3,"PresetNum":7,"Name":"087 Duty Cycle","BoundChannel":0},{"BankNum":3,"PresetNum":8,"Name":"087 Lead Guitar","BoundChannel":0},{"BankNum":3,"PresetNum":9,"Name":"088 Choir Aahs","BoundChannel":0},{"BankNum":3,"PresetNum":10,"Name":"088 POWER","BoundChannel":0},{"BankNum":3,"PresetNum":11,"Name":"089 Viola","BoundChannel":0},{"BankNum":3,"PresetNum":12,"Name":"089 Drumkit","BoundChannel":0},{"BankNum":3,"PresetNum":13,"Name":"089 Glockenspiel","BoundChannel":0},{"BankNum":3,"PresetNum":14,"Name":"089 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":15,"Name":"089 Square","BoundChannel":0},{"BankNum":3,"PresetNum":16,"Name":"089 Lead Guitar","BoundChannel":0},{"BankNum":3,"PresetNum":17,"Name":"090 Piano","BoundChannel":0},{"BankNum":3,"PresetNum":18,"Name":"090 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":19,"Name":"090 Drumkit","BoundChannel":0},{"BankNum":3,"PresetNum":20,"Name":"090 Violin Detache","BoundChannel":0},{"BankNum":3,"PresetNum":21,"Name":"090 Glockenspiel","BoundChannel":0},{"BankNum":3,"PresetNum":22,"Name":"092 rhodes","BoundChannel":0},{"BankNum":3,"PresetNum":23,"Name":"092 str","BoundChannel":0},{"BankNum":3,"PresetNum":24,"Name":"092 flute","BoundChannel":0},{"BankNum":3,"PresetNum":25,"Name":"092 piano","BoundChannel":0},{"BankNum":3,"PresetNum":26,"Name":"092 toms","BoundChannel":0},{"BankNum":3,"PresetNum":27,"Name":"092 sax","BoundChannel":0},{"BankNum":3,"PresetNum":28,"Name":"092 tone1","BoundChannel":0},{"BankNum":3,"PresetNum":29,"Name":"092 pizzicato","BoundChannel":0},{"BankNum":3,"PresetNum":30,"Name":"092 fbass","BoundChannel":0},{"BankNum":3,"PresetNum":31,"Name":"092 VivesPS06","BoundChannel":0},{"BankNum":3,"PresetNum":32,"Name":"093 Square Wave 12%","BoundChannel":0},{"BankNum":3,"PresetNum":33,"Name":"093 White Noise","BoundChannel":0},{"BankNum":3,"PresetNum":34,"Name":"093 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":35,"Name":"093 Piano","BoundChannel":0},{"BankNum":3,"PresetNum":36,"Name":"093 Drumkit","BoundChannel":0},{"BankNum":3,"PresetNum":37,"Name":"094 Grand Piano","BoundChannel":0},{"BankNum":3,"PresetNum":38,"Name":"095 Pulse 12.5%","BoundChannel":0},{"BankNum":3,"PresetNum":39,"Name":"095 Pulse 25%","BoundChannel":0},{"BankNum":3,"PresetNum":40,"Name":"095 Triangle Wave","BoundChannel":0},{"BankNum":3,"PresetNum":41,"Name":"095 Drumkit","BoundChannel":0},{"BankNum":3,"PresetNum":42,"Name":"095 Piano 3","BoundChannel":0},{"BankNum":3,"PresetNum":43,"Name":"095 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":44,"Name":"095 Impact Hit","BoundChannel":0},{"BankNum":3,"PresetNum":45,"Name":"095 Piano 1","BoundChannel":0},{"BankNum":3,"PresetNum":46,"Name":"095 Glockenspiel","BoundChannel":0},{"BankNum":3,"PresetNum":47,"Name":"095 Music Box","BoundChannel":0},{"BankNum":3,"PresetNum":48,"Name":"095 Pan Flute","BoundChannel":0},{"BankNum":3,"PresetNum":49,"Name":"095 Brass 1","BoundChannel":0},{"BankNum":3,"PresetNum":50,"Name":"095 Mellow Piano","BoundChannel":0},{"BankNum":3,"PresetNum":51,"Name":"095 Onett Bass","BoundChannel":0},{"BankNum":3,"PresetNum":52,"Name":"095 Waspy","BoundChannel":0},{"BankNum":3,"PresetNum":53,"Name":"095 Strings 3","BoundChannel":0},{"BankNum":3,"PresetNum":54,"Name":"095 Grand","BoundChannel":0},{"BankNum":3,"PresetNum":55,"Name":"095 \"Pan Flute\"","BoundChannel":0},{"BankNum":3,"PresetNum":56,"Name":"095 Saw wave","BoundChannel":0},{"BankNum":3,"PresetNum":57,"Name":"096 Drumkit","BoundChannel":0},{"BankNum":3,"PresetNum":58,"Name":"096 Viola","BoundChannel":0},{"BankNum":3,"PresetNum":59,"Name":"097 Choir Aahs","BoundChannel":0},{"BankNum":3,"PresetNum":60,"Name":"097 Wind","BoundChannel":0},{"BankNum":3,"PresetNum":61,"Name":"097 Bulldozer Move","BoundChannel":0},{"BankNum":3,"PresetNum":62,"Name":"098 Square Wave 25%","BoundChannel":0},{"BankNum":3,"PresetNum":63,"Name":"098 DUTY CYCLE","BoundChannel":0},{"BankNum":3,"PresetNum":64,"Name":"098 piano","BoundChannel":0},{"BankNum":3,"PresetNum":65,"Name":"098 R. Tp","BoundChannel":0},{"BankNum":3,"PresetNum":66,"Name":"098 POWER","BoundChannel":0},{"BankNum":3,"PresetNum":67,"Name":"098 Piano 1","BoundChannel":0},{"BankNum":3,"PresetNum":68,"Name":"098 Choir Aahs","BoundChannel":0},{"BankNum":3,"PresetNum":69,"Name":"098 Piccolo","BoundChannel":0},{"BankNum":3,"PresetNum":70,"Name":"098 Violin","BoundChannel":0},{"BankNum":3,"PresetNum":71,"Name":"098 Tubular Bells","BoundChannel":0},{"BankNum":3,"PresetNum":72,"Name":"098 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":73,"Name":"098 Nylon-str. Gt.","BoundChannel":0},{"BankNum":3,"PresetNum":74,"Name":"099 Strings","BoundChannel":0},{"BankNum":3,"PresetNum":75,"Name":"099 Impact Hit","BoundChannel":0},{"BankNum":3,"PresetNum":76,"Name":"099 Organ 3","BoundChannel":0},{"BankNum":3,"PresetNum":77,"Name":"099 Overdrive Guitar","BoundChannel":0},{"BankNum":3,"PresetNum":78,"Name":"099 Distortion Gt.","BoundChannel":0},{"BankNum":3,"PresetNum":79,"Name":"101 Grand Piano","BoundChannel":0},{"BankNum":3,"PresetNum":80,"Name":"KD French Harpsich","BoundChannel":0},{"BankNum":3,"PresetNum":81,"Name":"KD Grand Piano","BoundChannel":0},{"BankNum":3,"PresetNum":82,"Name":"KD Slow Strings","BoundChannel":0},{"BankNum":3,"PresetNum":83,"Name":"G Piano","BoundChannel":0},{"BankNum":3,"PresetNum":84,"Name":"MSB Rock Organ","BoundChannel":0},{"BankNum":3,"PresetNum":85,"Name":"MSB Overdriven Gt.","BoundChannel":0},{"BankNum":3,"PresetNum":86,"Name":"MSB Onett Bass","BoundChannel":0},{"BankNum":3,"PresetNum":87,"Name":"MSB Slap Bass","BoundChannel":0},{"BankNum":3,"PresetNum":88,"Name":"MSB Square","BoundChannel":0},{"BankNum":3,"PresetNum":89,"Name":"MSB M. D. Seeger","BoundChannel":0},{"BankNum":3,"PresetNum":90,"Name":"MSB Giygas 3","BoundChannel":0},{"BankNum":3,"PresetNum":91,"Name":"MSB Hi Hat 1","BoundChannel":0},{"BankNum":3,"PresetNum":92,"Name":"MSB Ride","BoundChannel":0},{"BankNum":3,"PresetNum":122,"Name":"067 Wind","BoundChannel":0},{"BankNum":8,"PresetNum":52,"Name":"083 St.ChoirAahs","BoundChannel":0},{"BankNum":8,"PresetNum":55,"Name":"053 Impact Hit","BoundChannel":0},{"BankNum":8,"PresetNum":116,"Name":"046 Ct. Bass Drum","BoundChannel":0},{"BankNum":9,"PresetNum":80,"Name":"025 Sine Lead","BoundChannel":0},{"BankNum":125,"PresetNum":54,"Name":"040 Ghost","BoundChannel":0},{"BankNum":128,"PresetNum":0,"Name":"100 Bass","BoundChannel":0},{"BankNum":128,"PresetNum":2,"Name":"005 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":3,"Name":"MSB Hi Hat Open","BoundChannel":0},{"BankNum":128,"PresetNum":5,"Name":"010 Ride Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":7,"Name":"MSB Snare 1","BoundChannel":0},{"BankNum":128,"PresetNum":9,"Name":"010 Snare 3","BoundChannel":0},{"BankNum":128,"PresetNum":11,"Name":"051 Drums","BoundChannel":0},{"BankNum":128,"PresetNum":14,"Name":"010 Kick 1","BoundChannel":0},{"BankNum":128,"PresetNum":15,"Name":"MSB Kick 2","BoundChannel":0},{"BankNum":128,"PresetNum":16,"Name":"059 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":22,"Name":"032 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":26,"Name":"025 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":32,"Name":"036 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":48,"Name":"035 Drumkit","BoundChannel":0},{"BankNum":128,"PresetNum":60,"Name":"048 Pulse 50%","BoundChannel":0}]}
+{
+  "List": [
+    {
+      "BankNum": 0,
+      "PresetNum": 0,
+      "Name": "100 Over. Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 1,
+      "Name": "100 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 2,
+      "Name": "100 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 3,
+      "Name": "072 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 4,
+      "Name": "100 Buzzy",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 5,
+      "Name": "100 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 6,
+      "Name": "100 Saw Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 7,
+      "Name": "100 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 8,
+      "Name": "100 25% Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 9,
+      "Name": "100 Impact Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 10,
+      "Name": "100 Ooh Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 11,
+      "Name": "100 Organ 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 12,
+      "Name": "100 Rock Organ",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 13,
+      "Name": "100 Bg. Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 14,
+      "Name": "100 Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 15,
+      "Name": "Special Instrument ;",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 16,
+      "Name": "015 Clavinet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 17,
+      "Name": "015 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 18,
+      "Name": "016 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 19,
+      "Name": "016 Square Wave 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 20,
+      "Name": "016 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 21,
+      "Name": "024 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 22,
+      "Name": "024 Square Wave 25",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 23,
+      "Name": "024 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 24,
+      "Name": "024 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 25,
+      "Name": "024 Xylophone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 26,
+      "Name": "024 Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 27,
+      "Name": "024 Hi Hat",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 28,
+      "Name": "024 Solo Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 29,
+      "Name": "086 Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 30,
+      "Name": "072 Dist. Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 31,
+      "Name": "086 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 32,
+      "Name": "086 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 33,
+      "Name": "086 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 34,
+      "Name": "034 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 35,
+      "Name": "015 Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 36,
+      "Name": "072 Slap Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 37,
+      "Name": "031 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 38,
+      "Name": "031 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 39,
+      "Name": "031 Cymbals",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 40,
+      "Name": "024 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 41,
+      "Name": "031 Bass Drum",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 42,
+      "Name": "031 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 43,
+      "Name": "031 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 44,
+      "Name": "031 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 45,
+      "Name": "033 Celesta",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 46,
+      "Name": "035 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 47,
+      "Name": "031 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 48,
+      "Name": "072 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 49,
+      "Name": "035 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 50,
+      "Name": "035 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 51,
+      "Name": "036 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 52,
+      "Name": "024 Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 53,
+      "Name": "036 Mellow Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 54,
+      "Name": "036 Venus",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 55,
+      "Name": "036 Waspy",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 56,
+      "Name": "036 Moonside Cafe",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 57,
+      "Name": "036 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 58,
+      "Name": "024 Tuba",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 59,
+      "Name": "036 Saw Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 60,
+      "Name": "032 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 61,
+      "Name": "024 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 62,
+      "Name": "014 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 63,
+      "Name": "014 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 64,
+      "Name": "014 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 65,
+      "Name": "014 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 66,
+      "Name": "014 Standard Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 67,
+      "Name": "015 Baritone Sax",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 68,
+      "Name": "014 Orchestra Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 69,
+      "Name": "014 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 70,
+      "Name": "014 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 71,
+      "Name": "014 French Horns",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 72,
+      "Name": "014 Quartet 4",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 73,
+      "Name": "014 Oboe",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 74,
+      "Name": "014 Solo Bo_0_57",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 75,
+      "Name": "014 Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 76,
+      "Name": "012 Nylon-str. Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 77,
+      "Name": "013 Music Box",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 78,
+      "Name": "011 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 79,
+      "Name": "010 Moonside Cafe",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 80,
+      "Name": "072 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 81,
+      "Name": "010 Venus",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 82,
+      "Name": "010 Mellow Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 83,
+      "Name": "010 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 84,
+      "Name": "010 Waspy",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 85,
+      "Name": "010 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 86,
+      "Name": "001 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 87,
+      "Name": "001 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 88,
+      "Name": "001 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 89,
+      "Name": "001 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 90,
+      "Name": "002 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 91,
+      "Name": "003 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 92,
+      "Name": "003 Duty Cycle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 93,
+      "Name": "004 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 94,
+      "Name": "004 Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 95,
+      "Name": "004 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 96,
+      "Name": "005 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 97,
+      "Name": "005 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 98,
+      "Name": "005 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 99,
+      "Name": "005 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 100,
+      "Name": "005 Sine Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 101,
+      "Name": "005 Square Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 102,
+      "Name": "006 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 103,
+      "Name": "006 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 104,
+      "Name": "007 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 105,
+      "Name": "007 Percussion",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 106,
+      "Name": "007 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 107,
+      "Name": "010 YNP 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 108,
+      "Name": "008 Triangle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 109,
+      "Name": "008 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 110,
+      "Name": "008 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 111,
+      "Name": "009 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 112,
+      "Name": "009 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 113,
+      "Name": "009 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 114,
+      "Name": "009 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 115,
+      "Name": "009 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 116,
+      "Name": "009 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 117,
+      "Name": "009 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 118,
+      "Name": "009 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 119,
+      "Name": "017 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 120,
+      "Name": "017 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 121,
+      "Name": "018 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 122,
+      "Name": "018 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 123,
+      "Name": "018 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 124,
+      "Name": "019 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 125,
+      "Name": "019 Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 126,
+      "Name": "020 Sine Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 0,
+      "PresetNum": 127,
+      "Name": "021 Mario",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 0,
+      "Name": "021 Dog",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 1,
+      "Name": "022 Vibraphone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 2,
+      "Name": "022 Xylophone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 3,
+      "Name": "022 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 4,
+      "Name": "022 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 5,
+      "Name": "072 Over Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 6,
+      "Name": "022 Pizzicato Str.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 7,
+      "Name": "022 Viola",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 8,
+      "Name": "022 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 9,
+      "Name": "022 Slow Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 10,
+      "Name": "022 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 11,
+      "Name": "023 Clarinet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 12,
+      "Name": "072 Organ",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 13,
+      "Name": "023 Slow Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 14,
+      "Name": "023 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 15,
+      "Name": "023 Pizzicato Str.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 16,
+      "Name": "023 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 17,
+      "Name": "025 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 18,
+      "Name": "025 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 19,
+      "Name": "025 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 20,
+      "Name": "025 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 21,
+      "Name": "026 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 22,
+      "Name": "026 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 23,
+      "Name": "027 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 24,
+      "Name": "027 Orchestra Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 25,
+      "Name": "027 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 26,
+      "Name": "027 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 27,
+      "Name": "027 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 28,
+      "Name": "027 Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 29,
+      "Name": "028 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 30,
+      "Name": "029: Cellio",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 31,
+      "Name": "030 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 32,
+      "Name": "030 Harpsichord",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 33,
+      "Name": "006 fbassfd",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 34,
+      "Name": "030 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 35,
+      "Name": "030 Rhodes EP",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 36,
+      "Name": "004 Pad",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 37,
+      "Name": "030 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 38,
+      "Name": "030 Sine Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 39,
+      "Name": "037 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 40,
+      "Name": "038 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 41,
+      "Name": "039 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 42,
+      "Name": "041 Tremolo",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 43,
+      "Name": "042 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 44,
+      "Name": "042 Synth",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 45,
+      "Name": "043 Doo",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 46,
+      "Name": "043 Bird",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 47,
+      "Name": "043 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 48,
+      "Name": "044 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 49,
+      "Name": "045 Orchestra Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 50,
+      "Name": "045 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 51,
+      "Name": "045 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 52,
+      "Name": "045 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 53,
+      "Name": "045 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 54,
+      "Name": "045 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 55,
+      "Name": "046 Romantic Tp",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 56,
+      "Name": "045 Brass Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 57,
+      "Name": "046 Brass Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 58,
+      "Name": "046 Orchestra Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 59,
+      "Name": "046 Ahh Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 60,
+      "Name": "046 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 61,
+      "Name": "046 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 62,
+      "Name": "046 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 63,
+      "Name": "046 Honky Tonk",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 64,
+      "Name": "046 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 65,
+      "Name": "046 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 66,
+      "Name": "046 Triangle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 67,
+      "Name": "047 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 68,
+      "Name": "047 Sine Lead",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 69,
+      "Name": "048 Synth Multi+",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 70,
+      "Name": "048 Xylophone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 71,
+      "Name": "048 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 72,
+      "Name": "048 Warbly Synth",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 73,
+      "Name": "048 Music Box",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 74,
+      "Name": "048 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 75,
+      "Name": "048 Vibraphone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 76,
+      "Name": "049 Square Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 77,
+      "Name": "049 Mute Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 78,
+      "Name": "049 Synth Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 79,
+      "Name": "049 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 80,
+      "Name": "049 Drumset",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 81,
+      "Name": "049 Taiko Drum",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 82,
+      "Name": "050 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 83,
+      "Name": "050 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 84,
+      "Name": "050 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 85,
+      "Name": "051 Ahh Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 86,
+      "Name": "051 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 87,
+      "Name": "051 Choir Aahs 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 88,
+      "Name": "051 Square Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 89,
+      "Name": "051 Saw",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 90,
+      "Name": "052 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 91,
+      "Name": "052 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 92,
+      "Name": "053 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 93,
+      "Name": "053 Percussion",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 94,
+      "Name": "053 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 95,
+      "Name": "053 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 96,
+      "Name": "053 Sawtooth",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 97,
+      "Name": "053 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 98,
+      "Name": "053 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 99,
+      "Name": "053 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 100,
+      "Name": "053 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 101,
+      "Name": "054 Nylon Frets",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 102,
+      "Name": "054 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 103,
+      "Name": "054 Vibraphone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 104,
+      "Name": "054 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 105,
+      "Name": "054 Acoustic Bass 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 106,
+      "Name": "055 Nylon Frets",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 107,
+      "Name": "055 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 108,
+      "Name": "055 Vibraphone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 109,
+      "Name": "055 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 110,
+      "Name": "055 Acoustic Bass 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 111,
+      "Name": "056 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 112,
+      "Name": "056 E. Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 113,
+      "Name": "057 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 114,
+      "Name": "057 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 115,
+      "Name": "058 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 116,
+      "Name": "058 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 117,
+      "Name": "058 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 118,
+      "Name": "058 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 119,
+      "Name": "058 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 120,
+      "Name": "059 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 121,
+      "Name": "059 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 122,
+      "Name": "059 Triangle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 123,
+      "Name": "059 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 124,
+      "Name": "059 Pulse 12%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 125,
+      "Name": "059 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 126,
+      "Name": "059 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 1,
+      "PresetNum": 127,
+      "Name": "072 Percussive",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 0,
+      "Name": "059 Harpsichord",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 1,
+      "Name": "059 Choir+Horn",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 2,
+      "Name": "060 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 3,
+      "Name": "060 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 4,
+      "Name": "060 Triangle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 5,
+      "Name": "060 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 6,
+      "Name": "060 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 7,
+      "Name": "061 Harp",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 8,
+      "Name": "061 Reed",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 9,
+      "Name": "061 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 10,
+      "Name": "061 Tenor",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 11,
+      "Name": "062 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 12,
+      "Name": "062 Trumpet 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 13,
+      "Name": "062 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 14,
+      "Name": "062 French Horn",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 15,
+      "Name": "062 Harp",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 16,
+      "Name": "062 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 17,
+      "Name": "062 Tuba",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 18,
+      "Name": "062 Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 19,
+      "Name": "062 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 20,
+      "Name": "062 Reverse Cym.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 21,
+      "Name": "063 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 22,
+      "Name": "063 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 23,
+      "Name": "063 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 24,
+      "Name": "063 Rain",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 25,
+      "Name": "063 VivesPS06",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 26,
+      "Name": "063 Electric Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 27,
+      "Name": "064 Nylon Frets",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 28,
+      "Name": "064 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 29,
+      "Name": "064 Vibraphone",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 30,
+      "Name": "064 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 31,
+      "Name": "064 Acoustic Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 32,
+      "Name": "065 Ahh Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 33,
+      "Name": "065 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 34,
+      "Name": "065 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 35,
+      "Name": "065 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 36,
+      "Name": "065 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 37,
+      "Name": "065 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 38,
+      "Name": "065 Saw",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 39,
+      "Name": "066 DUTY CYCLE",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 40,
+      "Name": "066 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 41,
+      "Name": "067 Guitar",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 42,
+      "Name": "068 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 43,
+      "Name": "068 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 44,
+      "Name": "068 Alto Sax",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 45,
+      "Name": "068 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 46,
+      "Name": "068 Impact Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 47,
+      "Name": "068 Rhodes EP",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 48,
+      "Name": "069 E.Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 49,
+      "Name": "069 Reed",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 50,
+      "Name": "069 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 51,
+      "Name": "069 Tenor",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 52,
+      "Name": "070 Misc Sound",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 53,
+      "Name": "071 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 54,
+      "Name": "071 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 55,
+      "Name": "071 Mute Guitar",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 56,
+      "Name": "071 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 57,
+      "Name": "071 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 58,
+      "Name": "071 Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 59,
+      "Name": "074 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 60,
+      "Name": "075 Giygas Breath",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 61,
+      "Name": "076 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 62,
+      "Name": "076 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 63,
+      "Name": "076 Duty Cycle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 64,
+      "Name": "077 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 65,
+      "Name": "077 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 66,
+      "Name": "077 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 67,
+      "Name": "077 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 68,
+      "Name": "077 25% Pulse",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 69,
+      "Name": "077 12.5% Pulse",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 70,
+      "Name": "077 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 71,
+      "Name": "077 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 72,
+      "Name": "077 Square 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 73,
+      "Name": "077 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 74,
+      "Name": "077 Timpani",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 75,
+      "Name": "077 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 76,
+      "Name": "077 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 77,
+      "Name": "077 Orchestra Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 78,
+      "Name": "077 Brass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 79,
+      "Name": "077 Oboe",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 80,
+      "Name": "077 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 81,
+      "Name": "079 Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 82,
+      "Name": "079 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 83,
+      "Name": "079 Concert Choir",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 84,
+      "Name": "079 Music Box",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 85,
+      "Name": "079 Ohh Voices",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 86,
+      "Name": "079 Picked Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 87,
+      "Name": "079 Duty Cycle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 88,
+      "Name": "079 Duty Cycle 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 89,
+      "Name": "079 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 90,
+      "Name": "079 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 91,
+      "Name": "079 Square Wave 12%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 92,
+      "Name": "080 Piano 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 93,
+      "Name": "080 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 94,
+      "Name": "080 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 95,
+      "Name": "080 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 96,
+      "Name": "080 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 97,
+      "Name": "080 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 98,
+      "Name": "080 Trumpet",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 99,
+      "Name": "080 Strings marc",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 100,
+      "Name": "080 SuperSawA",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 101,
+      "Name": "081 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 102,
+      "Name": "081 Grand",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 103,
+      "Name": "082 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 104,
+      "Name": "083 Boris America",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 105,
+      "Name": "083 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 106,
+      "Name": "083 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 107,
+      "Name": "083 Synth Strings 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 108,
+      "Name": "083 Solo Vox",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 109,
+      "Name": "083 Choir 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 110,
+      "Name": "083 Dog",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 111,
+      "Name": "084 The Past",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 112,
+      "Name": "084 Kraken String",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 113,
+      "Name": "084 Giygas Breath",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 114,
+      "Name": "084 Giygas Static",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 115,
+      "Name": "084 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 116,
+      "Name": "084 Bump",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 117,
+      "Name": "084 Unsettling Opp.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 118,
+      "Name": "084 Tt. For All Time",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 119,
+      "Name": "084 Onett Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 120,
+      "Name": "084 Bongo",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 121,
+      "Name": "085 Mellow Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 122,
+      "Name": "085 Pad",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 123,
+      "Name": "085 Strings 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 124,
+      "Name": "084 Panflute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 125,
+      "Name": "087 Violin Detache",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 126,
+      "Name": "087 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 2,
+      "PresetNum": 127,
+      "Name": "087 POWER",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 0,
+      "Name": "087 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 1,
+      "Name": "087 Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 2,
+      "Name": "087 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 3,
+      "Name": "087 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 4,
+      "Name": "087 Viola",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 5,
+      "Name": "087 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 6,
+      "Name": "087 Pulse 50%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 7,
+      "Name": "087 Duty Cycle",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 8,
+      "Name": "087 Lead Guitar",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 9,
+      "Name": "088 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 10,
+      "Name": "088 POWER",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 11,
+      "Name": "089 Viola",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 12,
+      "Name": "089 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 13,
+      "Name": "089 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 14,
+      "Name": "089 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 15,
+      "Name": "089 Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 16,
+      "Name": "089 Lead Guitar",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 17,
+      "Name": "090 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 18,
+      "Name": "090 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 19,
+      "Name": "090 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 20,
+      "Name": "090 Violin Detache",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 21,
+      "Name": "090 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 22,
+      "Name": "092 rhodes",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 23,
+      "Name": "092 str",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 24,
+      "Name": "092 flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 25,
+      "Name": "092 piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 26,
+      "Name": "092 toms",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 27,
+      "Name": "092 sax",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 28,
+      "Name": "092 tone1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 29,
+      "Name": "092 pizzicato",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 30,
+      "Name": "092 fbass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 31,
+      "Name": "092 VivesPS06",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 32,
+      "Name": "093 Square Wave 12%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 33,
+      "Name": "093 White Noise",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 34,
+      "Name": "093 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 35,
+      "Name": "093 Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 36,
+      "Name": "093 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 37,
+      "Name": "094 Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 38,
+      "Name": "095 Pulse 12.5%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 39,
+      "Name": "095 Pulse 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 40,
+      "Name": "095 Triangle Wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 41,
+      "Name": "095 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 42,
+      "Name": "095 Piano 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 43,
+      "Name": "095 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 44,
+      "Name": "095 Impact Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 45,
+      "Name": "095 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 46,
+      "Name": "095 Glockenspiel",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 47,
+      "Name": "095 Music Box",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 48,
+      "Name": "095 Pan Flute",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 49,
+      "Name": "095 Brass 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 50,
+      "Name": "095 Mellow Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 51,
+      "Name": "095 Onett Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 52,
+      "Name": "095 Waspy",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 53,
+      "Name": "095 Strings 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 54,
+      "Name": "095 Grand",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 55,
+      "Name": "095 \"Pan Flute\"",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 56,
+      "Name": "095 Saw wave",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 57,
+      "Name": "096 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 58,
+      "Name": "096 Viola",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 59,
+      "Name": "097 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 60,
+      "Name": "097 Wind",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 61,
+      "Name": "097 Bulldozer Move",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 62,
+      "Name": "098 Square Wave 25%",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 63,
+      "Name": "098 DUTY CYCLE",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 64,
+      "Name": "098 piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 65,
+      "Name": "098 R. Tp",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 66,
+      "Name": "098 POWER",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 67,
+      "Name": "098 Piano 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 68,
+      "Name": "098 Choir Aahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 69,
+      "Name": "098 Piccolo",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 70,
+      "Name": "098 Violin",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 71,
+      "Name": "098 Tubular Bells",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 72,
+      "Name": "098 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 73,
+      "Name": "098 Nylon-str. Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 74,
+      "Name": "099 Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 75,
+      "Name": "099 Impact Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 76,
+      "Name": "099 Organ 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 77,
+      "Name": "099 Overdrive Guitar",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 78,
+      "Name": "099 Distortion Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 79,
+      "Name": "101 Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 80,
+      "Name": "KD French Harpsich",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 81,
+      "Name": "KD Grand Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 82,
+      "Name": "KD Slow Strings",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 83,
+      "Name": "G Piano",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 84,
+      "Name": "MSB Rock Organ",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 85,
+      "Name": "MSB Overdriven Gt.",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 86,
+      "Name": "MSB Onett Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 87,
+      "Name": "MSB Slap Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 88,
+      "Name": "MSB Square",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 89,
+      "Name": "MSB M. D. Seeger",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 90,
+      "Name": "MSB Giygas 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 91,
+      "Name": "MSB Hi Hat 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 92,
+      "Name": "MSB Ride",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 3,
+      "PresetNum": 122,
+      "Name": "067 Wind",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 8,
+      "PresetNum": 52,
+      "Name": "083 St.ChoirAahs",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 8,
+      "PresetNum": 55,
+      "Name": "053 Impact Hit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 8,
+      "PresetNum": 116,
+      "Name": "046 Ct. Bass Drum",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 9,
+      "PresetNum": 80,
+      "Name": "025 Sine Lead",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 125,
+      "PresetNum": 54,
+      "Name": "040 Ghost",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 0,
+      "Name": "100 Bass",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 2,
+      "Name": "005 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 3,
+      "Name": "MSB Hi Hat Open",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 5,
+      "Name": "010 Ride Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 7,
+      "Name": "MSB Snare 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 9,
+      "Name": "010 Snare 3",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 11,
+      "Name": "051 Drums",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 14,
+      "Name": "010 Kick 1",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 15,
+      "Name": "MSB Kick 2",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 16,
+      "Name": "059 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 22,
+      "Name": "032 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 26,
+      "Name": "025 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 32,
+      "Name": "036 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 48,
+      "Name": "035 Drumkit",
+      "BoundChannel": 0
+    },
+    {
+      "BankNum": 128,
+      "PresetNum": 60,
+      "Name": "048 Pulse 50%",
+      "BoundChannel": 0
+    }
+  ]
+}
