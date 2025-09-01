@@ -310,12 +310,15 @@ namespace RuntimeGraph.Sprite
             currentPartList = new GameObject($"PartList_{categoryData.categoryName}");
             currentPartList.transform.SetParent(categoryCanvas.transform, false);
             
-            // Position part list above the category button
+            // Position part list so its bottom aligns with the top of category buttons (with margin)
             var listRect = currentPartList.AddComponent<RectTransform>();
             listRect.anchorMin = new Vector2(0, 0);
             listRect.anchorMax = new Vector2(0, 0);
-            listRect.pivot = new Vector2(0, 0);
-            listRect.anchoredPosition = new Vector2(bottomLeftOffset.x, bottomLeftOffset.y + buttonSize.y + buttonSpacing);
+            listRect.pivot = new Vector2(0, 0); // Bottom-left pivot
+            // Calculate position: bottom of list = top of buttons + margin
+            float topOfButtons = bottomLeftOffset.y + buttonSize.y;
+            float margin = buttonSpacing; // Use existing button spacing as margin
+            listRect.anchoredPosition = new Vector2(bottomLeftOffset.x, topOfButtons + margin);
             listRect.sizeDelta = partListSize;
             
             // Add background image

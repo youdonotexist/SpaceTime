@@ -387,11 +387,9 @@ MonoBehaviour:
   nodeSize: 5
   gridColor: {r: 1, g: 1, b: 1, a: 0.1}
   gridSpacing: 5
-  nodeLayerMask:
+  nodeLayer:
     serializedVersion: 2
-    m_Bits: 2097152
-  nodeBlockLayer: 0
-  nodeLayer: 0
+    m_Bits: 4294967295
   graphCamera: {fileID: 0}
   zoomMin: 5
   zoomMax: 50

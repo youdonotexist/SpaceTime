@@ -125,20 +125,44 @@ namespace RuntimeGraph.Sprite
         private bool isDragging;
         private Vector3 dragStartPos;
         private Vector3 mouseOffset;
-        
-        // Connection anchors (3 per side = 12 total)
+        private int partBlockLayer;
+
+        // Connection anchors (3 per side = 12 total for regular nodes)
         private const int AnchorsPerSide = 3;
-        private const int TotalAnchors = AnchorsPerSide * 4;
+        private const int DefaultTotalAnchors = AnchorsPerSide * 4;
+        
+        // Dynamic property for total anchors - includes port block anchors for ship parts
+        private int TotalAnchors 
+        { 
+            get 
+            { 
+                if (compositeShipPartRenderer != null)
+                {
+                    // For ship parts, calculate total anchors based on port blocks
+                    int totalPortAnchors = 0;
+                    foreach (var block in compositeShipPartRenderer.PartBlocks)
+                    {
+                        if (block.isPort)
+                        {
+                            totalPortAnchors += block.availableAnchorIndices.Count;
+                        }
+                    }
+                    return Math.Max(totalPortAnchors, DefaultTotalAnchors);
+                }
+                return DefaultTotalAnchors; 
+            } 
+        }
         
         
         public NodeData NodeDataInstance => nodeData;
         public bool IsSelected => isSelected;
         public bool IsDragging => isDragging;
         
-        public void Initialize(SpriteRuntimeGraph graph, NodeData data)
+        public void Initialize(SpriteRuntimeGraph graph, NodeData data, int partBlockLayer)
         {
             this.graph = graph;
             this.nodeData = data;
+            this.partBlockLayer = partBlockLayer;
             
             SetupComponents();
             UpdatePosition();
@@ -182,7 +206,6 @@ namespace RuntimeGraph.Sprite
             gameObject.name = isShipPart ? $"ShipPartNode ({nodeData.title})" : $"GraphNode ({nodeData.title})";
             
             // Ensure proper layer and sorting
-            gameObject.layer = LayerMask.NameToLayer("Default");
             spriteRenderer.sortingOrder = 10; // Above connections but below UI
         }
         
@@ -313,7 +336,7 @@ namespace RuntimeGraph.Sprite
             }
             
             // Initialize the composite renderer with this node
-            compositeShipPartRenderer.Initialize(this);
+            compositeShipPartRenderer.Initialize(this, partBlockLayer);
         }
         
         private void SetupCompositeEngineRenderer()
@@ -330,7 +353,7 @@ namespace RuntimeGraph.Sprite
             }
             
             // Initialize the composite renderer with this node
-            compositeEngineRenderer.Initialize(this);
+            compositeEngineRenderer.Initialize(this, partBlockLayer);
         }
         
         private UnityEngine.Sprite CreateEngineSprite()
@@ -615,12 +638,13 @@ namespace RuntimeGraph.Sprite
         {
             var partBlocks = compositeShipPartRenderer.PartBlocks;
             
-            // Find which block this anchor belongs to
+            // Find which block this anchor belongs to, but only consider port blocks
             foreach (var block in partBlocks)
             {
-                if (block.availableAnchorIndices.Contains(anchorIndex))
+                // Only allow connections to blocks designated as ports
+                if (block.isPort && block.availableAnchorIndices.Contains(anchorIndex))
                 {
-                    // Get anchor positions for this specific block
+                    // Get anchor positions for this specific port block
                     var blockAnchorPositions = compositeShipPartRenderer.GetBlockAnchorPositions(block);
                     
                     // Find the local index within the block's anchors
@@ -633,7 +657,7 @@ namespace RuntimeGraph.Sprite
                 }
             }
             
-            // Fallback to center position if anchor not found
+            // Fallback to center position if no valid port anchor found
             return transform.position;
         }
         
@@ -687,21 +711,62 @@ namespace RuntimeGraph.Sprite
             float bestDistance = float.MaxValue;
             int bestIndex = -1;
             
-            for (int i = 0; i < TotalAnchors; i++)
+            // For ship parts, only consider anchor indices that belong to port blocks
+            if (compositeShipPartRenderer != null)
             {
-                if (!graph.IsAnchorAvailable(nodeData.id, i))
-                    continue;
-                
-                Vector3 anchorPos = GetAnchorWorldPosition(i);
-                float distance = Vector3.Distance(worldPos, anchorPos);
-                if (distance < bestDistance)
+                foreach (var block in compositeShipPartRenderer.PartBlocks)
                 {
-                    bestDistance = distance;
-                    bestIndex = i;
+                    if (!block.isPort) continue; // Only consider port blocks
+                    
+                    foreach (int anchorIndex in block.availableAnchorIndices)
+                    {
+                        if (!graph.IsAnchorAvailable(nodeData.id, anchorIndex))
+                            continue;
+                        
+                        Vector3 anchorPos = GetAnchorWorldPosition(anchorIndex);
+                        float distance = Vector3.Distance(worldPos, anchorPos);
+                        if (distance < bestDistance)
+                        {
+                            bestDistance = distance;
+                            bestIndex = anchorIndex;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // For regular nodes, use the original logic
+                for (int i = 0; i < TotalAnchors; i++)
+                {
+                    if (!graph.IsAnchorAvailable(nodeData.id, i))
+                        continue;
+                    
+                    Vector3 anchorPos = GetAnchorWorldPosition(i);
+                    float distance = Vector3.Distance(worldPos, anchorPos);
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestIndex = i;
+                    }
                 }
             }
             
             return bestIndex;
+        }
+
+        /// <summary>
+        /// Checks if the given world position is on a port block for ship parts.
+        /// For non-ship parts, always returns true to maintain backward compatibility.
+        /// </summary>
+        public bool IsPositionOnPortBlock(Vector3 worldPos)
+        {
+            // For non-ship parts, allow connections anywhere (backward compatibility)
+            if (!IsShipPart() || compositeShipPartRenderer == null)
+                return true;
+                
+            // For ship parts, check if position is on a port block
+            var block = compositeShipPartRenderer.GetBlockAtPosition(worldPos);
+            return block != null && block.isPort;
         }
         
         public void UpdateTitle(string newTitle)

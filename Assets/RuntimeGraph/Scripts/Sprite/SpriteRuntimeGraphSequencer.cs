@@ -403,7 +403,7 @@ namespace RuntimeGraph.Sprite
                 Velocity = Mathf.RoundToInt(velocity)
             };
             
-            midiPlayer.MPTK_PlayDirectEvent(noteEvent);
+            midiPlayer.MPTK_PlayEvent(noteEvent);
         }
         
         public void SetChannelInstrument(int channelIndex, int bankNum, int presetNum)

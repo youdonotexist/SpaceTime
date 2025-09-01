@@ -418,6 +418,32 @@ namespace RuntimeGraph.Sprite
             return GetLength() / gridSpacing;
         }
         
+        /// <summary>
+        /// Gets the grid-based Manhattan distance between connected nodes for consistent timing.
+        /// This ensures connections with the same grid distance have identical timing regardless of their visual path routing.
+        /// </summary>
+        public float GetGridDistance(float gridSpacing = 5f)
+        {
+            // Get the actual node positions instead of line renderer positions
+            var fromNode = graph?.GetNode(connectionData.fromNodeId);
+            var toNode = graph?.GetNode(connectionData.toNodeId);
+            
+            if (fromNode != null && toNode != null)
+            {
+                Vector3 fromPos = fromNode.transform.position;
+                Vector3 toPos = toNode.transform.position;
+                
+                // Calculate Manhattan distance (sum of horizontal and vertical distances)
+                float manhattanDistance = Mathf.Abs(toPos.x - fromPos.x) + Mathf.Abs(toPos.y - fromPos.y);
+                
+                // Convert to grid tiles
+                return manhattanDistance / gridSpacing;
+            }
+            
+            // Fallback to actual path length if nodes can't be found
+            return GetLengthInGridTiles(gridSpacing);
+        }
+        
         public Vector3 GetMidpoint()
         {
             if (lineRenderer == null || lineRenderer.positionCount < 2) return Vector3.zero;

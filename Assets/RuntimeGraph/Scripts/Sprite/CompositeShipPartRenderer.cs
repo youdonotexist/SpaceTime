@@ -15,7 +15,9 @@ namespace RuntimeGraph.Sprite
         public string slug;
         public string category;
         public int[][] coords;
+        public int[][] ports; // New field for port coordinates
         public int block_count;
+        public int port_count;
         public bool center_is_block;
         public int tile_size;
     }
@@ -50,6 +52,7 @@ namespace RuntimeGraph.Sprite
             public SpriteRenderer blockRenderer;
             public BoxCollider2D blockCollider;
             public List<int> availableAnchorIndices = new List<int>(); // Anchor indices available on this block
+            public bool isPort = false; // Whether this block is designated as a connection port
         }
 
         [Header("Ship Part Block Configuration")]
@@ -59,7 +62,8 @@ namespace RuntimeGraph.Sprite
         private SpriteNode parentNode;
         private List<PartBlock> partBlocks = new List<PartBlock>();
         private Vector2Int partGridSize;
-        
+        private int shipPartBlockLayer;
+
         // Static data for JSON layout loading
         private static Dictionary<string, ShipPartLayoutData> shipPartLayouts = null;
         private static bool layoutsLoaded = false;
@@ -67,9 +71,10 @@ namespace RuntimeGraph.Sprite
         public List<PartBlock> PartBlocks => partBlocks;
         public Vector2Int PartGridSize => partGridSize;
 
-        public void Initialize(SpriteNode node)
+        public void Initialize(SpriteNode node, int shipPartBlockLayer)
         {
             parentNode = node;
+            this.shipPartBlockLayer = shipPartBlockLayer;
             LoadShipPartLayouts();
             LoadPartBlockSprite();
             GeneratePartBlocks();
@@ -183,37 +188,47 @@ namespace RuntimeGraph.Sprite
             ClearExistingBlocks();
             
             // Determine part pattern based on category and type
-            var blockPattern = GetPartBlockPattern();
+            var (blockPattern, portPositions) = GetPartBlockPatternWithPorts();
             partGridSize = CalculateGridSize(blockPattern);
             
             // Create blocks based on pattern
             foreach (var blockPos in blockPattern)
             {
-                CreatePartBlock(blockPos);
+                bool isPort = portPositions.Contains(blockPos);
+                CreatePartBlock(blockPos, isPort);
             }
             
             // Update parent node collider to encompass all blocks
             UpdateParentCollider();
         }
 
-        private List<Vector2Int> GetPartBlockPattern()
+        //TODO: Cache this data eventually
+        private (List<Vector2Int> blocks, HashSet<Vector2Int> ports) GetPartBlockPatternWithPorts()
         {
-            var pattern = new List<Vector2Int>();
+            var blockPattern = new List<Vector2Int>();
+            var portPositions = new HashSet<Vector2Int>();
             string partName = parentNode.NodeDataInstance.title;
             
             // First, try to get pattern from JSON data
             if (shipPartLayouts != null && shipPartLayouts.ContainsKey(partName))
             {
-                pattern = GetPatternFromJson(shipPartLayouts[partName]);
-                if (pattern.Count > 0)
+                var (jsonBlocks, jsonPorts) = GetPatternFromJsonWithPorts(shipPartLayouts[partName]);
+                if (jsonBlocks.Count > 0)
                 {
-                    return pattern;
+                    return (jsonBlocks, jsonPorts);
                 }
             }
             
-            // Fallback to hardcoded patterns
+            // Fallback to hardcoded patterns (no port information available)
+            blockPattern = GetPartBlockPatternFallback();
+            return (blockPattern, portPositions);
+        }
+
+        private List<Vector2Int> GetPartBlockPatternFallback()
+        {
+            var pattern = new List<Vector2Int>();
             string category = GetPartCategory();
-            string partNameLower = partName.ToLowerInvariant();
+            string partName = parentNode.NodeDataInstance.title.ToLowerInvariant();
             
             // Handle engine parts with existing patterns
             if (parentNode.NodeDataInstance.isEngine)
@@ -225,28 +240,28 @@ namespace RuntimeGraph.Sprite
             switch (category)
             {
                 case "Power & Energy":
-                    pattern = GetPowerEnergyPattern(partNameLower);
+                    pattern = GetPowerEnergyPattern(partName);
                     break;
                 case "Thermal & Coolant":
-                    pattern = GetThermalCoolantPattern(partNameLower);
+                    pattern = GetThermalCoolantPattern(partName);
                     break;
                 case "Atmosphere & Life Support":
-                    pattern = GetLifeSupportPattern(partNameLower);
+                    pattern = GetLifeSupportPattern(partName);
                     break;
                 case "Structural & Hull":
-                    pattern = GetStructuralHullPattern(partNameLower);
+                    pattern = GetStructuralHullPattern(partName);
                     break;
                 case "Navigation, Comms & Sensors":
-                    pattern = GetNavCommsPattern(partNameLower);
+                    pattern = GetNavCommsPattern(partName);
                     break;
                 case "Data, Control & Security":
-                    pattern = GetDataControlPattern(partNameLower);
+                    pattern = GetDataControlPattern(partName);
                     break;
                 case "Manufacturing, Inventory & Logistics":
-                    pattern = GetManufacturingPattern(partNameLower);
+                    pattern = GetManufacturingPattern(partName);
                     break;
                 case "Defense & Shielding":
-                    pattern = GetDefensePattern(partNameLower);
+                    pattern = GetDefensePattern(partName);
                     break;
                 default:
                     // Default pattern for unknown categories
@@ -257,13 +272,14 @@ namespace RuntimeGraph.Sprite
             return pattern;
         }
 
-        private List<Vector2Int> GetPatternFromJson(ShipPartLayoutData layoutData)
+        private (List<Vector2Int> blocks, HashSet<Vector2Int> ports) GetPatternFromJsonWithPorts(ShipPartLayoutData layoutData)
         {
-            var pattern = new List<Vector2Int>();
+            var blockPattern = new List<Vector2Int>();
+            var portPositions = new HashSet<Vector2Int>();
             
             if (layoutData.coords == null || layoutData.coords.Length == 0)
             {
-                return pattern;
+                return (blockPattern, portPositions);
             }
             
             // First pass: find the bounds to determine offset needed
@@ -297,11 +313,32 @@ namespace RuntimeGraph.Sprite
                     // Add offset to make all coordinates positive for grid system
                     int x = coord[0] + offsetX;
                     int y = coord[1] + offsetY;
-                    pattern.Add(new Vector2Int(x, y));
+                    blockPattern.Add(new Vector2Int(x, y));
                 }
             }
             
-            return pattern;
+            // Parse port coordinates if available
+            if (layoutData.ports != null && layoutData.ports.Length > 0)
+            {
+                foreach (var portCoord in layoutData.ports)
+                {
+                    if (portCoord.Length >= 2)
+                    {
+                        // Apply same offset transformation to port coordinates
+                        int x = portCoord[0] + offsetX;
+                        int y = portCoord[1] + offsetY;
+                        portPositions.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+            
+            return (blockPattern, portPositions);
+        }
+
+        private List<Vector2Int> GetPatternFromJson(ShipPartLayoutData layoutData)
+        {
+            var (blocks, _) = GetPatternFromJsonWithPorts(layoutData);
+            return blocks;
         }
 
         private string GetPartCategory()
@@ -809,11 +846,12 @@ namespace RuntimeGraph.Sprite
             return new Vector2Int(maxX + 1, maxY + 1);
         }
 
-        private void CreatePartBlock(Vector2Int gridPosition)
+        private void CreatePartBlock(Vector2Int gridPosition, bool isPort = false)
         {
             // Create block GameObject
             var blockGO = new GameObject($"PartBlock_{gridPosition.x}_{gridPosition.y}");
             blockGO.transform.SetParent(transform, false);
+            blockGO.layer = shipPartBlockLayer;
             
             // Position block relative to parent
             Vector3 blockWorldPos = new Vector3(
@@ -822,12 +860,14 @@ namespace RuntimeGraph.Sprite
                 0
             );
             blockGO.transform.localPosition = blockWorldPos;
-            blockGO.transform.localScale = new Vector3(0.5f, 0.5f, 1.0f);
             
             // Add sprite renderer
             var spriteRenderer = blockGO.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = partBlockSprite;
-            spriteRenderer.color = GetCategoryColor();
+            
+            // Color the block based on whether it's a port or regular block
+            Color blockColor = isPort ? GetPortColor() : GetCategoryColor();
+            spriteRenderer.color = blockColor;
             
             // Calculate scale based on tile_size from JSON data
             float scale = GetTileScale();
@@ -836,7 +876,7 @@ namespace RuntimeGraph.Sprite
             
             // Add collider for individual block interactions
             var collider = blockGO.AddComponent<BoxCollider2D>();
-            collider.size = Vector2.one * blockSize;
+            collider.size = Vector2.one;
             
             // Create part block data
             var partBlock = new PartBlock
@@ -845,7 +885,8 @@ namespace RuntimeGraph.Sprite
                 blockGameObject = blockGO,
                 blockRenderer = spriteRenderer,
                 blockCollider = collider,
-                availableAnchorIndices = GenerateBlockAnchorIndices(gridPosition)
+                availableAnchorIndices = isPort ? GenerateBlockAnchorIndices(gridPosition) : new List<int>(), // Only generate anchors for port blocks
+                isPort = isPort
             };
             
             partBlocks.Add(partBlock);
@@ -869,6 +910,12 @@ namespace RuntimeGraph.Sprite
                 "Defense & Shielding" => new Color(1f, 0.2f, 0.2f, 1f), // Shield red
                 _ => parentNode.NodeDataInstance.color // Fallback to node's color
             };
+        }
+
+        private Color GetPortColor()
+        {
+            // Bright cyan/green color to clearly indicate connection ports
+            return new Color(0.0f, 1.0f, 0.8f, 1f); // Bright cyan-green for high visibility
         }
 
         private float GetTileScale()
@@ -948,11 +995,14 @@ namespace RuntimeGraph.Sprite
 
         public void UpdateBlockColors(Color newColor)
         {
+            var (blockPattern, portPositions) = GetPartBlockPatternWithPorts();
+            
             foreach (var block in partBlocks)
             {
                 if (block.blockRenderer != null)
                 {
-                    block.blockRenderer.color = newColor;
+                    bool isPort = portPositions.Contains(block.gridPosition);
+                    block.blockRenderer.color = isPort ? GetPortColor() : newColor;
                 }
             }
         }
@@ -991,6 +1041,150 @@ namespace RuntimeGraph.Sprite
                 blockPos + Vector3.left * halfSize,   // Left
                 blockPos + Vector3.down * halfSize    // Bottom
             };
+        }
+
+        /// <summary>
+        /// Gets all world positions occupied by this composite ship part
+        /// </summary>
+        public List<Vector3> GetOccupiedWorldPositions()
+        {
+            var occupiedPositions = new List<Vector3>();
+            
+            foreach (var block in partBlocks)
+            {
+                if (block.blockGameObject != null)
+                {
+                    occupiedPositions.Add(block.blockGameObject.transform.position);
+                }
+            }
+            
+            return occupiedPositions;
+        }
+
+        /// <summary>
+        /// Gets all grid positions occupied by this composite ship part, snapped to grid
+        /// </summary>
+        public List<Vector3> GetOccupiedGridPositions(float gridSpacing = 5f)
+        {
+            var occupiedPositions = new List<Vector3>();
+            
+            foreach (var block in partBlocks)
+            {
+                if (block.blockGameObject != null)
+                {
+                    Vector3 worldPos = block.blockGameObject.transform.position;
+                    // Snap to grid spacing
+                    Vector3 gridPos = new Vector3(
+                        Mathf.Round(worldPos.x / gridSpacing) * gridSpacing,
+                        Mathf.Round(worldPos.y / gridSpacing) * gridSpacing,
+                        worldPos.z
+                    );
+                    occupiedPositions.Add(gridPos);
+                }
+            }
+            
+            return occupiedPositions;
+        }
+
+        /// <summary>
+        /// Checks if this composite part would overlap with another composite part at the given position
+        /// </summary>
+        public bool WouldOverlapWith(CompositeShipPartRenderer otherPart, Vector3 proposedPosition, float rotationDegrees = 0f)
+        {
+            if (otherPart == null) return false;
+            
+            // Get current occupied positions of the other part
+            var otherOccupiedPositions = otherPart.GetOccupiedGridPositions();
+            
+            // Calculate where our blocks would be at the proposed position and rotation
+            var ourProposedPositions = GetProposedOccupiedPositions(proposedPosition, rotationDegrees);
+            
+            // Check for any overlap
+            const float tolerance = 0.1f; // Small tolerance for floating point comparison
+            foreach (var ourPos in ourProposedPositions)
+            {
+                foreach (var otherPos in otherOccupiedPositions)
+                {
+                    if (Vector3.Distance(ourPos, otherPos) < tolerance)
+                    {
+                        return true; // Overlap detected
+                    }
+                }
+            }
+            
+            return false; // No overlap
+        }
+
+        /// <summary>
+        /// Gets the grid positions this part would occupy at a proposed position and rotation
+        /// </summary>
+        public List<Vector3> GetProposedOccupiedPositions(Vector3 proposedPosition, float rotationDegrees = 0f, float gridSpacing = 5f)
+        {
+            var proposedPositions = new List<Vector3>();
+            
+            // Calculate rotation offset from current rotation
+            float currentRotation = transform.rotation.eulerAngles.z;
+            float rotationOffset = rotationDegrees - currentRotation;
+            
+            foreach (var block in partBlocks)
+            {
+                if (block.blockGameObject != null)
+                {
+                    // Get current local position relative to parent
+                    Vector3 localPos = block.blockGameObject.transform.localPosition;
+                    
+                    // Apply rotation offset
+                    if (Mathf.Abs(rotationOffset) > 0.1f)
+                    {
+                        float radians = rotationOffset * Mathf.Deg2Rad;
+                        float cos = Mathf.Cos(radians);
+                        float sin = Mathf.Sin(radians);
+                        
+                        float rotatedX = localPos.x * cos - localPos.y * sin;
+                        float rotatedY = localPos.x * sin + localPos.y * cos;
+                        
+                        localPos = new Vector3(rotatedX, rotatedY, localPos.z);
+                    }
+                    
+                    // Transform to world position at proposed location
+                    Vector3 worldPos = proposedPosition + localPos;
+                    
+                    // Snap to grid
+                    Vector3 gridPos = new Vector3(
+                        Mathf.Round(worldPos.x / gridSpacing) * gridSpacing,
+                        Mathf.Round(worldPos.y / gridSpacing) * gridSpacing,
+                        worldPos.z
+                    );
+                    
+                    proposedPositions.Add(gridPos);
+                }
+            }
+            
+            return proposedPositions;
+        }
+
+        /// <summary>
+        /// Checks if any position in the given list would be occupied by this composite part
+        /// </summary>
+        public bool OccupiesAnyPosition(List<Vector3> positions)
+        {
+            if (positions == null || positions.Count == 0) return false;
+            
+            var ourOccupiedPositions = GetOccupiedGridPositions();
+            const float tolerance = 0.1f;
+            
+            foreach (var position in positions)
+            {
+                foreach (var ourPos in ourOccupiedPositions)
+                {
+                    if (Vector3.Distance(position, ourPos) < tolerance)
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
         }
 
         public void OnDestroy()

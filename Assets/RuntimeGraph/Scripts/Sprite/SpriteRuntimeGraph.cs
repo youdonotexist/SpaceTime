@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Commonwealth.Script.Ship.Monitors;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,7 +23,9 @@ namespace RuntimeGraph.Sprite
         public float nodeSize = 5f;
         public Color gridColor = new Color(1f, 1f, 1f, 0.1f);
         public float gridSpacing = 5f;
-        public LayerMask nodeLayer = -1;
+        public LayerMask nodeLayerMask = -1;
+        public int nodeBlockLayer;
+        public int nodeLayer;
         
         [Header("Camera")]
         public Camera graphCamera;
@@ -93,6 +96,9 @@ namespace RuntimeGraph.Sprite
         
         private void Awake()
         {
+            nodeBlockLayer = LayerMask.NameToLayer("PartNodeBlocks");
+            nodeLayer = LayerMask.NameToLayer("PartNodes");
+            
             InitializeCamera();
             InitializeNodeContainer();
             InitializeGrid();
@@ -265,7 +271,9 @@ namespace RuntimeGraph.Sprite
             
             // Add SpriteNode component and initialize it
             var ghostSpriteNode = ghostPart.AddComponent<SpriteNode>();
-            ghostSpriteNode.Initialize(this, tempNodeData);
+            ghostSpriteNode.Initialize(this, tempNodeData, partBlockLayer: nodeBlockLayer);
+            ghostPart.layer = nodeLayer;
+            
             
             // Make it semi-transparent and disable collider
             var renderers = ghostPart.GetComponentsInChildren<SpriteRenderer>();
@@ -339,7 +347,8 @@ namespace RuntimeGraph.Sprite
             // Clear the ghost part after placement
             ClearGhostPart();
             
-            Debug.Log($"Placed ship part: {ghostNodeType.name} at {snappedPos}");
+            if (ghostNodeType != null)
+                Debug.Log($"Placed ship part: {ghostNodeType.name} at {snappedPos}");
         }
         
         private void InitializeAudio()
@@ -889,13 +898,15 @@ namespace RuntimeGraph.Sprite
                 nodeGO.transform.SetParent(nodeContainer);
             }
             
+            nodeGO.layer = nodeLayer;
+            
             var spriteNode = nodeGO.GetComponent<SpriteNode>();
             if (spriteNode == null)
             {
                 spriteNode = nodeGO.AddComponent<SpriteNode>();
             }
             
-            spriteNode.Initialize(this, nodeData);
+            spriteNode.Initialize(this, nodeData, nodeBlockLayer);
             nodeInstances[nodeData.id] = spriteNode;
             
             return spriteNode;
@@ -976,7 +987,7 @@ namespace RuntimeGraph.Sprite
         
         private SpriteNode GetNodeAtPosition(Vector3 worldPos)
         {
-            var collider = Physics2D.OverlapPoint(worldPos, nodeLayer);
+            var collider = Physics2D.OverlapPoint(worldPos, nodeLayerMask);
             if (collider != null)
             {
                 return collider.GetComponent<SpriteNode>();
@@ -1067,6 +1078,10 @@ namespace RuntimeGraph.Sprite
         
         private void HandleConnectionClick(SpriteNode node, Vector3 worldPos)
         {
+            // Only allow connections when clicking on port blocks (new approach) for ship parts
+            if (!node.IsPositionOnPortBlock(worldPos))
+                return; // Click is not on a port block, ignore
+                
             int anchorIndex = node.GetNearestAvailableAnchorIndex(worldPos);
             if (anchorIndex == -1) return; // No available anchors
             
@@ -1082,7 +1097,7 @@ namespace RuntimeGraph.Sprite
             }
             else if (pendingFromNodeId != node.NodeDataInstance.id)
             {
-                // Complete connection
+                // Complete connection - also check that the target position is on a port block
                 nodeInstances.TryGetValue(pendingFromNodeId, out var fromNode);
                 if (fromNode)
                 {
@@ -1282,8 +1297,9 @@ namespace RuntimeGraph.Sprite
         {
             if (connection == null || gridRenderer == null) return 0.5f; // Default fallback
             
-            // Get connection length in grid tiles (1 grid tile = 1 quarter note)
-            float distanceInGridTiles = connection.GetLengthInGridTiles(gridRenderer.gridSpacing);
+            // Get grid-based node-to-node distance (1 grid tile = 1 quarter note)
+            // This ensures travel time is based on node positions, not port mount points
+            float distanceInGridTiles = connection.GetGridDistance(gridRenderer.gridSpacing);
             
             // Convert to time using quarter note interval
             float quarterNoteInterval = GetQuarterNoteInterval();
@@ -1299,7 +1315,7 @@ namespace RuntimeGraph.Sprite
                 //nodeBeepSource.PlayOneShot(nodeBeepClip, nodeBeepVolume);
             }
 
-            OnNodeActivated(node.NodeDataInstance);
+            OnNodeActivated?.Invoke(node.NodeDataInstance);
             
             // Hook for additional processing when travelers arrive at nodes
             // Can be extended for music/MIDI event triggering, etc.
@@ -1507,14 +1523,76 @@ namespace RuntimeGraph.Sprite
 
         public bool IsPositionOccupied(Vector3 position, float tolerance = 1f)
         {
-            foreach (var node in nodes)
+            // For composite ship parts, use shape-based collision detection
+            foreach (var nodeInstance in nodeInstances.Values)
             {
-                float distance = Vector3.Distance(node.worldPosition, position);
-                if (distance < tolerance)
+                if (nodeInstance == null) continue;
+                
+                // Check if this is a composite ship part
+                var compositeRenderer = nodeInstance.GetComponent<CompositeShipPartRenderer>();
+                if (compositeRenderer != null)
                 {
-                    return true;
+                    // Use composite part collision detection
+                    var occupiedPositions = compositeRenderer.GetOccupiedGridPositions();
+                    foreach (var occupiedPos in occupiedPositions)
+                    {
+                        if (Vector3.Distance(occupiedPos, position) < tolerance)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    // Fallback to simple distance check for non-composite parts
+                    float distance = Vector3.Distance(nodeInstance.transform.position, position);
+                    if (distance < tolerance)
+                    {
+                        return true;
+                    }
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if placing a composite ship part at the given position would overlap with existing parts
+        /// </summary>
+        public bool WouldCompositePartOverlap(CompositeShipPartRenderer newPart, Vector3 proposedPosition, float rotationDegrees = 0f)
+        {
+            if (newPart == null) return false;
+            
+            // Get the positions the new part would occupy
+            var proposedPositions = newPart.GetProposedOccupiedPositions(proposedPosition, rotationDegrees);
+            
+            // Check against all existing composite parts
+            foreach (var nodeInstance in nodeInstances.Values)
+            {
+                if (nodeInstance == null) continue;
+                
+                var existingComposite = nodeInstance.GetComponent<CompositeShipPartRenderer>();
+                if (existingComposite != null && existingComposite != newPart)
+                {
+                    // Check if any of our proposed positions would overlap with this existing part
+                    if (existingComposite.OccupiesAnyPosition(proposedPositions))
+                    {
+                        return true;
+                    }
+                }
+                else if (existingComposite == null)
+                {
+                    // Check against non-composite parts using simple distance check
+                    var nodePos = nodeInstance.transform.position;
+                    foreach (var proposedPos in proposedPositions)
+                    {
+                        if (Vector3.Distance(nodePos, proposedPos) < 1f)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
             return false;
         }
 

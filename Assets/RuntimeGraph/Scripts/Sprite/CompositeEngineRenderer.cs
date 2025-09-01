@@ -26,12 +26,14 @@ namespace RuntimeGraph.Sprite
         private SpriteNode parentNode;
         private List<EngineBlock> engineBlocks = new List<EngineBlock>();
         private Vector2Int engineGridSize;
-        
+        private LayerMask partBlockLayer;
+
         public List<EngineBlock> EngineBlocks => engineBlocks;
         public Vector2Int EngineGridSize => engineGridSize;
 
-        public void Initialize(SpriteNode node)
+        public void Initialize(SpriteNode node, LayerMask partBlockLayer)
         {
+            this.partBlockLayer = partBlockLayer;
             parentNode = node;
             LoadEngineBlockSprite();
             GenerateEngineBlocks();
