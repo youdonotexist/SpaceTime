@@ -14,7 +14,7 @@ namespace Commonwealth.Script.Ship.EngineMod
 
         void Awake()
         {
-            Sprite[] sprites = Resources.LoadAll<Sprite>(_spriteName);
+            Sprite[] sprites = UnityEngine.Resources.LoadAll<Sprite>(_spriteName);
             foreach (var sprite in sprites)
             {
                 _spriteMap[sprite.name] = sprite;

@@ -10,7 +10,7 @@ namespace RuntimeGraph.Sprite
     public class ShipPartCategoryUI : MonoBehaviour
     {
         [Header("UI Configuration")]
-        public Vector2 buttonSize = new Vector2(40, 40);
+        public Vector2 buttonSize = new Vector2(80, 80);
         public float buttonSpacing = 5f;
         public Vector2 bottomLeftOffset = new Vector2(20, 20);
         public Color categoryButtonColor = new Color(0.2f, 0.2f, 0.3f, 0.9f);
@@ -264,7 +264,7 @@ namespace RuntimeGraph.Sprite
             button.colors = colors;
             
             // Add click event
-            button.onClick.AddListener(() => OnCategoryButtonClicked(categoryData));
+            button.onClick.AddListener(() => OnCategoryButtonClicked(button, categoryData));
         }
         
         private string GetShortCategoryName(string categoryName)
@@ -285,7 +285,7 @@ namespace RuntimeGraph.Sprite
             };
         }
         
-        private void OnCategoryButtonClicked(CategoryData categoryData)
+        private void OnCategoryButtonClicked(Button button, CategoryData categoryData)
         {
             // Close current part list if it's the same category
             if (currentSelectedCategory == categoryData.categoryName && currentPartList != null)
@@ -298,14 +298,16 @@ namespace RuntimeGraph.Sprite
             HidePartList();
             
             // Show new part list
-            ShowPartList(categoryData);
+            ShowPartList(button, categoryData);
             currentSelectedCategory = categoryData.categoryName;
             
             Debug.Log($"Selected category: {categoryData.categoryName} with {categoryData.nodeTypes.Count} parts");
         }
         
-        private void ShowPartList(CategoryData categoryData)
+        private void ShowPartList(Button button, CategoryData categoryData)
         {
+            RectTransform rectTransform = button.GetComponent<RectTransform>();
+            
             // Create part list container
             currentPartList = new GameObject($"PartList_{categoryData.categoryName}");
             currentPartList.transform.SetParent(categoryCanvas.transform, false);
@@ -316,9 +318,12 @@ namespace RuntimeGraph.Sprite
             listRect.anchorMax = new Vector2(0, 0);
             listRect.pivot = new Vector2(0, 0); // Bottom-left pivot
             // Calculate position: bottom of list = top of buttons + margin
-            float topOfButtons = bottomLeftOffset.y + buttonSize.y;
+            float topOfButtons = rectTransform.position.y;
+            float leftOfButtons = rectTransform.position.x;
             float margin = buttonSpacing; // Use existing button spacing as margin
-            listRect.anchoredPosition = new Vector2(bottomLeftOffset.x, topOfButtons + margin);
+            listRect.position = new Vector2(
+                leftOfButtons + (rectTransform.sizeDelta.x * 0.5f), 
+                topOfButtons + (rectTransform.sizeDelta.y * 0.5f) + margin);
             listRect.sizeDelta = partListSize;
             
             // Add background image

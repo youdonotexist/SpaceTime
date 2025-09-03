@@ -380,7 +380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RuntimeGraph.Sprite.SpriteRuntimeGraph
   nodePrefab: {fileID: 2603256051364203923, guid: 5638c69e268ac7f4fa264bb2166bf998,
     type: 3}
-  connectionPrefab: {fileID: 2603256051364203923, guid: 5638c69e268ac7f4fa264bb2166bf998,
+  connectionPrefab: {fileID: 2603256051364203923, guid: 18f2878c5b66ca34b922b6b1de1d5fd8,
     type: 3}
   shipStatsUIPrefab: {fileID: 8525001193609788032, guid: 19880ee27f435f24dbd131af103ec95a,
     type: 3}
@@ -400,6 +400,7 @@ MonoBehaviour:
   nodeBeepSource: {fileID: 0}
   nodeBeepClip: {fileID: 0}
   nodeBeepVolume: 0.5
+  nodeTooltip: {fileID: 0}
   generatorSettings:
     minimumTotalParts: 20
     systemCountRange: {x: 2, y: 4}

@@ -3,7 +3,9 @@
     "origin": "(0,0) = visual center; x right; y up",
     "tile_size": 64,
     "units": "grid cells",
-    "ports_note": "ports lists grid cells that act as conduit connection points"
+    "ports_note": "ports lists grid cells that act as conduit connection points",
+    "ship_stats_note": "ship_stats_impact lists which ship statistics this part affects",
+    "part_flow_note": "part_flow indicates if this is a start, middle, or end part in the flow chain"
   },
   "parts": [
     {
@@ -113,7 +115,13 @@
       "block_count": 20,
       "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Reactor Output",
+        "Energy Reserve Hours",
+        "Blackout Risk Index"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "Auxiliary Microreactor",
@@ -166,7 +174,13 @@
       "block_count": 9,
       "port_count": 1,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Reactor Output",
+        "Energy Reserve Hours",
+        "Blackout Risk Index"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "Capacitor Bank",
@@ -235,7 +249,13 @@
       "block_count": 12,
       "port_count": 2,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Capacitor Charge",
+        "Battery Health (SoH)",
+        "Energy Reserve Hours"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Battery Rack",
@@ -299,11 +319,34 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
       "block_count": 14,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Capacitor Charge",
+        "Battery Health (SoH)",
+        "Energy Reserve Hours"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Power Inverter Rectifier Unit",
@@ -375,11 +418,37 @@
           3
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ]
+      ],
       "block_count": 16,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Reactor Output",
+        "Capacitor Charge",
+        "Power Bus Utilization",
+        "Blackout Risk Index",
+        "Battery Health (SoH)",
+        "Energy Reserve Hours"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Overclock Controller",
@@ -439,11 +508,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ]
+      ],
       "block_count": 13,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Bus Tie Breaker ATS",
@@ -487,11 +579,37 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
       "block_count": 9,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Reactor Output",
+        "Capacitor Charge",
+        "Power Bus Utilization",
+        "Blackout Risk Index",
+        "Battery Health (SoH)",
+        "Energy Reserve Hours"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Coolant Pump Assembly",
@@ -584,7 +702,14 @@
       "block_count": 16,
       "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Coolant Loop Pressure",
+        "Coolant ΔT",
+        "Radiator Efficiency",
+        "Heat Sink Saturation"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Heat Exchanger",
@@ -673,7 +798,14 @@
       "block_count": 17,
       "port_count": 2,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Coolant Loop Pressure",
+        "Coolant ΔT",
+        "Radiator Efficiency",
+        "Heat Sink Saturation"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Radiator Panel Array",
@@ -769,11 +901,35 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
       "block_count": 22,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Coolant Loop Pressure",
+        "Coolant ΔT",
+        "Radiator Efficiency",
+        "Heat Sink Saturation"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Heat Sink Block",
@@ -841,11 +997,35 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
       "block_count": 15,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Coolant Loop Pressure",
+        "Coolant ΔT",
+        "Radiator Efficiency",
+        "Heat Sink Saturation"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Phase-Change Reservoir",
@@ -902,7 +1082,15 @@
       "block_count": 10,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Coolant Loop Pressure",
+        "Coolant ΔT",
+        "Radiator Efficiency",
+        "Heat Sink Saturation",
+        "Thermal Hotspot Count"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Thermal Control Valve",
@@ -947,7 +1135,13 @@
       "block_count": 6,
       "port_count": 2,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "O2 Generator (Electrolyzer)",
@@ -1024,7 +1218,13 @@
       "block_count": 14,
       "port_count": 2,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "O₂ Partial Pressure",
+        "CO₂ Concentration",
+        "Airflow Rate"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "CO2 Scrubber Cartridge",
@@ -1084,11 +1284,34 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
       "block_count": 13,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "O₂ Partial Pressure",
+        "CO₂ Concentration",
+        "Airflow Rate"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Air Circulation Blower",
@@ -1136,11 +1359,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
       "block_count": 10,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "O₂ Partial Pressure",
+        "CO₂ Concentration",
+        "Airflow Rate"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "HEPA Filter Cassette",
@@ -1188,11 +1434,30 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
       "block_count": 10,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "end"
     },
     {
       "name": "Dehumidifier Unit",
@@ -1240,11 +1505,30 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
       "block_count": 10,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "end"
     },
     {
       "name": "Humidifier Vaporizer",
@@ -1284,11 +1568,30 @@
           -1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ]
+      ],
       "block_count": 8,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Pressure Regulator / Relief Valve",
@@ -1345,7 +1648,9 @@
       "block_count": 10,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "UV Sterilizer / Biofilter",
@@ -1413,11 +1718,30 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
       "block_count": 15,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "end"
     },
     {
       "name": "Hull Plate Segment (Composite Tile)",
@@ -1457,11 +1781,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
       "block_count": 8,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Hull Stress",
+        "Bulkhead Integrity",
+        "Microfracture Index"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Bulkhead Door Actuator",
@@ -1534,7 +1881,13 @@
       "block_count": 14,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Hull Stress",
+        "Bulkhead Integrity",
+        "Microfracture Index"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Seal/Gasket Ring Set",
@@ -1606,11 +1959,30 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
       "block_count": 16,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Vibration Dampener / Isolator",
@@ -1650,11 +2022,30 @@
           -1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ]
+      ],
       "block_count": 8,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Microfracture Sensor Mesh",
@@ -1682,11 +2073,34 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
       "block_count": 5,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Nav Solution Confidence",
+        "Sensor SNR",
+        "Comms Uptime (24h)"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Micrometeor Shield Tile (Whipple)",
@@ -1718,11 +2132,34 @@
           -1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
       "block_count": 6,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Hull Stress",
+        "Bulkhead Integrity",
+        "Microfracture Index"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Main Thruster Nozzle",
@@ -1778,11 +2215,34 @@
           -1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ]
+      ],
       "block_count": 12,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Thrust Availability",
+        "Drive Core Stability",
+        "FTL Spool Readiness"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Reaction Mass Tank",
@@ -1851,7 +2311,9 @@
       "block_count": 10,
       "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Thrust Vector Gimbal",
@@ -1892,7 +2354,9 @@
       "block_count": 6,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Drive Core Field Coil",
@@ -1968,11 +2432,34 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
       "block_count": 17,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Thrust Availability",
+        "Drive Core Stability",
+        "FTL Spool Readiness"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "FTL Spool / Condenser",
@@ -2000,11 +2487,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
       "block_count": 5,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Thrust Availability",
+        "Drive Core Stability",
+        "FTL Spool Readiness"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "RCS Thruster Quad",
@@ -2053,7 +2563,13 @@
       "block_count": 5,
       "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Thrust Availability",
+        "Drive Core Stability",
+        "FTL Spool Readiness"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Navigation Computer",
@@ -2110,7 +2626,13 @@
       "block_count": 10,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Nav Solution Confidence",
+        "Sensor SNR",
+        "Comms Uptime (24h)"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "Star Tracker Camera",
@@ -2147,7 +2669,9 @@
       "block_count": 5,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "start"
     },
     {
       "name": "Inertial Measurement Unit (IMU)",
@@ -2195,11 +2719,30 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
       "block_count": 10,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Sensor Array Receiver (Multi-band)",
@@ -2227,11 +2770,34 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
       "block_count": 5,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Nav Solution Confidence",
+        "Sensor SNR",
+        "Comms Uptime (24h)"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "High-Gain Antenna",
@@ -2276,7 +2842,13 @@
       "block_count": 7,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Nav Solution Confidence",
+        "Sensor SNR",
+        "Comms Uptime (24h)"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Quantum/Ka-Band Transceiver",
@@ -2329,7 +2901,9 @@
       "block_count": 8,
       "port_count": 2,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Signal Processing DSP Module",
@@ -2406,7 +2980,9 @@
       "block_count": 12,
       "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [],
+      "part_flow": "middle"
     },
     {
       "name": "Control Router / PLC Backplane",
@@ -2475,7 +3051,13 @@
       "block_count": 13,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Error-Correcting Memory Bank",
@@ -2536,7 +3118,14 @@
       "block_count": 9,
       "port_count": 3,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk",
+        "Command Queue Backlog"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Security Firewall Appliance",
@@ -2592,11 +3181,34 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ]
+      ],
       "block_count": 12,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Intrusion Detection Node (IDS)",
@@ -2633,7 +3245,14 @@
       "block_count": 5,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk",
+        "Command Queue Backlog"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Redundant Controller (Hot-Standby PLC)",
@@ -2673,11 +3292,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
       "block_count": 8,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Control Bus Integrity",
+        "Routing Table Health",
+        "Cyber Intrusion Risk"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Fabricator (Multi-Material Printer)",
@@ -2733,11 +3375,34 @@
           1
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
       "block_count": 12,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": false,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Fabricator Queue Time",
+        "Spare Parts Stock",
+        "Salvage Yield Rate"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "Smart Parts Locker (RFID)",
@@ -2805,11 +3470,34 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
       "block_count": 15,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Fabricator Queue Time",
+        "Spare Parts Stock",
+        "Salvage Yield Rate"
+      ],
+      "part_flow": "middle"
     },
     {
       "name": "Salvage Drone (Autonomous EVA)",
@@ -2837,11 +3525,34 @@
           0
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
       "block_count": 5,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Fabricator Queue Time",
+        "Spare Parts Stock",
+        "Salvage Yield Rate"
+      ],
+      "part_flow": "start"
     },
     {
       "name": "Shield Emitter Array",
@@ -2933,11 +3644,34 @@
           2
         ]
       ],
-      "ports": [],
+      "ports": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
       "block_count": 21,
-      "port_count": 0,
+      "port_count": 4,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Hull Stress",
+        "Bulkhead Integrity",
+        "Microfracture Index"
+      ],
+      "part_flow": "end"
     },
     {
       "name": "Shield Capacitor Bank",
@@ -3006,7 +3740,13 @@
       "block_count": 13,
       "port_count": 1,
       "center_is_block": true,
-      "tile_size": 64
+      "tile_size": 64,
+      "ship_stats_impact": [
+        "Capacitor Charge",
+        "Battery Health (SoH)",
+        "Energy Reserve Hours"
+      ],
+      "part_flow": "middle"
     }
   ]
 }

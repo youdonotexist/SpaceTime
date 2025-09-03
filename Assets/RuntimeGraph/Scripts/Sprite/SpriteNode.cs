@@ -286,7 +286,7 @@ namespace RuntimeGraph.Sprite
             return UnityEngine.Sprite.Create(texture, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
         }
         
-        private bool IsShipPart()
+        public bool IsShipPart()
         {
             // Check if this node is a ship part based on metadata or engine flag
             if (nodeData.isEngine) return true;
@@ -788,8 +788,31 @@ namespace RuntimeGraph.Sprite
             }
         }
         
+        // Mouse hover events for tooltip
+        private void OnMouseEnter()
+        {
+            if (NodeInfoTooltip.Instance != null)
+            {
+                NodeInfoTooltip.Instance.ShowTooltip(this, transform.position);
+            }
+        }
+        
+        private void OnMouseExit()
+        {
+            if (NodeInfoTooltip.Instance != null)
+            {
+                NodeInfoTooltip.Instance.Hide();
+            }
+        }
+        
         private void OnDestroy()
         {
+            // Hide tooltip if this node is destroyed while being hovered
+            if (NodeInfoTooltip.Instance != null && NodeInfoTooltip.Instance.IsVisible)
+            {
+                NodeInfoTooltip.Instance.Hide();
+            }
+            
             // Clean up any references
             // World-space UI removed - no UI cleanup needed
         }

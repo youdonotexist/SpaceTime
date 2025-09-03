@@ -39,6 +39,9 @@ namespace RuntimeGraph.Sprite
         public AudioClip nodeBeepClip;
         public float nodeBeepVolume = 0.5f;
         
+        [Header("UI")]
+        public NodeInfoTooltip nodeTooltip;
+        
         [Header("Procedural Generation")]
         public ProceduralShipLayoutGenerator.GeneratorSettings generatorSettings;
         
@@ -111,6 +114,7 @@ namespace RuntimeGraph.Sprite
             InitializeCategoryUI();
             InitializeAudio();
             InitializeStatsUI();
+            InitializeTooltip();
             EnsureNodeIds();
             CreateNodeInstances();
             CreateConnectionInstances();
@@ -371,8 +375,49 @@ namespace RuntimeGraph.Sprite
         
         private void InitializeStatsUI()
         {
-            // Create ship stats UI integration
-            Instantiate(shipStatsUIPrefab, FindFirstObjectByType<Canvas>().transform);
+            // Disabled complex ship stats UI - replaced with simplified dashboard
+            // Instantiate(shipStatsUIPrefab, FindFirstObjectByType<Canvas>().transform);
+            
+            // Create simplified ship dashboard
+            CreateSimplifiedShipDashboard();
+        }
+        
+        private void CreateSimplifiedShipDashboard()
+        {
+            // Create a dedicated canvas for the ship dashboard to ensure it stays visible across all modes
+            var dashboardCanvasGO = new GameObject("ShipDashboard Canvas");
+            var dashboardCanvas = dashboardCanvasGO.AddComponent<Canvas>();
+            dashboardCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            dashboardCanvas.sortingOrder = 100; // High sorting order to appear above other UI
+            
+            var canvasScaler = dashboardCanvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+            canvasScaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.referenceResolution = new Vector2(1920, 1080);
+            
+            dashboardCanvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            
+            // Create dashboard container
+            var dashboardGO = new GameObject("SimplifiedShipDashboard");
+            dashboardGO.transform.SetParent(dashboardCanvas.transform);
+            
+            var dashboardComponent = dashboardGO.AddComponent<SimplifiedShipDashboard>();
+            dashboardComponent.Initialize(this);
+        }
+        
+        private void InitializeTooltip()
+        {
+            // Create or find the NodeInfoTooltip instance
+            if (nodeTooltip == null)
+            {
+                nodeTooltip = FindObjectOfType<NodeInfoTooltip>();
+                
+                if (nodeTooltip == null)
+                {
+                    var tooltipGO = new GameObject("NodeInfoTooltip");
+                    nodeTooltip = tooltipGO.AddComponent<NodeInfoTooltip>();
+                    Debug.Log("Created NodeInfoTooltip system");
+                }
+            }
         }
         
         private AudioClip CreateNodeBeepSound()
