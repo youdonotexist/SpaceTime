@@ -1430,7 +1430,7 @@ namespace RuntimeGraph.Sprite
         {
             return engineType switch
             {
-                SpriteNode.EngineType.MainEngine => 0,      // Channel 0 for MainEngine
+                SpriteNode.EngineType.MainEngine => 9,      // Channel 0 for MainEngine
                 SpriteNode.EngineType.Thruster => 1,        // Channel 1 for Thruster
                 SpriteNode.EngineType.RetroEngine => 2,     // Channel 2 for RetroEngine
                 SpriteNode.EngineType.StabilityEngine => 3, // Channel 3 for StabilityEngine
@@ -1518,10 +1518,10 @@ namespace RuntimeGraph.Sprite
                 rotation = UnityEngine.Random.Range(0, 4) * 90f, // Random rotation (0, 90, 180, or 270 degrees)
                 connectedNodeIds = new List<string>(),
                 
-                // MIDI properties
-                note = UnityEngine.Random.Range(36, 84),
+                // MIDI properties - Use drum channel and specific notes for propulsion/energy parts
+                note = part.usesDrumChannel ? part.drumNote : UnityEngine.Random.Range(36, 84),
                 velocity = UnityEngine.Random.Range(60, 100),
-                channel = GetEngineTypeChannel(engineType), // Each engine category uses its own channel
+                channel = part.usesDrumChannel ? 9 : GetEngineTypeChannel(engineType), // Channel 9 for drums, others use engine type channel
                 duration = 0.08f,
                 icon = EnginePartIconGenerator.GenerateIconForPart(part)
             };
@@ -1530,6 +1530,14 @@ namespace RuntimeGraph.Sprite
             nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Type", value = part.name });
             nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Category", value = part.category });
             nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Description", value = part.description });
+            
+            // Add drum-specific metadata for propulsion and energy parts
+            if (part.usesDrumChannel)
+            {
+                nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "MIDI Channel", value = "9 (Drum Channel)" });
+                nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "Drum Sound", value = part.drumSoundName });
+                nodeData.metadata.Add(new SpriteNode.MetadataEntry { key = "MIDI Note", value = part.drumNote.ToString() });
+            }
             
             nodes.Add(nodeData);
             CreateNodeInstance(nodeData);

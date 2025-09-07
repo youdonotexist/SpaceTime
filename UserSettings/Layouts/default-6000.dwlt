@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.ContainerWindow
   m_PixelRect:
     serializedVersion: 2
-    x: 1564
+    x: 8
     y: 56
-    width: 2856
+    width: 1424
     height: 1330
   m_ShowMode: 4
   m_Title: Project
@@ -44,7 +44,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2856
+    width: 1424
     height: 1330
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -69,7 +69,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2856
+    width: 1424
     height: 36
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 1310
-    width: 2856
+    width: 1424
     height: 20
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
@@ -114,7 +114,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 36
-    width: 2856
+    width: 1424
     height: 1274
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
@@ -140,7 +140,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2390
+    width: 1191
     height: 1274
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
@@ -166,7 +166,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2390
+    width: 1191
     height: 737
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
@@ -190,7 +190,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 688
+    width: 343
     height: 737
   m_MinSize: {x: 201, y: 226}
   m_MaxSize: {x: 4001, y: 4026}
@@ -214,9 +214,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 688
+    x: 343
     y: 0
-    width: 1702
+    width: 848
     height: 737
   m_MinSize: {x: 202, y: 226}
   m_MaxSize: {x: 4002, y: 4026}
@@ -242,7 +242,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 737
-    width: 2390
+    width: 1191
     height: 537
   m_MinSize: {x: 231, y: 276}
   m_MaxSize: {x: 10001, y: 10026}
@@ -268,9 +268,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 2390
+    x: 1191
     y: 0
-    width: 466
+    width: 233
     height: 1274
   m_MinSize: {x: 276, y: 76}
   m_MaxSize: {x: 4001, y: 4026}
@@ -405,9 +405,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Hierarchy\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1564
-    y: 92
-    width: 687
+    x: 0
+    y: 24
+    width: 342
     height: 711
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -472,9 +472,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 2252
-    y: 92
-    width: 1700
+    x: 344
+    y: 24
+    width: 846
     height: 711
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1126,9 +1126,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1564
-    y: 829
-    width: 2389
+    x: 0
+    y: 761
+    width: 1190
     height: 511
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1171,7 +1171,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 311}
     m_SelectedIDs: 505e0100
     m_LastClickedID: 89680
-    m_ExpandedIDs: 0000000028f500002af500002cf500002ef5000030f5000032f5000034f5000036f5000038f50000465e010000ca9a3b
+    m_ExpandedIDs: 0000000046f5000048f500004af500004cf500004ef5000050f5000052f5000054f5000056f50000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1200,7 +1200,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000028f500002af500002cf500002ef5000030f5000032f5000034f5000036f5000038f5000000ca9a3b
+    m_ExpandedIDs: 0000000046f5000048f500004af500004cf500004ef5000050f5000052f5000054f5000056f50000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1300,9 +1300,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 3954
-    y: 92
-    width: 465
+    x: 1192
+    y: 24
+    width: 232
     height: 1248
   m_SerializedDataModeController:
     m_DataMode: 0

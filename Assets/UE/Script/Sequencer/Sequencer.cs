@@ -30,11 +30,11 @@ namespace UE.Script.Sequencer
         [SerializeField]
         private List<SeqChannel> channels;
         
-        [SerializeField] ChannelModel[] channelConfigs;
+        [SerializeField] protected ChannelModel[] channelConfigs;
 
-        [SerializeField] private GemstrumentManager gemstrumentManager;
+        [SerializeField] protected GemstrumentManager gemstrumentManager;
 
-        [SerializeField] private SpriteRenderer lightSprite;
+        [SerializeField] protected SpriteRenderer lightSprite;
 
         public int beatsPerLoop;
         public int beatsPerMinute;

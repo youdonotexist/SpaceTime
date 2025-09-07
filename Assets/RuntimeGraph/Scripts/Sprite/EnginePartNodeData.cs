@@ -16,6 +16,11 @@ namespace RuntimeGraph.Sprite
         public UnityEngine.Sprite icon;
         public List<string> affectedStats; // Stats from ship monitoring system
         
+        // MIDI drum integration properties
+        public bool usesDrumChannel = false; // Whether this component uses drum channel 9
+        public int drumNote = 36; // MIDI note for drum sound (36 = kick drum by default)
+        public string drumSoundName = ""; // Human-readable name of the drum sound
+        
         public EnginePartNodeData(string name, string category, Color color, string description, params string[] stats)
         {
             this.name = name;
@@ -23,6 +28,21 @@ namespace RuntimeGraph.Sprite
             this.color = color;
             this.description = description;
             this.affectedStats = new List<string>(stats);
+            
+            // Set drum channel usage for propulsion and energy components
+            this.usesDrumChannel = category == "Propulsion & Maneuvering" || category == "Power & Energy";
+        }
+        
+        public EnginePartNodeData(string name, string category, Color color, string description, int drumNote, string drumSoundName, params string[] stats)
+        {
+            this.name = name;
+            this.category = category;
+            this.color = color;
+            this.description = description;
+            this.affectedStats = new List<string>(stats);
+            this.usesDrumChannel = category == "Propulsion & Maneuvering" || category == "Power & Energy";
+            this.drumNote = drumNote;
+            this.drumSoundName = drumSoundName;
         }
     }
     
@@ -46,23 +66,23 @@ namespace RuntimeGraph.Sprite
         {
             var parts = new List<EnginePartNodeData>();
             
-            // Power & Energy (7 parts)
+            // Power & Energy (7 parts) - Mapped to drum sounds
             parts.AddRange(new[]
             {
                 new EnginePartNodeData("Fusion Reactor Core", "Power & Energy", PowerEnergyColor, 
-                    "Main power generation unit", "Reactor Output", "Blackout Risk Index", "Energy Reserve Hours"),
+                    "Main power generation unit", 36, "Kick Drum", "Reactor Output", "Blackout Risk Index", "Energy Reserve Hours"),
                 new EnginePartNodeData("Auxiliary Microreactor", "Power & Energy", PowerEnergyColor, 
-                    "Backup power generation", "Reactor Output", "Propulsion Redundancy Score", "Blackout Risk Index"),
+                    "Backup power generation", 38, "Snare Drum", "Reactor Output", "Propulsion Redundancy Score", "Blackout Risk Index"),
                 new EnginePartNodeData("Capacitor Bank", "Power & Energy", PowerEnergyColor, 
-                    "Short-term power storage", "Capacitor Charge", "Power Bus Utilization", "Shield Charge"),
+                    "Short-term power storage", 42, "Closed Hi-Hat", "Capacitor Charge", "Power Bus Utilization", "Shield Charge"),
                 new EnginePartNodeData("Battery Rack", "Power & Energy", PowerEnergyColor, 
-                    "Long-term energy storage", "Battery Health (SoH)", "Energy Reserve Hours", "Blackout Risk Index"),
+                    "Long-term energy storage", 46, "Open Hi-Hat", "Battery Health (SoH)", "Energy Reserve Hours", "Blackout Risk Index"),
                 new EnginePartNodeData("Power Inverter/Rectifier Unit", "Power & Energy", PowerEnergyColor, 
-                    "Power conditioning system", "Power Bus Utilization", "Control Bus Integrity", "Blackout Risk Index"),
+                    "Power conditioning system", 49, "Crash Cymbal", "Power Bus Utilization", "Control Bus Integrity", "Blackout Risk Index"),
                 new EnginePartNodeData("Overclock Controller (Clock Module)", "Power & Energy", PowerEnergyColor, 
-                    "Performance enhancement system", "Overclock Thermal Penalty", "Reactor Output", "Drive Core Stability"),
+                    "Performance enhancement system", 51, "Ride Cymbal", "Overclock Thermal Penalty", "Reactor Output", "Drive Core Stability"),
                 new EnginePartNodeData("Bus Tie Breaker / ATS", "Power & Energy", PowerEnergyColor, 
-                    "Power distribution switch", "Blackout Risk Index", "Power Bus Utilization", "Comms Uptime (24h)")
+                    "Power distribution switch", 47, "Low Mid Tom", "Blackout Risk Index", "Power Bus Utilization", "Comms Uptime (24h)")
             });
             
             // Thermal & Coolant (6 parts)
@@ -120,21 +140,21 @@ namespace RuntimeGraph.Sprite
                     "Impact protection system", "Micrometeor Impact Rate", "Armor Ablation", "Hull Stress")
             });
             
-            // Propulsion & Maneuvering (6 parts)
+            // Propulsion & Maneuvering (6 parts) - Mapped to drum sounds
             parts.AddRange(new[]
             {
                 new EnginePartNodeData("Main Thruster Nozzle", "Propulsion & Maneuvering", PropulsionColor, 
-                    "Primary propulsion system", "Thrust Availability", "Thruster Alignment Error", "Drive Core Stability"),
+                    "Primary propulsion system", 35, "Acoustic Bass Drum", "Thrust Availability", "Thruster Alignment Error", "Drive Core Stability"),
                 new EnginePartNodeData("Reaction Mass Tank", "Propulsion & Maneuvering", PropulsionColor, 
-                    "Propellant storage", "Reaction Mass Reserve", "Thrust Availability", "FTL Spool Readiness"),
+                    "Propellant storage", 40, "Electric Snare", "Reaction Mass Reserve", "Thrust Availability", "FTL Spool Readiness"),
                 new EnginePartNodeData("Thrust Vector Gimbal", "Propulsion & Maneuvering", PropulsionColor, 
-                    "Directional control", "Thruster Alignment Error", "Vibration RMS", "Propulsion Redundancy Score"),
+                    "Directional control", 41, "Low Floor Tom", "Thruster Alignment Error", "Vibration RMS", "Propulsion Redundancy Score"),
                 new EnginePartNodeData("Drive Core Field Coil", "Propulsion & Maneuvering", PropulsionColor, 
-                    "FTL drive component", "Drive Core Stability", "Overclock Thermal Penalty", "FTL Spool Readiness"),
+                    "FTL drive component", 43, "High Floor Tom", "Drive Core Stability", "Overclock Thermal Penalty", "FTL Spool Readiness"),
                 new EnginePartNodeData("FTL Spool/Condenser", "Propulsion & Maneuvering", PropulsionColor, 
-                    "Jump preparation system", "FTL Spool Readiness", "Drive Core Stability", "Energy Reserve Hours"),
+                    "Jump preparation system", 45, "Low Tom", "FTL Spool Readiness", "Drive Core Stability", "Energy Reserve Hours"),
                 new EnginePartNodeData("RCS Thruster Quad", "Propulsion & Maneuvering", PropulsionColor, 
-                    "Attitude control system", "Thrust Availability", "Propulsion Redundancy Score", "Nav Solution Confidence")
+                    "Attitude control system", 48, "Hi Mid Tom", "Thrust Availability", "Propulsion Redundancy Score", "Nav Solution Confidence")
             });
             
             // Navigation, Comms & Sensors (7 parts)

@@ -160,7 +160,7 @@ namespace RuntimeGraph.Sprite
         {
             return engineType switch
             {
-                SpriteNode.EngineType.MainEngine => 0,
+                SpriteNode.EngineType.MainEngine => 15,
                 SpriteNode.EngineType.Thruster => 1,
                 SpriteNode.EngineType.RetroEngine => 2,
                 SpriteNode.EngineType.StabilityEngine => 3,
